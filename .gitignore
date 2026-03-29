@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+build/
+**/dist/
+front/dist/
+
+# Environment files
+.env
+**/.env
+!**/.env.example
+
+# Database
+*.db
+*.sqlite
+
+# Uploads (imagens de produtos - não versionar)
+back/uploads/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Vite
+front/.vite/

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx nest:*)",
+      "Bash(timeout 15 node dist/main.js)"
+    ]
+  }
+}

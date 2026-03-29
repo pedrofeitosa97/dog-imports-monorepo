@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"\\\\.\\(json|yml|yaml|md|txt\\)$\")",
+      "Bash(find C:UsersPedroDesktopworkspacedog-imports-monorepofront -type f -name *logo* -o -name *brand*)",
+      "Bash(find C:UsersPedroDesktopworkspacedog-imports-monorepofront -type f \\\\\\(-name *.jsx -o -name *.js -o -name *.tsx -o -name *.ts \\\\\\))",
+      "Bash(xargs grep:*)",
+      "Bash(grep -r \"image\\\\|Image\\\\|img\" C:UsersPedroDesktopworkspacedog-imports-monorepofrontsrcshared --include=*.jsx --include=*.js)",
+      "Bash(grep -r src= C:UsersPedroDesktopworkspacedog-imports-monorepofrontsrc --include=*.jsx)",
+      "WebFetch(domain:i.imgur.com)",
+      "Bash(curl -L \"https://i.imgur.com/YFPJDZ5.png\" -o /tmp/logo_brand.png)",
+      "Read(//tmp/**)",
+      "Bash(curl -L \"https://i.imgur.com/YFPJDZ5.png\" -o \"C:/Users/Pedro/Desktop/workspace/dog-imports-monorepo/logo_temp.png\")"
+    ]
+  }
+}
