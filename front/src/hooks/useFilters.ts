@@ -56,8 +56,17 @@ function filtersReducer(state: FiltersState, action: FiltersAction): FiltersStat
 }
 
 export function useFilters() {
-  const [filters, dispatch] = useReducer(filtersReducer, initialState)
-  const [, setSearchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const [filters, dispatch] = useReducer(filtersReducer, undefined, () => ({
+    ...initialState,
+    gender:     searchParams.get('gender')?.split(',').filter(Boolean)     ?? [],
+    brands:     searchParams.get('brands')?.split(',').filter(Boolean)     ?? [],
+    categories: searchParams.get('categories')?.split(',').filter(Boolean) ?? [],
+    sizes:      searchParams.get('sizes')?.split(',').filter(Boolean)      ?? [],
+    sortBy:     searchParams.get('sortBy') ?? 'relevance',
+    page:       Number(searchParams.get('page')) || 1,
+  }))
 
   useEffect(() => {
     const params: Record<string, string> = {}

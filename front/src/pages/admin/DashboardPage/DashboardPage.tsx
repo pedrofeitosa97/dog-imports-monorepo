@@ -193,18 +193,20 @@ const ProductRow = styled(Link)`
 `
 
 const ProductImgWrapper = styled.div`
-  width: 40px;
-  height: 48px;
-  border-radius: 6px;
+  width: 52px;
+  height: 64px;
+  border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
   background: rgba(255,255,255,0.07);
+
+  img { width: 100%; height: 100%; object-fit: cover; }
 `
 
 const ProductImgPlaceholder = styled.div`
-  width: 40px;
-  height: 48px;
-  border-radius: 6px;
+  width: 52px;
+  height: 64px;
+  border-radius: 8px;
   background: rgba(255,255,255,0.07);
   display: flex;
   align-items: center;
