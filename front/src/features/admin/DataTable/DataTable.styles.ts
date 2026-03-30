@@ -52,9 +52,13 @@ export const Tr = styled.tr<{ $clickable?: boolean }>`
 `
 
 export const Td = styled.td`
-  padding: 12px 16px;
+  padding: 10px 14px;
   color: ${TEXT};
   vertical-align: middle;
+
+  @media (max-width: 640px) {
+    padding: 8px 10px;
+  }
 `
 
 export const SortIcon = styled.span`

@@ -50,11 +50,17 @@ const IconBtn = styled.button<{ $danger?: boolean }>`
 `
 
 const ProductThumb = styled.img`
-  width: 40px;
-  height: 48px;
+  width: 52px;
+  height: 64px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 6px;
   background: rgba(255,255,255,0.1);
+  flex-shrink: 0;
+
+  @media (max-width: 640px) {
+    width: 56px;
+    height: 70px;
+  }
 `
 
 const ConfirmText = styled.p`
@@ -134,7 +140,7 @@ export default function ProductsListPage() {
     {
       key: 'images',
       label: '',
-      width: '60px',
+      width: '88px',
       render: (images: unknown) => {
         const imgs = images as string[] | undefined
         return <ProductThumb src={getImageUrl(imgs?.[0]) ?? undefined} alt="" />
