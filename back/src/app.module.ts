@@ -32,6 +32,11 @@ import { SeedService } from './database/seed.service';
             entities: [User, Product, ProductSize, ProductColor, Category],
             synchronize: true,
             ssl: { rejectUnauthorized: false },
+            extra: {
+              max: 10,
+              idleTimeoutMillis: 30000,
+              connectionTimeoutMillis: 5000,
+            },
           };
         }
 
