@@ -79,6 +79,12 @@ export class CreateProductDto {
   @IsBoolean()
   isFeatured?: boolean;
 
+  @ApiPropertyOptional({ default: false })
+  @IsOptional()
+  @Transform(parseBool)
+  @IsBoolean()
+  isPromotion?: boolean;
+
   @ApiPropertyOptional({ example: 1 })
   @IsOptional()
   @Transform(({ value }) => { if (!value || value === 'null' || value === '') return null; const n = parseInt(value); return isNaN(n) ? null : n; })

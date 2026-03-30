@@ -61,4 +61,9 @@ export class ProductFiltersDto {
   @IsOptional()
   @Transform(({ value }) => value === 'true' || value === true)
   showAll?: boolean;
+
+  @ApiPropertyOptional({ description: 'Filtra apenas produtos em promoção' })
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  discount?: boolean;
 }

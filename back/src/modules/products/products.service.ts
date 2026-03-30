@@ -20,7 +20,7 @@ export class ProductsService {
   ) {}
 
   async findAll(filters: ProductFiltersDto) {
-    const { brand, category, sizes, priceMin, priceMax, gender, sortBy, showAll, search } = filters;
+    const { brand, category, sizes, priceMin, priceMax, gender, sortBy, showAll, search, discount } = filters;
     const page = Number.isFinite(Number(filters.page)) ? Math.max(1, Number(filters.page)) : 1;
     const limit = Number.isFinite(Number(filters.limit)) ? Math.max(1, Number(filters.limit)) : 12;
 
@@ -47,6 +47,7 @@ export class ProductsService {
     if (priceMin !== undefined) qb.andWhere('product.price >= :priceMin', { priceMin });
     if (priceMax !== undefined) qb.andWhere('product.price <= :priceMax', { priceMax });
     if (gender?.length) qb.andWhere('product.gender IN (:...genders)', { genders: gender });
+    if (discount) qb.andWhere('product.isPromotion = :isPromotion', { isPromotion: true });
     if (sizes?.length) {
       qb.innerJoin(
         'product.sizes',

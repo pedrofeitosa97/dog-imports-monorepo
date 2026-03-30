@@ -36,6 +36,7 @@ export interface Product {
   badge?: string | null
   isActive?: boolean
   isFeatured?: boolean
+  isPromotion?: boolean
   stock?: number
   sizes?: ProductSize[]
   colors?: ProductColor[]
@@ -67,6 +68,7 @@ export interface ProductFilters {
   page?: number
   limit?: number
   showAll?: boolean
+  discount?: boolean
   brand?: string
   category?: string
 }

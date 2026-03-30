@@ -11,6 +11,7 @@ export interface FiltersState {
   colors: string[]
   sortBy: string
   page: number
+  discount: boolean
 }
 
 type ArrayFilterKey = 'gender' | 'sizes' | 'brands' | 'categories' | 'colors'
@@ -24,6 +25,7 @@ function buildParams(filters: FiltersState): Record<string, string> {
   if (filters.sizes.length) params.sizes = filters.sizes.join(',')
   if (filters.gender.length) params.gender = filters.gender.join(',')
   if (filters.colors.length) params.colors = filters.colors.join(',')
+  if (filters.discount) params.discount = 'true'
   return params
 }
 
@@ -43,6 +45,7 @@ export function useFilters() {
     page:       Number(searchParams.get('page')) || 1,
     priceMin:   Number(searchParams.get('priceMin')) || 0,
     priceMax:   Number(searchParams.get('priceMax')) || 9999,
+    discount:   searchParams.get('discount') === 'true',
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [searchStr])
 

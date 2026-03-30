@@ -33,6 +33,7 @@ export interface ProductFormValues {
   sizes: SizeRow[]
   isActive: boolean
   isFeatured: boolean
+  isPromotion: boolean
   images: ImagePreview[]
 }
 
@@ -75,6 +76,7 @@ export default function ProductForm({
     sizes: [],
     isActive: true,
     isFeatured: false,
+    isPromotion: false,
     images: [],
     ...initialValues,
   })
@@ -266,6 +268,10 @@ export default function ProductForm({
         <ToggleRow>
           <input type="checkbox" id="isFeatured" checked={values.isFeatured} onChange={(e) => set('isFeatured', e.target.checked)} />
           <ToggleLabel htmlFor="isFeatured">Produto em destaque</ToggleLabel>
+        </ToggleRow>
+        <ToggleRow>
+          <input type="checkbox" id="isPromotion" checked={values.isPromotion} onChange={(e) => set('isPromotion', e.target.checked)} />
+          <ToggleLabel htmlFor="isPromotion">Produto em promoção (aparece na aba Promoções)</ToggleLabel>
         </ToggleRow>
       </FormSection>
 

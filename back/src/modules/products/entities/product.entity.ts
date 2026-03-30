@@ -45,6 +45,9 @@ export class Product {
   @Column({ default: false })
   isFeatured: boolean;
 
+  @Column({ default: false })
+  isPromotion: boolean;
+
   @Column('decimal', { precision: 3, scale: 2, default: 0 })
   rating: number;
 

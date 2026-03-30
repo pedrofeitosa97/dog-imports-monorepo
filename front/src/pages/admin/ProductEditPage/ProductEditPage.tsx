@@ -59,11 +59,12 @@ export default function ProductEditPage() {
         sizes: loadedSizes,
         isActive: prod.isActive ?? true,
         isFeatured: prod.isFeatured ?? false,
+        isPromotion: prod.isPromotion ?? false,
         images: (prod.images ?? []).map((url: string) => ({ url, preview: url })),
       })
       setCategories(cats)
     }).catch(() => {
-      setProduct({ name: '', slug: '', description: '', price: '', originalPrice: '', stock: '', brand: '', gender: '', category: '', sizes: [], isActive: true, isFeatured: false, images: [] })
+      setProduct({ name: '', slug: '', description: '', price: '', originalPrice: '', stock: '', brand: '', gender: '', category: '', sizes: [], isActive: true, isFeatured: false, isPromotion: false, images: [] })
     }).finally(() => setLoading(false))
   }, [id])
 
