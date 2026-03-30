@@ -6,12 +6,12 @@ import { ProductColor } from './entities/product-color.entity';
 import { Category } from '../categories/entities/category.entity';
 import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
-import { CloudinaryModule } from '../cloudinary/cloudinary.module';
+import { S3Module } from '../s3/s3.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Product, ProductSize, ProductColor, Category]),
-    CloudinaryModule,
+    S3Module,
   ],
   providers: [ProductsService],
   controllers: [ProductsController],

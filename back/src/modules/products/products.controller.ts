@@ -13,16 +13,16 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductFiltersDto } from './dto/product-filters.dto';
 import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { S3Service } from '../s3/s3.service';
 
 const imageFilter = (_req: any, file: Express.Multer.File, cb: any) => {
   const allowed = /\.(jpg|jpeg|png|webp)$/i;
   cb(null, allowed.test(file.originalname));
 };
 
-// Em produção usa memoryStorage (upload vai para Cloudinary).
-// Em desenvolvimento usa diskStorage (salva em ./uploads/products/).
-const storageConfig = process.env.DATABASE_URL
+// Produção (S3): usa memoryStorage — o buffer é enviado para o S3.
+// Desenvolvimento local: usa diskStorage — salva em ./uploads/products/.
+const storageConfig = process.env.AWS_S3_BUCKET
   ? memoryStorage()
   : diskStorage({
       destination: join(process.cwd(), 'uploads', 'products'),
@@ -37,23 +37,23 @@ const storageConfig = process.env.DATABASE_URL
 export class ProductsController {
   constructor(
     private productsService: ProductsService,
-    private cloudinaryService: CloudinaryService,
+    private s3Service: S3Service,
   ) {}
 
   private async resolveImagePaths(files: Express.Multer.File[]): Promise<string[]> {
     if (!files?.length) return [];
 
-    // Produção com Cloudinary configurado: faz upload e retorna URL
-    if (this.cloudinaryService.isConfigured()) {
-      return Promise.all(files.map((f) => this.cloudinaryService.uploadBuffer(f.buffer)));
+    // Produção: faz upload para o S3 e retorna URL pública
+    if (this.s3Service.isConfigured()) {
+      return Promise.all(
+        files.map((f) => this.s3Service.uploadBuffer(f.buffer, f.originalname, f.mimetype)),
+      );
     }
 
-    // Desenvolvimento (diskStorage): arquivo já salvo em disco com nome gerado
-    // Em produção sem Cloudinary (memoryStorage), f.filename é undefined — ignora as imagens
-    const paths = files
+    // Desenvolvimento: arquivo salvo em disco pelo diskStorage
+    return files
       .filter((f) => f.filename)
       .map((f) => `/uploads/products/${f.filename}`);
-    return paths;
   }
 
   @Public()

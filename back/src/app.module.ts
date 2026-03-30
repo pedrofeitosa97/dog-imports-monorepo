@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ProductsModule } from './modules/products/products.module';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { S3Module } from './modules/s3/s3.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { User } from './modules/users/entities/user.entity';
 import { Product } from './modules/products/entities/product.entity';
@@ -46,6 +47,7 @@ import { SeedService } from './database/seed.service';
     }),
 
     TypeOrmModule.forFeature([User, Product, ProductSize, ProductColor, Category]),
+    S3Module,
     AuthModule,
     UsersModule,
     ProductsModule,
