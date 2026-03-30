@@ -54,8 +54,8 @@ export default function Header({ transparent = false }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const isActive = useIsActive()
-  const { settings } = useSiteSettings()
-  const headerLogo = settings.logo_header || '/logo.png'
+  const { settings, loaded: settingsLoaded } = useSiteSettings()
+  const headerLogo = settingsLoaded ? (settings.logo_header || '/logo.png') : null
   const { user } = useAuth()
 
   const scrolled = scrollY > 60
@@ -79,7 +79,7 @@ export default function Header({ transparent = false }: HeaderProps) {
           </Hamburger>
 
           <Logo as={Link} to="/">
-            <img src={headerLogo} alt="Dog Imports" height="44" />
+            {headerLogo && <img src={headerLogo} alt="Dog Imports" height="44" />}
           </Logo>
 
           <Nav>

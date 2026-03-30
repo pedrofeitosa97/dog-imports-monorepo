@@ -4,21 +4,25 @@ import type { SiteSettings } from '../types/api'
 
 interface SiteSettingsContextValue {
   settings: SiteSettings
+  loaded: boolean
   refresh: () => void
 }
 
 const SiteSettingsContext = createContext<SiteSettingsContextValue>({
   settings: {},
+  loaded: false,
   refresh: () => undefined,
 })
 
 export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<SiteSettings>({})
+  const [loaded, setLoaded] = useState(false)
 
   const load = () => {
     settingsService.getAll()
       .then(setSettings)
       .catch(() => setSettings({}))
+      .finally(() => setLoaded(true))
   }
 
   useEffect(() => { load() }, [])
@@ -35,7 +39,7 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   }, [settings.favicon])
 
   return (
-    <SiteSettingsContext.Provider value={{ settings, refresh: load }}>
+    <SiteSettingsContext.Provider value={{ settings, loaded, refresh: load }}>
       {children}
     </SiteSettingsContext.Provider>
   )

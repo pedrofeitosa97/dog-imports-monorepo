@@ -6,14 +6,14 @@ import {
 } from './Footer.styles'
 
 export default function Footer() {
-  const { settings } = useSiteSettings()
-  const footerLogo = settings.logo_footer || '/logo.png'
+  const { settings, loaded: settingsLoaded } = useSiteSettings()
+  const footerLogo = settingsLoaded ? (settings.logo_footer || '/logo.png') : null
 
   return (
     <FooterWrapper>
       <FooterGrid>
         <FooterBrand>
-          <img src={footerLogo} alt="Dog Imports" />
+          {footerLogo && <img src={footerLogo} alt="Dog Imports" />}
           <FooterTagline>
             Roupas importadas e marcas de grife com autenticidade garantida. Estilo que fala por você.
           </FooterTagline>
