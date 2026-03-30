@@ -24,7 +24,7 @@ import { SeedService } from './database/seed.service';
         const databaseUrl = config.get<string>('DATABASE_URL');
 
         if (databaseUrl) {
-          // Produção: PostgreSQL (Railway)
+          console.log('🐘 Banco: PostgreSQL (Railway)');
           return {
             type: 'postgres',
             url: databaseUrl,
@@ -34,7 +34,7 @@ import { SeedService } from './database/seed.service';
           };
         }
 
-        // Desenvolvimento local: SQLite
+        console.warn('⚠️  DATABASE_URL não encontrado — usando SQLite local. Dados NÃO persistem no Railway!');
         return {
           type: 'sqlite',
           database: 'dog_imports.db',
