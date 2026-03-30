@@ -1,22 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Button from '../../ui/Button/Button'
+import { bannerService } from '../../services/bannerService'
+import type { Banner } from '../../types/api'
 import {
   BannerWrapper, Slide, SlideImage, SlideOverlay, SlideContent,
   SlideEyebrow, SlideTitle, SlideSubtitle, NavBtn, DotsRow, Dot,
 } from './HeroBanner.styles'
 
-interface SlideItem {
-  id: number
-  imageUrl: string
-  eyebrow?: string
-  title: string
-  subtitle: string
-  cta: string
-  to: string
-}
-
-const defaultSlides: SlideItem[] = [
+const FALLBACK_SLIDES: Banner[] = [
   {
     id: 1,
     imageUrl: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=1440&q=80',
@@ -24,7 +16,9 @@ const defaultSlides: SlideItem[] = [
     title: 'Estilo que\nfala por você',
     subtitle: 'As melhores marcas de grife importadas com autenticidade garantida.',
     cta: 'Ver coleção',
-    to: '/produtos',
+    ctaUrl: '/produtos',
+    order: 0,
+    isActive: true,
   },
   {
     id: 2,
@@ -33,7 +27,9 @@ const defaultSlides: SlideItem[] = [
     title: 'Últimas\ntendências',
     subtitle: 'Direto das passarelas internacionais para o seu guarda-roupa.',
     cta: 'Comprar agora',
-    to: '/produtos?sortBy=newest',
+    ctaUrl: '/produtos?sortBy=newest',
+    order: 1,
+    isActive: true,
   },
   {
     id: 3,
@@ -42,19 +38,27 @@ const defaultSlides: SlideItem[] = [
     title: 'Cada peça,\numa história',
     subtitle: 'Autenticidade e qualidade em cada item da nossa curadoria.',
     cta: 'Explorar',
-    to: '/produtos',
+    ctaUrl: '/produtos',
+    order: 2,
+    isActive: true,
   },
 ]
 
 interface HeroBannerProps {
-  slides?: SlideItem[]
   autoPlay?: boolean
   interval?: number
 }
 
-export default function HeroBanner({ slides = defaultSlides, autoPlay = true, interval = 5500 }: HeroBannerProps) {
+export default function HeroBanner({ autoPlay = true, interval = 5500 }: HeroBannerProps) {
+  const [slides, setSlides] = useState<Banner[]>(FALLBACK_SLIDES)
   const [active, setActive] = useState(0)
   const timer = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    bannerService.getActive()
+      .then((data) => { if (data.length > 0) setSlides(data) })
+      .catch(() => { /* fallback já definido */ })
+  }, [])
 
   const startTimer = useCallback(() => {
     if (!autoPlay) return
@@ -85,9 +89,9 @@ export default function HeroBanner({ slides = defaultSlides, autoPlay = true, in
           <SlideContent>
             {slide.eyebrow && <SlideEyebrow>{slide.eyebrow}</SlideEyebrow>}
             <SlideTitle style={{ whiteSpace: 'pre-line' }}>{slide.title}</SlideTitle>
-            <SlideSubtitle>{slide.subtitle}</SlideSubtitle>
+            {slide.subtitle && <SlideSubtitle>{slide.subtitle}</SlideSubtitle>}
             <div>
-              <Button as="a" href={slide.to} variant="primary" size="lg">
+              <Button as="a" href={slide.ctaUrl} variant="primary" size="lg">
                 {slide.cta}
               </Button>
             </div>

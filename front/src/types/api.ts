@@ -88,3 +88,27 @@ export interface CategoryFormData {
   name: string
   description?: string
 }
+
+export interface Banner {
+  id: number
+  imageUrl: string
+  eyebrow?: string
+  title: string
+  subtitle?: string
+  cta: string
+  ctaUrl: string
+  order: number
+  isActive: boolean
+}
+
+export interface BannerFormData {
+  imageUrl: string
+  eyebrow?: string
+  title: string
+  subtitle?: string
+  cta?: string
+  ctaUrl?: string
+  order?: number
+  isActive?: boolean
+  imageFile?: File
+}

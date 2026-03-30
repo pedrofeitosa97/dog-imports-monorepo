@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ProductsModule } from './modules/products/products.module';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { BannersModule } from './modules/banners/banners.module';
 import { S3Module } from './modules/s3/s3.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { User } from './modules/users/entities/user.entity';
@@ -13,6 +14,7 @@ import { Product } from './modules/products/entities/product.entity';
 import { ProductSize } from './modules/products/entities/product-size.entity';
 import { ProductColor } from './modules/products/entities/product-color.entity';
 import { Category } from './modules/categories/entities/category.entity';
+import { Banner } from './modules/banners/entities/banner.entity';
 import { SeedService } from './database/seed.service';
 
 @Module({
@@ -29,7 +31,7 @@ import { SeedService } from './database/seed.service';
           return {
             type: 'postgres',
             url: databaseUrl,
-            entities: [User, Product, ProductSize, ProductColor, Category],
+            entities: [User, Product, ProductSize, ProductColor, Category, Banner],
             synchronize: true,
             ssl: { rejectUnauthorized: false },
             extra: {
@@ -44,7 +46,7 @@ import { SeedService } from './database/seed.service';
         return {
           type: 'sqlite',
           database: 'dog_imports.db',
-          entities: [User, Product, ProductSize, ProductColor, Category],
+          entities: [User, Product, ProductSize, ProductColor, Category, Banner],
           synchronize: true,
         };
       },
@@ -57,6 +59,7 @@ import { SeedService } from './database/seed.service';
     UsersModule,
     ProductsModule,
     CategoriesModule,
+    BannersModule,
   ],
   providers: [
     {
