@@ -9,6 +9,7 @@ export interface ProductSize {
   id?: number
   name?: string
   label: string
+  stock?: number
   available?: boolean
 }
 

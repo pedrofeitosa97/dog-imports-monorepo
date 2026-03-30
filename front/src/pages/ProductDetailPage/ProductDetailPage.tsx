@@ -197,7 +197,7 @@ export default function ProductDetailPage() {
 
           {(product.sizes?.length ?? 0) > 0 && (
             <SizeSelector
-              sizes={product.sizes!.map((s) => ({ label: s.label ?? s.name ?? '', available: s.available }))}
+              sizes={product.sizes!.map((s) => ({ label: s.label ?? s.name ?? '', available: s.available ?? true }))}
               selected={selectedSize}
               onChange={setSelectedSize}
             />
