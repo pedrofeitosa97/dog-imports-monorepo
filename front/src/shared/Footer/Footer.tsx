@@ -22,8 +22,8 @@ export default function Footer() {
         <FooterCol>
           <FooterTitle>Comprar</FooterTitle>
           <FooterLink as={Link} to="/produtos">Todos os produtos</FooterLink>
-          <FooterLink as={Link} to="/categorias/masculino">Masculino</FooterLink>
-          <FooterLink as={Link} to="/categorias/feminino">Feminino</FooterLink>
+          <FooterLink as={Link} to="/produtos?gender=masculino">Masculino</FooterLink>
+          <FooterLink as={Link} to="/produtos?gender=feminino">Feminino</FooterLink>
           <FooterLink as={Link} to="/produtos?sortBy=newest">Novidades</FooterLink>
         </FooterCol>
 

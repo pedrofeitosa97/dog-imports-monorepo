@@ -150,3 +150,10 @@ export const ReviewCount = styled.span`
   font-size: 10px;
   color: ${({ theme }) => theme.colors.textSecondary};
 `
+
+export const LowStock = styled.span`
+  font-size: 10px;
+  font-weight: 600;
+  color: #f87171;
+  margin-top: 2px;
+`

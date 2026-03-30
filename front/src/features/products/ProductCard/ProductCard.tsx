@@ -9,7 +9,7 @@ import { getImageUrl } from '../../../utils/getImageUrl'
 import {
   Card, ImageWrapper, WishlistBtn, BadgeWrapper,
   Info, Brand, Name, PriceRow, CurrentPrice, OriginalPrice,
-  DiscountBadge, RatingRow, Stars, ReviewCount,
+  DiscountBadge, RatingRow, Stars, ReviewCount, LowStock,
 } from './ProductCard.styles'
 
 interface ProductCardProps {
@@ -24,11 +24,12 @@ interface ProductCardProps {
   reviewCount?: number
   images?: string[]
   badge?: string | null
+  stock?: number
 }
 
 export default function ProductCard({
   id, slug, name, brand, price, originalPrice, discountPct,
-  rating, reviewCount, images = [], badge,
+  rating, reviewCount, images = [], badge, stock,
 }: ProductCardProps) {
   const { toggle, isWishlisted } = useWishlist()
   const wishlisted = isWishlisted(id)
@@ -80,6 +81,9 @@ export default function ProductCard({
             </Stars>
             {(reviewCount ?? 0) > 0 && <ReviewCount>({reviewCount})</ReviewCount>}
           </RatingRow>
+        )}
+        {stock !== undefined && stock > 0 && stock <= 5 && (
+          <LowStock>Restam apenas {stock} {stock === 1 ? 'unidade' : 'unidades'}</LowStock>
         )}
       </Info>
     </Card>

@@ -12,6 +12,7 @@ import FavoritesPage from '../pages/FavoritesPage/FavoritesPage'
 import SearchPage from '../pages/SearchPage/SearchPage'
 import AboutPage from '../pages/AboutPage/AboutPage'
 import ReturnPolicyPage from '../pages/ReturnPolicyPage/ReturnPolicyPage'
+import NotFoundPage from '../pages/NotFoundPage/NotFoundPage'
 
 import LoginPage from '../pages/admin/LoginPage/LoginPage'
 import DashboardPage from '../pages/admin/DashboardPage/DashboardPage'
@@ -38,6 +39,7 @@ export default function AppRoutes() {
           <Route path="/categorias/:category" element={<ProductListingPage />} />
           <Route path="/sobre-nos" element={<AboutPage />} />
           <Route path="/politica-de-trocas" element={<ReturnPolicyPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
 
         <Route element={<AuthLayout />}>
