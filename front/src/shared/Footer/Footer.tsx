@@ -1,15 +1,19 @@
 import { Link } from 'react-router-dom'
+import { useSiteSettings } from '../../hooks/useSiteSettings'
 import {
   FooterWrapper, FooterGrid, FooterBrand, FooterTagline,
   FooterCol, FooterTitle, FooterLink, FooterBottom, Copyright, FooterAccent,
 } from './Footer.styles'
 
 export default function Footer() {
+  const { settings } = useSiteSettings()
+  const footerLogo = settings.logo_footer || settings.logo_header || '/logo.png'
+
   return (
     <FooterWrapper>
       <FooterGrid>
         <FooterBrand>
-          <img src="/logo.png" alt="Dog Imports" />
+          <img src={footerLogo} alt="Dog Imports" />
           <FooterTagline>
             Roupas importadas e marcas de grife com autenticidade garantida. Estilo que fala por você.
           </FooterTagline>

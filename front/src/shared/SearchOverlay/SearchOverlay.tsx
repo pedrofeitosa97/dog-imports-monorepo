@@ -4,6 +4,7 @@ import { Search, X, ArrowRight, Clock, TrendingUp } from 'lucide-react'
 import styled, { keyframes } from 'styled-components'
 import { productService } from '../../services/productService'
 import { getImageUrl } from '../../utils/getImageUrl'
+import { useSiteSettings } from '../../hooks/useSiteSettings'
 import type { Product } from '../../types/api'
 
 /* ── animations ─────────────────────────────────────────────────────────── */
@@ -311,6 +312,8 @@ export default function SearchOverlay({ onClose }: SearchOverlayProps) {
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
   const [recent, setRecent] = useState<string[]>(loadRecent)
+  const { settings } = useSiteSettings()
+  const headerLogo = settings.logo_header || '/logo.png'
 
   useEffect(() => { inputRef.current?.focus() }, [])
 
@@ -350,7 +353,7 @@ export default function SearchOverlay({ onClose }: SearchOverlayProps) {
     <>
       <Bar>
         <LogoArea>
-          <img src="/logo.png" alt="Dog Imports" />
+          <img src={headerLogo} alt="Dog Imports" />
         </LogoArea>
 
         <InputWrap>

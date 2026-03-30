@@ -20,6 +20,7 @@ import ProductCreatePage from '../pages/admin/ProductCreatePage/ProductCreatePag
 import ProductEditPage from '../pages/admin/ProductEditPage/ProductEditPage'
 import CategoryPage from '../pages/admin/CategoryPage/CategoryPage'
 import BannerPage from '../pages/admin/BannerPage/BannerPage'
+import SettingsPage from '../pages/admin/SettingsPage/SettingsPage'
 import PopupPage from '../pages/admin/PopupPage/PopupPage'
 
 export default function AppRoutes() {
@@ -51,6 +52,7 @@ export default function AppRoutes() {
             <Route path="/admin/produtos/:id/editar" element={<ProductEditPage />} />
             <Route path="/admin/categorias" element={<CategoryPage />} />
             <Route path="/admin/banners" element={<BannerPage />} />
+            <Route path="/admin/configuracoes" element={<SettingsPage />} />
             <Route path="/admin/popups" element={<PopupPage />} />
           </Route>
         </Route>

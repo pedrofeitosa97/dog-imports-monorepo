@@ -101,6 +101,12 @@ export interface Banner {
   isActive: boolean
 }
 
+export interface SiteSettings {
+  logo_header?: string | null
+  logo_footer?: string | null
+  [key: string]: string | null | undefined
+}
+
 export interface BannerFormData {
   imageUrl: string
   eyebrow?: string

@@ -5,6 +5,7 @@ import { useCart } from '../../hooks/useCart'
 import { useWishlist } from '../../hooks/useWishlist'
 import { useScrollPosition } from '../../hooks/useScrollPosition'
 import { useThemeContext } from '../../hooks/useTheme'
+import { useSiteSettings } from '../../hooks/useSiteSettings'
 import SearchOverlay from '../SearchOverlay/SearchOverlay'
 import {
   HeaderWrapper, TopBar, TopBarLink, MainHeader, Logo, Nav, NavItem,
@@ -52,6 +53,8 @@ export default function Header({ transparent = false }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const isActive = useIsActive()
+  const { settings } = useSiteSettings()
+  const headerLogo = settings.logo_header || '/logo.png'
 
   const scrolled = scrollY > 60
   const isTransparent = transparent && !scrolled && !mobileOpen
@@ -71,7 +74,7 @@ export default function Header({ transparent = false }: HeaderProps) {
           </Hamburger>
 
           <Logo as={Link} to="/">
-            <img src="/logo.png" alt="Dog Imports" height="44" />
+            <img src={headerLogo} alt="Dog Imports" height="44" />
           </Logo>
 
           <Nav>

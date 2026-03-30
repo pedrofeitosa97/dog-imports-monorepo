@@ -1,7 +1,8 @@
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Package, Tag, Image, MessageSquare, LogOut, Menu, X, ChevronLeft } from 'lucide-react'
+import { LayoutDashboard, Package, Tag, Image, Settings, MessageSquare, LogOut, Menu, X, ChevronLeft } from 'lucide-react'
 import { useState, useEffect, type ReactNode } from 'react'
 import { useAuth } from '../hooks/useAuth'
+import { useSiteSettings } from '../hooks/useSiteSettings'
 import styled from 'styled-components'
 
 const BG      = '#0d0d0f'
@@ -255,6 +256,7 @@ const navItems: NavItemConfig[] = [
   { to: '/admin/categorias', label: 'Categorias', icon: <Tag size={17} /> },
   { to: '/admin/banners', label: 'Banners', icon: <Image size={17} /> },
   { to: '/admin/popups', label: 'Popups', icon: <MessageSquare size={17} /> },
+  { to: '/admin/configuracoes', label: 'Configurações', icon: <Settings size={17} /> },
 ]
 
 const pageTitles: Record<string, string> = {
@@ -264,6 +266,7 @@ const pageTitles: Record<string, string> = {
   '/admin/categorias': 'Categorias',
   '/admin/banners': 'Banners',
   '/admin/popups': 'Popups',
+  '/admin/configuracoes': 'Configurações',
 }
 
 export default function AdminLayout() {
@@ -272,6 +275,8 @@ export default function AdminLayout() {
   const { logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const { settings } = useSiteSettings()
+  const sidebarLogo = settings.logo_header || '/logo.png'
 
   useEffect(() => { setMobileOpen(false) }, [location.pathname])
 
@@ -291,7 +296,7 @@ export default function AdminLayout() {
       <Sidebar $collapsed={collapsed} $mobileOpen={mobileOpen}>
         <SidebarTop>
           <LogoMark>
-            <LogoImg src="/logo.png" alt="Dog Imports" />
+            <LogoImg src={sidebarLogo} alt="Dog Imports" />
             <LogoText $collapsed={collapsed}>DOG IMPORTS</LogoText>
           </LogoMark>
           <CollapseBtn onClick={() => setCollapsed(v => !v)} title={collapsed ? 'Expandir' : 'Recolher'}>
