@@ -222,8 +222,8 @@ export default function AboutPage() {
         <SectionLabel>Como tudo começou</SectionLabel>
         <SectionTitle>Do bairro para o mundo</SectionTitle>
         <BodyText>
-          Tudo começou em 2023, quando Lucas, Rafael e Mateus — três amigos de infância do mesmo
-          bairro em São Paulo — perceberam que marcas como Tommy Hilfiger, Ralph Lauren e Calvin Klein
+          Tudo começou em 2026, quando Caio Moisés, Pedro Feitosa e Marcelo Lima — três amigos de
+          infância do mesmo bairro — perceberam que marcas como Tommy Hilfiger, Ralph Lauren e Calvin Klein
           chegavam ao Brasil por caminhos pouco confiáveis. Produtos falsos circulavam livremente,
           e quem queria o original pagava absurdos em importações duvidosas.
         </BodyText>
@@ -240,9 +240,9 @@ export default function AboutPage() {
 
         <FriendsGrid>
           {[
-            { initial: 'L', name: 'Lucas', role: 'Fundador · Operações' },
-            { initial: 'R', name: 'Rafael', role: 'Fundador · Importação' },
-            { initial: 'M', name: 'Mateus', role: 'Fundador · Comercial' },
+            { initial: 'C', name: 'Caio Moisés', role: 'Fundador · Operações' },
+            { initial: 'P', name: 'Pedro Feitosa', role: 'Fundador · Comercial' },
+            { initial: 'M', name: 'Marcelo Lima', role: 'Fundador · Importação' },
           ].map((f) => (
             <FriendCard key={f.name}>
               <FriendInitial>{f.initial}</FriendInitial>
