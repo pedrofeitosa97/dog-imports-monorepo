@@ -18,11 +18,19 @@ export interface ProductFormValues {
   originalPrice: string
   stock: string
   brand: string
+  gender: string
   category: string | number
   isActive: boolean
   isFeatured: boolean
   images: ImagePreview[]
 }
+
+const GENDER_OPTIONS = [
+  { value: '', label: 'Selecione...' },
+  { value: 'masculino', label: 'Masculino' },
+  { value: 'feminino', label: 'Feminino' },
+  { value: 'unissex', label: 'Unissex' },
+]
 
 interface ProductFormProps {
   initialValues?: Partial<ProductFormValues>
@@ -47,6 +55,7 @@ export default function ProductForm({
     originalPrice: '',
     stock: '',
     brand: '',
+    gender: '',
     category: '',
     isActive: true,
     isFeatured: false,
@@ -98,6 +107,14 @@ export default function ProductForm({
             options={categories.map((c) => ({ value: c.id, label: c.name }))}
             value={values.category}
             onChange={(e) => set('category', e.target.value)}
+            fullWidth
+            dark
+          />
+          <Select
+            label="Público-alvo"
+            options={GENDER_OPTIONS}
+            value={values.gender}
+            onChange={(e) => set('gender', e.target.value)}
             fullWidth
             dark
           />

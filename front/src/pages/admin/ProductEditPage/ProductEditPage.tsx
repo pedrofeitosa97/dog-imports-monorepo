@@ -49,6 +49,7 @@ export default function ProductEditPage() {
         originalPrice: prod.originalPrice != null ? String(prod.originalPrice) : '',
         stock: String(prod.stock ?? ''),
         brand: prod.brand ?? '',
+        gender: prod.gender ?? '',
         category: catValue,
         isActive: prod.isActive ?? true,
         isFeatured: prod.isFeatured ?? false,
@@ -56,7 +57,7 @@ export default function ProductEditPage() {
       })
       setCategories(cats)
     }).catch(() => {
-      setProduct({ name: '', slug: '', description: '', price: '', originalPrice: '', stock: '', brand: '', category: '', isActive: true, isFeatured: false, images: [] })
+      setProduct({ name: '', slug: '', description: '', price: '', originalPrice: '', stock: '', brand: '', gender: '', category: '', isActive: true, isFeatured: false, images: [] })
     }).finally(() => setLoading(false))
   }, [id])
 
