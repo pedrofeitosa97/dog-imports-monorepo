@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Package, Tag, Image, Settings, MessageSquare, LogOut, Menu, X, ChevronLeft } from 'lucide-react'
+import { LayoutDashboard, Package, Tag, Image, Settings, MessageSquare, LogOut, ExternalLink, Menu, X, ChevronLeft } from 'lucide-react'
 import { useState, useEffect, type ReactNode } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useSiteSettings } from '../hooks/useSiteSettings'
@@ -168,6 +168,24 @@ const SidebarBottom = styled.div`
   border-top: 1px solid ${BORDER};
 `
 
+const SidebarLink = styled.a`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  width: 100%;
+  border-radius: 8px;
+  color: ${MUTED};
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms;
+  white-space: nowrap;
+  text-decoration: none;
+
+  &:hover { background: rgba(255,255,255,0.05); color: ${TEXT}; }
+`
+
 const LogoutBtn = styled.button`
   display: flex;
   align-items: center;
@@ -226,6 +244,21 @@ const PageTitle = styled.h1`
   font-weight: 600;
   color: ${TEXT};
   flex: 1;
+`
+
+const TopBarLink = styled.a`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: ${MUTED};
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 7px;
+  white-space: nowrap;
+  transition: all 150ms;
+  &:hover { background: rgba(255,255,255,0.05); color: ${TEXT}; }
 `
 
 const Main = styled.main`
@@ -317,6 +350,10 @@ export default function AdminLayout() {
         </SidebarNav>
 
         <SidebarBottom>
+          <SidebarLink href="/" target="_blank" rel="noopener noreferrer">
+            <ExternalLink size={17} />
+            <NavLabel $collapsed={collapsed}>Ver o site</NavLabel>
+          </SidebarLink>
           <LogoutBtn onClick={handleLogout}>
             <LogOut size={17} />
             <NavLabel $collapsed={collapsed}>Sair</NavLabel>
@@ -330,6 +367,10 @@ export default function AdminLayout() {
             <Menu size={20} />
           </HamburgerBtn>
           <PageTitle>{title}</PageTitle>
+          <TopBarLink href="/" target="_blank" rel="noopener noreferrer">
+            <ExternalLink size={14} />
+            Ver site
+          </TopBarLink>
         </TopBar>
         <Main>
           <Outlet />

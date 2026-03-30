@@ -7,7 +7,7 @@ import {
 
 export default function Footer() {
   const { settings } = useSiteSettings()
-  const footerLogo = settings.logo_footer || settings.logo_header || '/logo.png'
+  const footerLogo = settings.logo_footer || '/logo.png'
 
   return (
     <FooterWrapper>

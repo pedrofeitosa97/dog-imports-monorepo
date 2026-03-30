@@ -6,6 +6,7 @@ import { useWishlist } from '../../hooks/useWishlist'
 import { useScrollPosition } from '../../hooks/useScrollPosition'
 import { useThemeContext } from '../../hooks/useTheme'
 import { useSiteSettings } from '../../hooks/useSiteSettings'
+import { useAuth } from '../../hooks/useAuth'
 import SearchOverlay from '../SearchOverlay/SearchOverlay'
 import {
   HeaderWrapper, TopBar, TopBarLink, MainHeader, Logo, Nav, NavItem,
@@ -55,6 +56,7 @@ export default function Header({ transparent = false }: HeaderProps) {
   const isActive = useIsActive()
   const { settings } = useSiteSettings()
   const headerLogo = settings.logo_header || '/logo.png'
+  const { user } = useAuth()
 
   const scrolled = scrollY > 60
   const isTransparent = transparent && !scrolled && !mobileOpen
@@ -65,7 +67,10 @@ export default function Header({ transparent = false }: HeaderProps) {
         <TopBar>
           <TopBarLink as={Link} to="/produtos">Guia de tamanhos</TopBarLink>
           <TopBarLink as={Link} to="/produtos">Lançamentos</TopBarLink>
-          <TopBarLink as={Link} to="/admin/login">Admin</TopBarLink>
+          {user
+            ? <TopBarLink as={Link} to="/admin">Dashboard</TopBarLink>
+            : <TopBarLink as={Link} to="/admin/login">Admin</TopBarLink>
+          }
         </TopBar>
 
         <MainHeader>

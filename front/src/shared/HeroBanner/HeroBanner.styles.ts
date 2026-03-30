@@ -1,4 +1,26 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
+
+const shimmer = keyframes`
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+`
+
+export const BannerSkeleton = styled.div`
+  position: relative;
+  overflow: hidden;
+  background: #111;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  height: clamp(320px, 50vh, 520px);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+    animation: ${shimmer} 1.6s infinite ease-in-out;
+    will-change: transform;
+  }
+`
 
 export const BannerOuter = styled.div`
   max-width: 1440px;
