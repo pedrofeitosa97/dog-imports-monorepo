@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 export interface FiltersState {
@@ -29,8 +30,10 @@ function buildParams(filters: FiltersState): Record<string, string> {
 export function useFilters() {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // URL is the single source of truth — derived on every render
-  const filters: FiltersState = {
+  // URL is the single source of truth — memoized so object reference only
+  // changes when the actual search string changes (prevents useEffect loops)
+  const searchStr = searchParams.toString()
+  const filters = useMemo<FiltersState>(() => ({
     gender:     searchParams.get('gender')?.split(',').filter(Boolean)     ?? [],
     brands:     searchParams.get('brands')?.split(',').filter(Boolean)     ?? [],
     categories: searchParams.get('categories')?.split(',').filter(Boolean) ?? [],
@@ -40,7 +43,8 @@ export function useFilters() {
     page:       Number(searchParams.get('page')) || 1,
     priceMin:   Number(searchParams.get('priceMin')) || 0,
     priceMax:   Number(searchParams.get('priceMax')) || 9999,
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [searchStr])
 
   const setFilter = (key: keyof FiltersState, value: FiltersState[keyof FiltersState]) => {
     setSearchParams(buildParams({ ...filters, [key]: value, page: 1 }), { replace: true })
