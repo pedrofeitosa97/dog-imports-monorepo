@@ -4,7 +4,7 @@ import Button from '../../ui/Button/Button'
 import { bannerService } from '../../services/bannerService'
 import type { Banner } from '../../types/api'
 import {
-  BannerWrapper, Slide, SlideImage, SlideOverlay, SlideContent,
+  BannerOuter, BannerWrapper, Slide, SlideImage, SlideOverlay, SlideContent,
   SlideEyebrow, SlideTitle, SlideSubtitle, NavBtn, DotsRow, Dot,
 } from './HeroBanner.styles'
 
@@ -81,6 +81,7 @@ export default function HeroBanner({ autoPlay = true, interval = 5500 }: HeroBan
   }
 
   return (
+    <BannerOuter>
     <BannerWrapper>
       {slides.map((slide, idx) => (
         <Slide key={slide.id} $active={idx === active}>
@@ -112,5 +113,6 @@ export default function HeroBanner({ autoPlay = true, interval = 5500 }: HeroBan
         ))}
       </DotsRow>
     </BannerWrapper>
+    </BannerOuter>
   )
 }

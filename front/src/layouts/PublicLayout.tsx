@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import Header from '../shared/Header/Header'
 import Footer from '../shared/Footer/Footer'
 import CartSidebar from '../features/cart/CartSidebar/CartSidebar'
+import SitePopup from '../features/popup/SitePopup/SitePopup'
 import styled from 'styled-components'
 
 const Main = styled.main`
@@ -17,6 +18,7 @@ export default function PublicLayout() {
       </Main>
       <Footer />
       <CartSidebar />
+      <SitePopup />
     </>
   )
 }

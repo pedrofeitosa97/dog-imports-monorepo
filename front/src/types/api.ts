@@ -112,3 +112,27 @@ export interface BannerFormData {
   isActive?: boolean
   imageFile?: File
 }
+
+export interface Popup {
+  id: number
+  imageUrl?: string
+  title: string
+  subtitle?: string
+  cta?: string
+  ctaUrl?: string
+  isActive: boolean
+  delaySeconds: number
+  cooldownHours: number
+}
+
+export interface PopupFormData {
+  title: string
+  imageUrl?: string
+  subtitle?: string
+  cta?: string
+  ctaUrl?: string
+  isActive?: boolean
+  delaySeconds?: number
+  cooldownHours?: number
+  imageFile?: File
+}

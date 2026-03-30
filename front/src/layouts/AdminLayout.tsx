@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Package, Tag, Image, LogOut, Menu, X, ChevronLeft } from 'lucide-react'
+import { LayoutDashboard, Package, Tag, Image, MessageSquare, LogOut, Menu, X, ChevronLeft } from 'lucide-react'
 import { useState, useEffect, type ReactNode } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import styled from 'styled-components'
@@ -254,6 +254,7 @@ const navItems: NavItemConfig[] = [
   { to: '/admin/produtos', label: 'Produtos', icon: <Package size={17} /> },
   { to: '/admin/categorias', label: 'Categorias', icon: <Tag size={17} /> },
   { to: '/admin/banners', label: 'Banners', icon: <Image size={17} /> },
+  { to: '/admin/popups', label: 'Popups', icon: <MessageSquare size={17} /> },
 ]
 
 const pageTitles: Record<string, string> = {
@@ -262,6 +263,7 @@ const pageTitles: Record<string, string> = {
   '/admin/produtos/novo': 'Novo produto',
   '/admin/categorias': 'Categorias',
   '/admin/banners': 'Banners',
+  '/admin/popups': 'Popups',
 }
 
 export default function AdminLayout() {
