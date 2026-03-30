@@ -78,20 +78,22 @@ export const Nav = styled.nav`
   }
 `
 
-export const NavItem = styled.a<{ $transparent?: boolean }>`
+export const NavItem = styled.a<{ $transparent?: boolean; $active?: boolean }>`
   font-size: ${({ theme }) => theme.typography.size.sm};
   font-weight: ${({ theme }) => theme.typography.weight.medium};
-  color: ${({ theme, $transparent }) => $transparent ? 'rgba(255,255,255,0.9)' : theme.colors.textPrimary};
+  color: ${({ theme, $transparent, $active }) =>
+    $active
+      ? ($transparent ? '#fff' : theme.colors.brand)
+      : ($transparent ? 'rgba(255,255,255,0.9)' : theme.colors.textPrimary)};
   text-decoration: none;
   letter-spacing: ${({ theme }) => theme.typography.letterSpacing.wide};
   white-space: nowrap;
   padding-bottom: 2px;
-  border-bottom: 2px solid transparent;
+  border-bottom: 2px solid ${({ theme, $active }) => $active ? theme.colors.brand : 'transparent'};
   transition: color ${({ theme }) => theme.transitions.fast},
               border-color ${({ theme }) => theme.transitions.fast};
 
-  &:hover,
-  &.active {
+  &:hover {
     color: ${({ theme, $transparent }) => $transparent ? '#fff' : theme.colors.brand};
     border-bottom-color: ${({ theme }) => theme.colors.brand};
   }
@@ -207,16 +209,16 @@ export const MobileNav = styled.nav`
   flex-direction: column;
 `
 
-export const MobileNavItem = styled.a`
+export const MobileNavItem = styled.a<{ $active?: boolean }>`
   font-size: ${({ theme }) => theme.typography.size.base};
   font-weight: ${({ theme }) => theme.typography.weight.medium};
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: ${({ theme, $active }) => $active ? theme.colors.brand : theme.colors.textPrimary};
   text-decoration: none;
   padding: ${({ theme }) => `${theme.spacing[4]} 0`};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   transition: color ${({ theme }) => theme.transitions.fast};
 
-  &:hover, &.active {
+  &:hover {
     color: ${({ theme }) => theme.colors.brand};
   }
 `

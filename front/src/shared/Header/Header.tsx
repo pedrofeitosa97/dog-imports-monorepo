@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { ShoppingBag, Heart, Search, Menu, X, Sun, Moon } from 'lucide-react'
 import { useCart } from '../../hooks/useCart'
 import { useWishlist } from '../../hooks/useWishlist'
@@ -11,18 +11,31 @@ import {
   MobileNav, MobileNavItem, Hamburger,
 } from './Header.styles'
 
-interface NavLink {
+interface NavLinkDef {
   label: string
   to: string
 }
 
-const navLinks: NavLink[] = [
+const navLinks: NavLinkDef[] = [
   { label: 'Novidades', to: '/produtos?sortBy=newest' },
   { label: 'Masculino', to: '/categorias/masculino' },
   { label: 'Feminino', to: '/categorias/feminino' },
   { label: 'Marcas', to: '/produtos' },
   { label: 'Promoções', to: '/produtos?discount=true' },
 ]
+
+function useIsActive() {
+  const location = useLocation()
+  return (to: string): boolean => {
+    const [toPart, toSearch = ''] = to.split('?')
+    const currentSearch = location.search.replace(/^\?/, '')
+    if (toPart !== location.pathname) return false
+    // Link sem query → ativo só se a página também não tiver query
+    if (!toSearch) return !currentSearch
+    // Link com query → deve bater exatamente
+    return currentSearch === toSearch
+  }
+}
 
 interface HeaderProps {
   transparent?: boolean
@@ -36,6 +49,7 @@ export default function Header({ transparent = false }: HeaderProps) {
   const isDark = themeCtx?.isDark ?? true
   const toggleTheme = themeCtx?.toggleTheme ?? (() => undefined)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const isActive = useIsActive()
 
   const scrolled = scrollY > 60
   const isTransparent = transparent && !scrolled && !mobileOpen
@@ -60,7 +74,7 @@ export default function Header({ transparent = false }: HeaderProps) {
 
           <Nav>
             {navLinks.map((link) => (
-              <NavItem as={NavLink} to={link.to} key={link.label} $transparent={isTransparent}>
+              <NavItem as={Link} to={link.to} key={link.label} $transparent={isTransparent} $active={isActive(link.to)}>
                 {link.label}
               </NavItem>
             ))}
@@ -95,7 +109,7 @@ export default function Header({ transparent = false }: HeaderProps) {
         </Hamburger>
         <MobileNav>
           {navLinks.map((link) => (
-            <MobileNavItem as={NavLink} to={link.to} key={link.label} onClick={() => setMobileOpen(false)}>
+            <MobileNavItem as={Link} to={link.to} key={link.label} $active={isActive(link.to)} onClick={() => setMobileOpen(false)}>
               {link.label}
             </MobileNavItem>
           ))}
