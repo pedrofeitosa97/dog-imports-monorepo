@@ -36,8 +36,8 @@ const Bar = styled.div`
   align-items: center;
   gap: 20px;
   padding: 0 clamp(16px, 5vw, 56px);
-  background: ${({ theme }) => theme.colors.background ?? theme.colors.headerBg};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.background};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.headerBorder};
   will-change: transform;
   animation: ${slideInBar} 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 
@@ -69,23 +69,22 @@ const InputWrap = styled.label`
   display: flex;
   align-items: center;
   gap: 10px;
-  background: ${({ theme }) => theme.colors.surface};
-  border: 1.5px solid ${({ theme }) => theme.colors.border};
-  border-radius: 999px;
-  padding: 0 18px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  padding: 0 16px;
   height: 44px;
   cursor: text;
-  transition: border-color 150ms;
+  transition: background 150ms;
 
   &:focus-within {
-    border-color: ${({ theme }) => theme.colors.brand};
+    background: rgba(255, 255, 255, 0.10);
   }
 
   svg { color: ${({ theme }) => theme.colors.textSecondary}; flex-shrink: 0; }
 
   @media (max-width: 640px) {
     height: 40px;
-    padding: 0 14px;
+    padding: 0 12px;
   }
 `
 
@@ -109,16 +108,15 @@ const ClearBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: ${({ theme }) => theme.colors.textSecondary};
-  color: ${({ theme }) => theme.colors.background ?? '#fff'};
+  background: rgba(255, 255, 255, 0.18);
+  color: ${({ theme }) => theme.colors.textPrimary};
   flex-shrink: 0;
   cursor: pointer;
-  opacity: 0.55;
-  transition: opacity 150ms;
-  &:hover { opacity: 1; }
+  transition: background 150ms;
+  &:hover { background: rgba(255, 255, 255, 0.28); }
 `
 
 const CancelBtn = styled.button`
@@ -154,8 +152,8 @@ const Dropdown = styled.div`
   left: 0;
   right: 0;
   z-index: ${({ theme }) => theme.zIndex.modal};
-  background: ${({ theme }) => theme.colors.background ?? theme.colors.headerBg};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.background};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.headerBorder};
   max-height: calc(100vh - 72px);
   overflow-y: auto;
   animation: ${fadeInResults} 180ms ease both;
@@ -209,7 +207,7 @@ const ProductItem = styled.button`
 const ProductThumb = styled.div`
   width: 100%;
   aspect-ratio: 3/4;
-  border-radius: 8px;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
   overflow: hidden;
   background: ${({ theme }) => theme.colors.surface};
 
@@ -223,7 +221,7 @@ const ProductThumb = styled.div`
 const ProductThumbPlaceholder = styled.div`
   width: 100%;
   aspect-ratio: 3/4;
-  border-radius: 8px;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
   background: ${({ theme }) => theme.colors.surface};
 `
 
@@ -256,7 +254,7 @@ const SuggestionItem = styled.button`
   align-items: center;
   gap: 10px;
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: ${({ theme }) => theme.borderRadius.base};
   font-size: 14px;
   color: ${({ theme }) => theme.colors.textPrimary};
   cursor: pointer;
