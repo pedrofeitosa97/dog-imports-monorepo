@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
-import { Package, Tag, CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react'
+import { Package, Tag, CheckCircle, AlertTriangle, ArrowRight, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { productService } from '../../../services/productService'
-import type { ProductStats } from '../../../types/api'
+import { getImageUrl } from '../../../utils/getImageUrl'
+import type { ProductStats, Product } from '../../../types/api'
 
 const pulse = keyframes`
   0%, 100% { opacity: 1; }
@@ -44,17 +45,6 @@ const WelcomeSub = styled.p`
   margin: 0;
 `
 
-const QuickLink = styled(Link)`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #60a5fa;
-  text-decoration: none;
-  white-space: nowrap;
-  &:hover { color: #93c5fd; }
-`
 
 /* ── Stat cards ───────────────────────────────────────────────────────── */
 
@@ -146,12 +136,18 @@ const ErrorBanner = styled.div`
   color: #ff453a;
 `
 
-/* ── Quick actions ────────────────────────────────────────────────────── */
+/* ── Recent products ─────────────────────────────────────────────────── */
 
 const Section = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+`
+
+const SectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `
 
 const SectionTitle = styled.h3`
@@ -163,35 +159,113 @@ const SectionTitle = styled.h3`
   margin: 0;
 `
 
-const Actions = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-`
-
-const ActionCard = styled(Link)`
+const SectionLink = styled(Link)`
+  font-size: 12px;
+  color: rgba(235,235,245,0.4);
+  text-decoration: none;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
+  gap: 4px;
+  &:hover { color: #60a5fa; }
+`
+
+const ProductList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border-radius: 12px;
+  overflow: hidden;
+`
+
+const ProductRow = styled(Link)`
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.03);
+  text-decoration: none;
+  transition: background 130ms;
+
+  &:hover { background: rgba(255,255,255,0.06); }
+
+  @media (max-width: 480px) { padding: 10px 12px; gap: 10px; }
+`
+
+const ProductImg = styled.img`
+  width: 40px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.07);
+  flex-shrink: 0;
+`
+
+const ProductImgPlaceholder = styled.div`
+  width: 40px;
+  height: 48px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: rgba(255,255,255,0.2);
+`
+
+const ProductInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+`
+
+const ProductName = styled.p`
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #f5f5f7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 0 2px;
+`
+
+const ProductMeta = styled.p`
+  font-size: 12px;
+  color: rgba(235,235,245,0.35);
+  margin: 0;
+`
+
+const ProductPrice = styled.span`
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(235,235,245,0.7);
+  flex-shrink: 0;
+`
+
+const EmptyRow = styled.div`
+  padding: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: rgba(235,235,245,0.25);
   background: rgba(255,255,255,0.03);
   border-radius: 12px;
-  text-decoration: none;
-  color: rgba(235,235,245,0.7);
+`
+
+const NewProductBtn = styled(Link)`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  background: rgba(249,115,22,0.12);
+  border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
-  transition: background 140ms, border-color 140ms, color 140ms;
-
-  &:hover {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.12);
-    color: #f5f5f7;
-  }
+  color: #f97316;
+  text-decoration: none;
+  transition: background 140ms;
+  &:hover { background: rgba(249,115,22,0.2); }
 `
+
+const formatPrice = (n: number) =>
+  n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
 /* ── Data ─────────────────────────────────────────────────────────────── */
 
@@ -209,24 +283,29 @@ const statConfigs: StatConfig[] = [
   { key: 'outOfStock',      label: 'Sem estoque',       color: '#f87171', Icon: AlertTriangle },
 ]
 
-const quickActions = [
-  { to: '/admin/produtos/novo', label: 'Novo produto' },
-  { to: '/admin/produtos',      label: 'Ver produtos' },
-  { to: '/admin/categorias',    label: 'Categorias' },
-]
-
 /* ── Component ─────────────────────────────────────────────────────────── */
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<ProductStats | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [statsLoading, setStatsLoading] = useState(true)
+  const [statsError, setStatsError] = useState('')
+
+  const [recent, setRecent] = useState<Product[]>([])
+  const [recentLoading, setRecentLoading] = useState(true)
 
   useEffect(() => {
     productService.getStats()
       .then(setStats)
-      .catch(() => setError('Não foi possível carregar as estatísticas.'))
-      .finally(() => setLoading(false))
+      .catch(() => setStatsError('Não foi possível carregar as estatísticas.'))
+      .finally(() => setStatsLoading(false))
+
+    productService.getAll({ showAll: true, limit: 5, sortBy: 'newest' })
+      .then((res) => {
+        const arr = Array.isArray(res) ? res : (res.data ?? [])
+        setRecent(arr)
+      })
+      .catch(() => setRecent([]))
+      .finally(() => setRecentLoading(false))
   }, [])
 
   return (
@@ -236,20 +315,20 @@ export default function DashboardPage() {
           <WelcomeTitle>Visão geral</WelcomeTitle>
           <WelcomeSub>Resumo do seu catálogo</WelcomeSub>
         </WelcomeText>
-        <QuickLink to="/admin/produtos/novo">
-          Novo produto <ArrowRight size={14} />
-        </QuickLink>
+        <NewProductBtn to="/admin/produtos/novo">
+          <Plus size={14} /> Novo produto
+        </NewProductBtn>
       </Welcome>
 
       <Grid>
-        {error && <ErrorBanner>{error}</ErrorBanner>}
-        {!error && statConfigs.map(({ key, label, color, Icon }) => (
+        {statsError && <ErrorBanner>{statsError}</ErrorBanner>}
+        {!statsError && statConfigs.map(({ key, label, color, Icon }) => (
           <Card key={key}>
             <CardTop>
               <IconBox $color={color}><Icon size={18} /></IconBox>
             </CardTop>
             <CardBottom>
-              {loading ? <Skeleton /> : <Value>{stats?.[key] ?? 0}</Value>}
+              {statsLoading ? <Skeleton /> : <Value>{stats?.[key] ?? 0}</Value>}
               <Label>{label}</Label>
             </CardBottom>
           </Card>
@@ -257,15 +336,44 @@ export default function DashboardPage() {
       </Grid>
 
       <Section>
-        <SectionTitle>Ações rápidas</SectionTitle>
-        <Actions>
-          {quickActions.map(({ to, label }) => (
-            <ActionCard key={to} to={to}>
-              {label}
-              <ArrowRight size={14} />
-            </ActionCard>
-          ))}
-        </Actions>
+        <SectionHeader>
+          <SectionTitle>Produtos recentes</SectionTitle>
+          <SectionLink to="/admin/produtos">
+            Ver todos <ArrowRight size={12} />
+          </SectionLink>
+        </SectionHeader>
+
+        <ProductList>
+          {recentLoading
+            ? Array.from({ length: 3 }).map((_, i) => (
+                <ProductRow key={i} to="#">
+                  <ProductImgPlaceholder><Package size={16} /></ProductImgPlaceholder>
+                  <ProductInfo>
+                    <Skeleton style={{ width: '60%', height: '14px', marginBottom: 4 }} />
+                    <Skeleton style={{ width: '35%', height: '12px' }} />
+                  </ProductInfo>
+                </ProductRow>
+              ))
+            : recent.length === 0
+              ? <EmptyRow>Nenhum produto cadastrado ainda.</EmptyRow>
+              : recent.map((p) => {
+                  const img = getImageUrl(p.images?.[0])
+                  return (
+                    <ProductRow key={p.id} to={`/admin/produtos/${p.id}/editar`}>
+                      {img
+                        ? <ProductImg src={img} alt={p.name} />
+                        : <ProductImgPlaceholder><Package size={16} /></ProductImgPlaceholder>
+                      }
+                      <ProductInfo>
+                        <ProductName>{p.name}</ProductName>
+                        <ProductMeta>{p.brand}</ProductMeta>
+                      </ProductInfo>
+                      <ProductPrice>{formatPrice(p.price)}</ProductPrice>
+                    </ProductRow>
+                  )
+                })
+          }
+        </ProductList>
       </Section>
     </Page>
   )

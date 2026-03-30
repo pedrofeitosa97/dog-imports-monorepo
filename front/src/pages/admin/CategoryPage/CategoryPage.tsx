@@ -6,6 +6,7 @@ import Modal from '../../../ui/Modal/Modal'
 import Input from '../../../ui/Input/Input'
 import { categoryService } from '../../../services/categoryService'
 import { slugify } from '../../../utils/slugify'
+import { useToast } from '../../../hooks/useToast'
 import type { Category } from '../../../types/api'
 import styled from 'styled-components'
 
@@ -64,6 +65,7 @@ export default function CategoryPage() {
   const [editing, setEditing] = useState<CategoryRow | null>(null)
   const [formName, setFormName] = useState('')
   const [saving, setSaving] = useState(false)
+  const { toast } = useToast()
 
   useEffect(() => {
     categoryService.getAll()
@@ -80,12 +82,16 @@ export default function CategoryPage() {
     const data = { name: formName, slug: slugify(formName) }
     try {
       if (editing) {
-        const updated = await categoryService.update(editing.id, data).catch(() => ({ ...editing, ...data }))
+        const updated = await categoryService.update(editing.id, data)
         setCategories((prev) => prev.map((c) => c.id === editing.id ? { ...updated, productCount: c.productCount } : c))
+        toast(`Categoria "${formName}" atualizada`, 'success')
       } else {
-        const created = await categoryService.create(data).catch(() => ({ id: Date.now(), ...data, productCount: 0 }))
+        const created = await categoryService.create(data)
         setCategories((prev) => [...prev, created])
+        toast(`Categoria "${formName}" criada`, 'success')
       }
+    } catch {
+      toast('Erro ao salvar categoria', 'error')
     } finally {
       setSaving(false)
       setModalOpen(false)
@@ -94,8 +100,13 @@ export default function CategoryPage() {
 
   const handleDelete = async (cat: CategoryRow) => {
     if (!window.confirm(`Excluir categoria "${cat.name}"?`)) return
-    await categoryService.remove(cat.id).catch(() => undefined)
-    setCategories((prev) => prev.filter((c) => c.id !== cat.id))
+    try {
+      await categoryService.remove(cat.id)
+      setCategories((prev) => prev.filter((c) => c.id !== cat.id))
+      toast(`Categoria "${cat.name}" removida`, 'success')
+    } catch {
+      toast('Erro ao remover categoria', 'error')
+    }
   }
 
   const columns: TableColumn<CategoryRow>[] = [

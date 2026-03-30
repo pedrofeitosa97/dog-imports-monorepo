@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import ProductForm from '../../../features/admin/ProductForm/ProductForm'
 import { productService } from '../../../services/productService'
 import { categoryService } from '../../../services/categoryService'
+import { useToast } from '../../../hooks/useToast'
 import type { Category } from '../../../types/api'
 import type { ProductFormValues } from '../../../features/admin/ProductForm/ProductForm'
 import styled from 'styled-components'
@@ -18,6 +19,7 @@ export default function ProductCreatePage() {
   const [loading, setLoading] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
   const navigate = useNavigate()
+  const { toast } = useToast()
 
   useEffect(() => {
     categoryService.getAll()
@@ -47,9 +49,11 @@ export default function ProductCreatePage() {
         }
       })
       await productService.create(formData)
+      toast('Produto criado com sucesso!', 'success')
       navigate('/admin/produtos')
     } catch (err) {
       console.error(err)
+      toast('Erro ao criar produto. Tente novamente.', 'error')
     } finally {
       setLoading(false)
     }

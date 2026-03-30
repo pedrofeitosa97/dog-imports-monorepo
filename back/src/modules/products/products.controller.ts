@@ -43,13 +43,17 @@ export class ProductsController {
   private async resolveImagePaths(files: Express.Multer.File[]): Promise<string[]> {
     if (!files?.length) return [];
 
-    // Produção: upload para Cloudinary
+    // Produção com Cloudinary configurado: faz upload e retorna URL
     if (this.cloudinaryService.isConfigured()) {
       return Promise.all(files.map((f) => this.cloudinaryService.uploadBuffer(f.buffer)));
     }
 
-    // Desenvolvimento: arquivo já salvo em disco
-    return files.map((f) => `/uploads/products/${f.filename}`);
+    // Desenvolvimento (diskStorage): arquivo já salvo em disco com nome gerado
+    // Em produção sem Cloudinary (memoryStorage), f.filename é undefined — ignora as imagens
+    const paths = files
+      .filter((f) => f.filename)
+      .map((f) => `/uploads/products/${f.filename}`);
+    return paths;
   }
 
   @Public()

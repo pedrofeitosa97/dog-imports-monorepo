@@ -7,6 +7,7 @@ import Badge from '../../../ui/Badge/Badge'
 import Modal from '../../../ui/Modal/Modal'
 import { productService } from '../../../services/productService'
 import { getImageUrl } from '../../../utils/getImageUrl'
+import { useToast } from '../../../hooks/useToast'
 import type { Product } from '../../../types/api'
 import styled from 'styled-components'
 
@@ -89,6 +90,7 @@ export default function ProductsListPage() {
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null)
   const [deleting, setDeleting] = useState(false)
   const navigate = useNavigate()
+  const { toast } = useToast()
 
   useEffect(() => {
     setLoading(true)
@@ -107,8 +109,9 @@ export default function ProductsListPage() {
     try {
       await productService.remove(deleteTarget.id)
       setProducts((prev) => prev.filter((p) => p.id !== deleteTarget.id))
+      toast(`"${deleteTarget.name}" removido com sucesso`, 'success')
     } catch {
-      setProducts((prev) => prev.filter((p) => p.id !== deleteTarget.id))
+      toast('Erro ao remover produto', 'error')
     } finally {
       setDeleting(false)
       setDeleteTarget(null)
