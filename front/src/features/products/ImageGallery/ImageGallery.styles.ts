@@ -6,14 +6,6 @@ export const GalleryWrapper = styled.div`
   gap: ${({ theme }) => theme.spacing[3]};
 `
 
-export const MainImage = styled.img`
-  width: 100%;
-  aspect-ratio: 1/1;
-  object-fit: cover;
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  background: ${({ theme }) => theme.colors.surface};
-`
-
 export const Thumbnails = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing[2]};

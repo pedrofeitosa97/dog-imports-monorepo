@@ -3,10 +3,11 @@ import { Heart } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useWishlist } from '../../../hooks/useWishlist'
 import Badge from '../../../ui/Badge/Badge'
+import LazyImage from '../../../ui/LazyImage/LazyImage'
 import { formatCurrency } from '../../../utils/formatCurrency'
 import { getImageUrl } from '../../../utils/getImageUrl'
 import {
-  Card, ImageWrapper, ProductImage, WishlistBtn, BadgeWrapper,
+  Card, ImageWrapper, WishlistBtn, BadgeWrapper,
   Info, Brand, Name, PriceRow, CurrentPrice, OriginalPrice,
   DiscountBadge, RatingRow, Stars, ReviewCount,
 } from './ProductCard.styles'
@@ -38,10 +39,9 @@ export default function ProductCard({
   return (
     <Card>
       <ImageWrapper as={Link} to={`/produtos/${slug}`}>
-        <ProductImage
+        <LazyImage
           src={getImageUrl(images[0]) || '/placeholder.jpg'}
           alt={name}
-          loading="lazy"
         />
         {badge && (
           <BadgeWrapper>

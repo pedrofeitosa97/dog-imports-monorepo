@@ -85,7 +85,13 @@ export default function HeroBanner({ autoPlay = true, interval = 5500 }: HeroBan
     <BannerWrapper>
       {slides.map((slide, idx) => (
         <Slide key={slide.id} $active={idx === active}>
-          <SlideImage src={slide.imageUrl} alt={slide.title} />
+          <SlideImage
+            src={slide.imageUrl}
+            alt={slide.title}
+            loading={idx === 0 ? 'eager' : 'lazy'}
+            decoding={idx === 0 ? 'sync' : 'async'}
+            fetchPriority={idx === 0 ? 'high' : 'auto'}
+          />
           <SlideOverlay />
           <SlideContent>
             {slide.eyebrow && <SlideEyebrow>{slide.eyebrow}</SlideEyebrow>}

@@ -1,5 +1,15 @@
 import { useState } from 'react'
-import { GalleryWrapper, MainImage, Thumbnails, Thumb } from './ImageGallery.styles'
+import styled from 'styled-components'
+import LazyImage from '../../../ui/LazyImage/LazyImage'
+import { GalleryWrapper, Thumbnails, Thumb } from './ImageGallery.styles'
+
+const MainImageWrapper = styled.div`
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  overflow: hidden;
+  background: ${({ theme }) => theme.colors.surface};
+`
 
 interface ImageGalleryProps {
   images?: string[]
@@ -12,7 +22,14 @@ export default function ImageGallery({ images = [] }: ImageGalleryProps) {
 
   return (
     <GalleryWrapper>
-      <MainImage src={images[active]} alt="Produto" />
+      <MainImageWrapper>
+        <LazyImage
+          src={images[active]}
+          alt="Produto"
+          eager
+        />
+      </MainImageWrapper>
+
       {images.length > 1 && (
         <Thumbnails>
           {images.map((src, idx) => (
@@ -20,6 +37,8 @@ export default function ImageGallery({ images = [] }: ImageGalleryProps) {
               key={idx}
               src={src}
               alt={`Foto ${idx + 1}`}
+              loading="lazy"
+              decoding="async"
               $active={idx === active}
               onClick={() => setActive(idx)}
             />

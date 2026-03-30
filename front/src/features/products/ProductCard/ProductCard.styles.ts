@@ -24,14 +24,8 @@ export const ImageWrapper = styled.a`
 
   &:hover img {
     transform: scale(1.04);
+    transition: transform 420ms ease;
   }
-`
-
-export const ProductImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 420ms ease;
 `
 
 export const WishlistBtn = styled.button<{ $wishlisted?: boolean }>`

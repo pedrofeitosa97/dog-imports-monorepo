@@ -4,6 +4,7 @@ import { Package, Tag, CheckCircle, AlertTriangle, ArrowRight, Plus } from 'luci
 import { Link } from 'react-router-dom'
 import { productService } from '../../../services/productService'
 import { getImageUrl } from '../../../utils/getImageUrl'
+import LazyImage from '../../../ui/LazyImage/LazyImage'
 import type { ProductStats, Product } from '../../../types/api'
 
 const pulse = keyframes`
@@ -191,13 +192,13 @@ const ProductRow = styled(Link)`
   @media (max-width: 480px) { padding: 10px 12px; gap: 10px; }
 `
 
-const ProductImg = styled.img`
+const ProductImgWrapper = styled.div`
   width: 40px;
   height: 48px;
-  object-fit: cover;
   border-radius: 6px;
-  background: rgba(255,255,255,0.07);
+  overflow: hidden;
   flex-shrink: 0;
+  background: rgba(255,255,255,0.07);
 `
 
 const ProductImgPlaceholder = styled.div`
@@ -361,7 +362,7 @@ export default function DashboardPage() {
                   return (
                     <ProductRow key={p.id} to={`/admin/produtos/${p.id}/editar`}>
                       {img
-                        ? <ProductImg src={img} alt={p.name} />
+                        ? <ProductImgWrapper><LazyImage src={img} alt={p.name} /></ProductImgWrapper>
                         : <ProductImgPlaceholder><Package size={16} /></ProductImgPlaceholder>
                       }
                       <ProductInfo>
