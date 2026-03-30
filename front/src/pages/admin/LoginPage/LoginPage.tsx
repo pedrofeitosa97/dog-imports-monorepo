@@ -3,219 +3,125 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import styled, { keyframes } from 'styled-components'
 import { useAuth } from '../../../hooks/useAuth'
 
-const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(12px); }
+const fadeUp = keyframes`
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 `
 
-/* ── Layout ─────────────────────────────────────────────────────────── */
+/* ── Page ─────────────────────────────────────────────────────────────── */
 
 const Page = styled.div`
-  display: flex;
   min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   background: #0a0a0a;
+  padding: 40px 24px;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Helvetica Neue', sans-serif;
 `
 
-/* Left panel — branding */
-const Panel = styled.aside`
-  display: none;
-
-  @media (min-width: 900px) {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 46%;
-    flex-shrink: 0;
-    background: #0d0d0d;
-    border-right: 1px solid rgba(255,255,255,0.06);
-    padding: 48px 56px;
-    position: relative;
-    overflow: hidden;
-  }
-`
-
-const PanelGlow = styled.div`
-  position: absolute;
-  width: 500px;
-  height: 500px;
+const Glow = styled.div`
+  position: fixed;
+  width: 600px;
+  height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(249,115,22,0.07) 0%, transparent 65%);
   top: 50%;
   left: 50%;
-  transform: translate(-60%, -50%);
+  transform: translate(-50%, -50%);
   pointer-events: none;
 `
 
-const PanelGrid = styled.div`
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-  background-size: 48px 48px;
-  pointer-events: none;
-  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
-`
+/* ── Form area ─────────────────────────────────────────────────────────── */
 
-const PanelLogo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  position: relative;
-  z-index: 1;
-`
-
-const PanelLogoIcon = styled.div`
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background: #f97316;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
-
-const PanelLogoName = styled.span`
-  font-size: 16px;
-  font-weight: 600;
-  color: #f5f5f7;
-  letter-spacing: -0.3px;
-`
-
-const PanelCenter = styled.div`
-  position: relative;
-  z-index: 1;
-`
-
-const PanelHeadline = styled.h2`
-  font-size: 34px;
-  font-weight: 700;
-  color: #f5f5f7;
-  letter-spacing: -0.8px;
-  line-height: 1.18;
-  margin: 0 0 16px;
-`
-
-const PanelSub = styled.p`
-  font-size: 15px;
-  color: rgba(235,235,245,0.45);
-  line-height: 1.6;
-  letter-spacing: -0.1px;
-  max-width: 320px;
-`
-
-const PanelFooter = styled.p`
-  position: relative;
-  z-index: 1;
-  font-size: 12px;
-  color: rgba(235,235,245,0.2);
-  letter-spacing: 0.2px;
-`
-
-/* Right panel — form */
-const FormSide = styled.main`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 24px;
-`
-
-const FormWrap = styled.div`
+const Wrap = styled.div`
   width: 100%;
-  max-width: 360px;
-  animation: ${fadeIn} 0.45s cubic-bezier(.22,.68,0,1.1) both;
+  max-width: 400px;
+  animation: ${fadeUp} 0.4s cubic-bezier(.22,.68,0,1.1) both;
 `
 
-const FormHeader = styled.div`
-  margin-bottom: 36px;
+/* ── Logo ─────────────────────────────────────────────────────────────── */
 
-  @media (min-width: 900px) { margin-bottom: 40px; }
-`
-
-/* Mobile-only logo */
-const MobileLogo = styled.div`
+const LogoRow = styled.div`
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 32px;
-
-  @media (min-width: 900px) { display: none; }
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 40px;
 `
 
-const MobileLogoIcon = styled.div`
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+const LogoMark = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   background: #f97316;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 28px;
 `
 
-const MobileLogoName = styled.span`
-  font-size: 15px;
-  font-weight: 600;
-  color: #f5f5f7;
-  letter-spacing: -0.3px;
-`
-
-const FormTitle = styled.h1`
-  font-size: 24px;
+const Heading = styled.h1`
+  font-size: 22px;
   font-weight: 700;
   color: #f5f5f7;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.4px;
   margin: 0 0 6px;
 `
 
-const FormSubtitle = styled.p`
+const Sub = styled.p`
   font-size: 14px;
   color: rgba(235,235,245,0.4);
   letter-spacing: -0.1px;
 `
 
-/* Fields */
+/* ── Fields ───────────────────────────────────────────────────────────── */
+
 const Fields = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 0;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 12px;
+  overflow: hidden;
 `
 
-const Field = styled.div`
+const FieldRow = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 6px;
+
+  & + & {
+    border-top: 1px solid rgba(255,255,255,0.09);
+  }
 `
 
 const FieldLabel = styled.label`
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
-  color: rgba(235,235,245,0.5);
-  letter-spacing: 0.5px;
+  color: rgba(235,235,245,0.35);
+  letter-spacing: 0.6px;
   text-transform: uppercase;
+  padding: 10px 16px 0;
 `
 
 const FieldInput = styled.input`
-  height: 46px;
-  padding: 0 14px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 10px;
+  height: 44px;
+  padding: 0 16px 4px;
+  background: rgba(255,255,255,0.04);
+  border: none;
   font-size: 15px;
   color: #f5f5f7;
   font-family: inherit;
   letter-spacing: -0.2px;
   outline: none;
-  transition: border-color 160ms ease, background 160ms ease;
+  width: 100%;
+  transition: background 150ms;
 
-  &::placeholder { color: rgba(235,235,245,0.2); }
+  &::placeholder { color: rgba(235,235,245,0.18); }
 
-  &:focus {
-    border-color: rgba(249,115,22,0.5);
-    background: rgba(249,115,22,0.04);
-  }
+  &:focus { background: rgba(249,115,22,0.05); }
 
   &:-webkit-autofill,
   &:-webkit-autofill:focus {
@@ -225,19 +131,21 @@ const FieldInput = styled.input`
   }
 `
 
-/* Error */
+/* ── Error ────────────────────────────────────────────────────────────── */
+
 const ErrorMsg = styled.p`
   font-size: 13px;
   color: #ff453a;
   letter-spacing: -0.1px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   padding: 10px 14px;
   background: rgba(255,59,48,0.08);
-  border: 1px solid rgba(255,59,48,0.2);
-  border-radius: 8px;
+  border: 1px solid rgba(255,59,48,0.18);
+  border-radius: 10px;
 `
 
-/* Submit */
+/* ── Button ───────────────────────────────────────────────────────────── */
+
 const SubmitBtn = styled.button<{ $loading: boolean }>`
   width: 100%;
   height: 46px;
@@ -248,56 +156,47 @@ const SubmitBtn = styled.button<{ $loading: boolean }>`
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.2px;
-  cursor: ${({ $loading }) => $loading ? 'default' : 'pointer'};
+  cursor: ${({ $loading }) => $loading ? 'not-allowed' : 'pointer'};
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   font-family: inherit;
-  transition: background 150ms, transform 120ms, box-shadow 150ms;
-  box-shadow: ${({ $loading }) => $loading ? 'none' : '0 1px 2px rgba(0,0,0,0.3)'};
+  transition: background 140ms, transform 120ms;
 
   &:hover:not(:disabled) { background: #ea6c0a; }
-
-  &:active:not(:disabled) {
-    transform: scale(0.98);
-    background: #dc6309;
-  }
-
+  &:active:not(:disabled) { transform: scale(0.985); background: #dc6309; }
   &:disabled {
     background: rgba(255,255,255,0.07);
-    color: rgba(235,235,245,0.25);
-    box-shadow: none;
+    color: rgba(235,235,245,0.22);
     cursor: not-allowed;
   }
 `
 
 const Spin = styled.span`
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255,255,255,0.25);
   border-top-color: #fff;
   border-radius: 50%;
   display: inline-block;
-  animation: _spin 0.65s linear infinite;
-  @keyframes _spin { to { transform: rotate(360deg); } }
+  animation: _s 0.65s linear infinite;
+  @keyframes _s { to { transform: rotate(360deg); } }
 `
 
-const SmallPaw = () => (
-  <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+const PawIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
     <ellipse cx="10" cy="12.5" rx="5" ry="4.5" fill="#fff"/>
-    <ellipse cx="5" cy="8" rx="2.3" ry="3" fill="#fff" opacity="0.8"/>
-    <ellipse cx="15" cy="8" rx="2.3" ry="3" fill="#fff" opacity="0.8"/>
-    <ellipse cx="7.5" cy="5.5" rx="1.8" ry="2.3" fill="#fff" opacity="0.65"/>
-    <ellipse cx="12.5" cy="5.5" rx="1.8" ry="2.3" fill="#fff" opacity="0.65"/>
+    <ellipse cx="5"  cy="8"    rx="2.2" ry="3"   fill="#fff" opacity="0.8"/>
+    <ellipse cx="15" cy="8"    rx="2.2" ry="3"   fill="#fff" opacity="0.8"/>
+    <ellipse cx="7.5"  cy="5.5" rx="1.7" ry="2.2" fill="#fff" opacity="0.65"/>
+    <ellipse cx="12.5" cy="5.5" rx="1.7" ry="2.2" fill="#fff" opacity="0.65"/>
   </svg>
 )
 
-/* ── Component ───────────────────────────────────────────────────────── */
+/* ── Component ────────────────────────────────────────────────────────── */
 
-interface LocationState {
-  from?: { pathname: string }
-}
+interface LocationState { from?: { pathname: string } }
 
 export default function LoginPage() {
   const { login } = useAuth()
@@ -327,81 +226,52 @@ export default function LoginPage() {
 
   return (
     <Page>
-      {/* Left panel */}
-      <Panel>
-        <PanelGrid />
-        <PanelGlow />
-        <PanelLogo>
-          <PanelLogoIcon><SmallPaw /></PanelLogoIcon>
-          <PanelLogoName>Dog Imports</PanelLogoName>
-        </PanelLogo>
+      <Glow />
+      <Wrap>
+        <LogoRow>
+          <LogoMark><PawIcon /></LogoMark>
+          <Heading>Entrar no painel</Heading>
+          <Sub>Dog Imports · Área administrativa</Sub>
+        </LogoRow>
 
-        <PanelCenter>
-          <PanelHeadline>
-            Gerencie seu<br />
-            negócio com<br />
-            precisão.
-          </PanelHeadline>
-          <PanelSub>
-            Painel administrativo completo para controle de produtos, categorias e estoque.
-          </PanelSub>
-        </PanelCenter>
+        <form onSubmit={handleSubmit}>
+          <Fields>
+            <FieldRow>
+              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <FieldInput
+                id="email"
+                type="email"
+                value={email}
+                placeholder="seu@email.com"
+                autoComplete="email"
+                autoFocus
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+              />
+            </FieldRow>
+            <FieldRow>
+              <FieldLabel htmlFor="password">Senha</FieldLabel>
+              <FieldInput
+                id="password"
+                type="password"
+                value={password}
+                placeholder="••••••••"
+                autoComplete="current-password"
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+              />
+            </FieldRow>
+          </Fields>
 
-        <PanelFooter>© {new Date().getFullYear()} Dog Imports · Todos os direitos reservados</PanelFooter>
-      </Panel>
+          {error && <ErrorMsg>{error}</ErrorMsg>}
 
-      {/* Right form */}
-      <FormSide>
-        <FormWrap>
-          <MobileLogo>
-            <MobileLogoIcon><SmallPaw /></MobileLogoIcon>
-            <MobileLogoName>Dog Imports</MobileLogoName>
-          </MobileLogo>
-
-          <FormHeader>
-            <FormTitle>Entrar</FormTitle>
-            <FormSubtitle>Acesse o painel com suas credenciais</FormSubtitle>
-          </FormHeader>
-
-          <form onSubmit={handleSubmit}>
-            <Fields>
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <FieldInput
-                  id="email"
-                  type="email"
-                  value={email}
-                  placeholder="seu@email.com"
-                  autoComplete="email"
-                  autoFocus
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="password">Senha</FieldLabel>
-                <FieldInput
-                  id="password"
-                  type="password"
-                  value={password}
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                />
-              </Field>
-            </Fields>
-
-            {error && <ErrorMsg>{error}</ErrorMsg>}
-
-            <SubmitBtn
-              type="submit"
-              $loading={loading}
-              disabled={loading || !email || !password}
-            >
-              {loading ? <><Spin /> Entrando…</> : 'Entrar'}
-            </SubmitBtn>
-          </form>
-        </FormWrap>
-      </FormSide>
+          <SubmitBtn
+            type="submit"
+            $loading={loading}
+            disabled={loading || !email || !password}
+          >
+            {loading ? <><Spin /> Entrando…</> : 'Entrar'}
+          </SubmitBtn>
+        </form>
+      </Wrap>
     </Page>
   )
 }
