@@ -22,7 +22,7 @@ import {
   ReviewCount,
 } from './ProductCard.styles'
 
-export default function ProductCard({ id, slug, name, brand, category, price, originalPrice, discountPct, rating, reviewCount, images = [], badge }) {
+export default function ProductCard({ id, slug, name, brand, price, originalPrice, discountPct, rating, reviewCount, images = [], badge }) {
   const { toggle, isWishlisted } = useWishlist()
   const wishlisted = isWishlisted(id)
   const discount = discountPct || (originalPrice && originalPrice > price

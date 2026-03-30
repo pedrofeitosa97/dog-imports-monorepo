@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Button from '../../ui/Button/Button'
 import {
@@ -49,17 +49,17 @@ export default function HeroBanner({ slides = defaultSlides, autoPlay = true, in
   const [active, setActive] = useState(0)
   const timer = useRef(null)
 
-  const startTimer = () => {
+  const startTimer = useCallback(() => {
     if (!autoPlay) return
     timer.current = setInterval(() => {
       setActive((a) => (a + 1) % slides.length)
     }, interval)
-  }
+  }, [autoPlay, interval, slides.length])
 
   useEffect(() => {
     startTimer()
     return () => clearInterval(timer.current)
-  }, [slides.length, autoPlay, interval])
+  }, [startTimer])
 
   const go = (idx) => {
     clearInterval(timer.current)

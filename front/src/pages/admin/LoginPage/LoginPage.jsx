@@ -26,10 +26,6 @@ const ErrorMsg = styled.p`
   text-align: center;
 `
 
-const StyledInput = styled(Input)`
-  input { color: #fff; }
-`
-
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

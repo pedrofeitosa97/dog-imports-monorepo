@@ -1,0 +1,29 @@
+{
+  "name": "dog-imports-monorepo",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "lint:front": "cd front && yarn lint",
+    "lint:back": "cd back && npm run lint --if-present",
+    "lint": "npm run lint:front",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pedrofeitosa97/dog-imports-monorepo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pedrofeitosa97/dog-imports-monorepo/issues"
+  },
+  "homepage": "https://github.com/pedrofeitosa97/dog-imports-monorepo#readme",
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0"
+  },
+  "lint-staged": {
+    "front/src/**/*.{js,jsx}": "yarn --cwd front eslint --max-warnings 0"
+  }
+}

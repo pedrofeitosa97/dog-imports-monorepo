@@ -2,16 +2,14 @@ import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { LayoutDashboard, Package, Tag, LogOut, Menu, X, ChevronLeft } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../hooks/useAuth'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
 /* ─── tokens ─────────────────────────────────────────────── */
 const BG       = '#0d0d0f'
 const SURFACE  = '#141416'
-const SURFACE2 = '#1c1c1f'
 const BORDER   = 'rgba(255,255,255,0.07)'
 const TEXT     = '#f5f5f7'
 const MUTED    = 'rgba(255,255,255,0.45)'
-const ACCENT   = '#2563eb'
 
 /* ─── shell ──────────────────────────────────────────────── */
 const Shell = styled.div`

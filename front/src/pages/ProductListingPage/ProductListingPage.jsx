@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useLocation } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { SlidersHorizontal } from 'lucide-react'
 import Breadcrumb from '../../shared/Breadcrumb/Breadcrumb'
 import FilterSidebar from '../../features/filters/FilterSidebar/FilterSidebar'

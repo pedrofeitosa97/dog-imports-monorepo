@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { Package, Tag, AlertTriangle, XCircle } from 'lucide-react'
+import { Package, Tag, XCircle } from 'lucide-react'
 import { productService } from '../../../services/productService'
 import Spinner from '../../../ui/Spinner/Spinner'
 

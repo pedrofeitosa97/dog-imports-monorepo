@@ -37,7 +37,7 @@ function filtersReducer(state, action) {
 
 export function useFilters() {
   const [filters, dispatch] = useReducer(filtersReducer, initialState)
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [, setSearchParams] = useSearchParams()
 
   useEffect(() => {
     const params = {}
@@ -48,7 +48,7 @@ export function useFilters() {
     if (filters.sizes.length) params.sizes = filters.sizes.join(',')
     if (filters.gender.length) params.gender = filters.gender.join(',')
     setSearchParams(params, { replace: true })
-  }, [filters])
+  }, [filters, setSearchParams])
 
   const setFilter = (key, value) => dispatch({ type: 'SET', key, value })
   const toggleFilter = (key, value) => dispatch({ type: 'TOGGLE_ARRAY', key, value })

@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { Upload, X, Star } from 'lucide-react'
+import { Upload, X } from 'lucide-react'
 import Badge from '../../../ui/Badge/Badge'
 import { getImageUrl } from '../../../utils/getImageUrl'
 import {

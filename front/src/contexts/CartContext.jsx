@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useReducer, useEffect, useState } from 'react'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { STORAGE_KEYS } from '../utils/constants'
@@ -59,7 +60,7 @@ export function CartProvider({ children }) {
 
   useEffect(() => {
     setSaved(items)
-  }, [items])
+  }, [items, setSaved])
 
   const addItem = (product, quantity = 1, selectedSize = '', selectedColor = '') => {
     dispatch({ type: 'ADD', payload: { product, quantity, selectedSize, selectedColor } })

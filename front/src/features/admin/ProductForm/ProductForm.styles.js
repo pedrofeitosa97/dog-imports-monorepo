@@ -1,6 +1,5 @@
 import styled from 'styled-components'
 
-const SURFACE  = '#141416'
 const BORDER   = 'rgba(255,255,255,0.07)'
 const TEXT     = '#f5f5f7'
 const MUTED    = 'rgba(255,255,255,0.45)'
