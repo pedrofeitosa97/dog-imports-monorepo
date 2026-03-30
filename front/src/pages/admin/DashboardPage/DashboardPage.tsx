@@ -193,19 +193,24 @@ const ProductRow = styled(Link)`
 `
 
 const ProductImgWrapper = styled.div`
-  width: 52px;
-  height: 64px;
+  width: 64px;
+  height: 80px;
   border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
   background: rgba(255,255,255,0.07);
 
   img { width: 100%; height: 100%; object-fit: cover; }
+
+  @media (max-width: 480px) {
+    width: 56px;
+    height: 70px;
+  }
 `
 
 const ProductImgPlaceholder = styled.div`
-  width: 52px;
-  height: 64px;
+  width: 64px;
+  height: 80px;
   border-radius: 8px;
   background: rgba(255,255,255,0.07);
   display: flex;
@@ -213,6 +218,11 @@ const ProductImgPlaceholder = styled.div`
   justify-content: center;
   flex-shrink: 0;
   color: rgba(255,255,255,0.2);
+
+  @media (max-width: 480px) {
+    width: 56px;
+    height: 70px;
+  }
 `
 
 const ProductInfo = styled.div`
