@@ -4,8 +4,8 @@ import styled, { keyframes } from 'styled-components'
 import { useAuth } from '../../../hooks/useAuth'
 
 const fadeUp = keyframes`
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 `
 
 const Page = styled.div`
@@ -14,40 +14,32 @@ const Page = styled.div`
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: #f2f2f7;
+  background: #000;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  position: relative;
+  overflow: hidden;
 `
 
-const Blobs = styled.div`
+const Blob1 = styled.div`
   position: fixed;
-  inset: 0;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(249,115,22,0.18) 0%, transparent 70%);
+  top: -200px;
+  right: -150px;
   pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
+`
 
-  &::before, &::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.35;
-  }
-
-  &::before {
-    width: 520px;
-    height: 520px;
-    background: radial-gradient(circle, #a8c8ff 0%, #c3b1e1 100%);
-    top: -140px;
-    right: -120px;
-  }
-
-  &::after {
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, #fde68a 0%, #fca5a5 100%);
-    bottom: -100px;
-    left: -80px;
-  }
+const Blob2 = styled.div`
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(37,99,235,0.14) 0%, transparent 70%);
+  bottom: -150px;
+  left: -100px;
+  pointer-events: none;
 `
 
 const Card = styled.div`
@@ -55,44 +47,44 @@ const Card = styled.div`
   z-index: 1;
   width: 100%;
   max-width: 380px;
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  background: rgba(28, 28, 30, 0.82);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
   border-radius: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
-    0 2px 4px rgba(0,0,0,0.04),
-    0 8px 24px rgba(0,0,0,0.08),
-    0 24px 64px rgba(0,0,0,0.10);
+    0 0 0 0.5px rgba(255,255,255,0.04),
+    0 8px 32px rgba(0,0,0,0.6),
+    0 32px 80px rgba(0,0,0,0.5);
   padding: 44px 36px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
-  animation: ${fadeUp} 0.55s cubic-bezier(.22,.68,0,1.2) both;
+  animation: ${fadeUp} 0.5s cubic-bezier(.22,.68,0,1.15) both;
 `
 
 const AppIcon = styled.div`
-  width: 72px;
-  height: 72px;
-  border-radius: 18px;
-  background: linear-gradient(145deg, #1c1c1e 0%, #2c2c2e 100%);
+  width: 76px;
+  height: 76px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #1a1a1a 0%, #0d0d0d 100%);
+  border: 1px solid rgba(255,255,255,0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   box-shadow:
-    0 4px 12px rgba(0,0,0,0.18),
-    inset 0 1px 0 rgba(255,255,255,0.08);
+    0 4px 16px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.07);
 `
 
 const PawIcon = () => (
-  <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-    <ellipse cx="19" cy="23" rx="9" ry="8" fill="#f97316" opacity="0.95"/>
-    <ellipse cx="10" cy="15" rx="4" ry="5.5" fill="#f97316" opacity="0.85"/>
-    <ellipse cx="28" cy="15" rx="4" ry="5.5" fill="#f97316" opacity="0.85"/>
-    <ellipse cx="15" cy="10" rx="3" ry="4" fill="#f97316" opacity="0.7"/>
-    <ellipse cx="23" cy="10" rx="3" ry="4" fill="#f97316" opacity="0.7"/>
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+    <ellipse cx="20" cy="24" rx="9.5" ry="8.5" fill="#f97316"/>
+    <ellipse cx="10.5" cy="15.5" rx="4.2" ry="5.5" fill="#f97316" opacity="0.85"/>
+    <ellipse cx="29.5" cy="15.5" rx="4.2" ry="5.5" fill="#f97316" opacity="0.85"/>
+    <ellipse cx="15.5" cy="10.5" rx="3.2" ry="4.2" fill="#f97316" opacity="0.7"/>
+    <ellipse cx="24.5" cy="10.5" rx="3.2" ry="4.2" fill="#f97316" opacity="0.7"/>
   </svg>
 )
 
@@ -100,20 +92,20 @@ const AppName = styled.h1`
   font-size: 26px;
   font-weight: 700;
   letter-spacing: -0.5px;
-  color: #1c1c1e;
-  margin: 0 0 4px;
+  color: #f5f5f7;
+  margin: 0 0 5px;
 `
 
 const Subtitle = styled.p`
   font-size: 14px;
-  color: #8e8e93;
+  color: rgba(235, 235, 245, 0.45);
   margin: 0 0 32px;
   letter-spacing: -0.1px;
 `
 
 const FieldGroup = styled.div`
   width: 100%;
-  background: rgba(118, 118, 128, 0.12);
+  background: rgba(118, 118, 128, 0.18);
   border-radius: 14px;
   overflow: hidden;
   margin-bottom: 20px;
@@ -125,7 +117,7 @@ const FieldRow = styled.div`
   align-items: center;
 
   & + & {
-    border-top: 1px solid rgba(0, 0, 0, 0.07);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
   }
 `
 
@@ -134,7 +126,7 @@ const FieldLabel = styled.label`
   left: 16px;
   font-size: 15px;
   font-weight: 500;
-  color: #1c1c1e;
+  color: #f5f5f7;
   pointer-events: none;
   width: 64px;
   flex-shrink: 0;
@@ -149,28 +141,28 @@ const FieldInput = styled.input`
   border: none;
   outline: none;
   font-size: 15px;
-  color: #1c1c1e;
+  color: #f5f5f7;
   font-family: inherit;
   letter-spacing: -0.2px;
 
-  &::placeholder { color: #c7c7cc; }
+  &::placeholder { color: rgba(235, 235, 245, 0.25); }
 
   &:-webkit-autofill,
   &:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0 100px rgba(118, 118, 128, 0.12) inset;
-    -webkit-text-fill-color: #1c1c1e;
-    caret-color: #1c1c1e;
+    -webkit-box-shadow: 0 0 0 100px rgba(28, 28, 30, 0.82) inset;
+    -webkit-text-fill-color: #f5f5f7;
+    caret-color: #f5f5f7;
   }
 `
 
 const ErrorBubble = styled.div`
   width: 100%;
-  background: rgba(255, 59, 48, 0.1);
-  border: 1px solid rgba(255, 59, 48, 0.22);
+  background: rgba(255, 59, 48, 0.12);
+  border: 1px solid rgba(255, 59, 48, 0.28);
   border-radius: 12px;
   padding: 11px 16px;
   font-size: 13.5px;
-  color: #d70015;
+  color: #ff453a;
   text-align: center;
   letter-spacing: -0.1px;
   margin-bottom: 16px;
@@ -182,8 +174,8 @@ const SignInBtn = styled.button<{ $loading: boolean }>`
   border-radius: 14px;
   border: none;
   background: ${({ $loading }) => $loading
-    ? 'rgba(0, 122, 255, 0.65)'
-    : 'linear-gradient(160deg, #0a84ff 0%, #007aff 100%)'};
+    ? 'rgba(249, 115, 22, 0.5)'
+    : 'linear-gradient(160deg, #fb923c 0%, #f97316 100%)'};
   color: #fff;
   font-size: 17px;
   font-weight: 600;
@@ -194,17 +186,17 @@ const SignInBtn = styled.button<{ $loading: boolean }>`
   justify-content: center;
   gap: 8px;
   font-family: inherit;
-  transition: all 160ms ease;
-  box-shadow: ${({ $loading }) => $loading ? 'none' : '0 4px 16px rgba(0, 122, 255, 0.38)'};
+  transition: all 150ms ease;
+  box-shadow: ${({ $loading }) => $loading ? 'none' : '0 4px 20px rgba(249, 115, 22, 0.35)'};
 
   &:active:not(:disabled) {
     transform: scale(0.97);
-    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.28);
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.2);
   }
 
   &:disabled {
-    background: rgba(118, 118, 128, 0.2);
-    color: #aeaeb2;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(235, 235, 245, 0.3);
     box-shadow: none;
     cursor: not-allowed;
   }
@@ -213,7 +205,7 @@ const SignInBtn = styled.button<{ $loading: boolean }>`
 const Spinner = styled.span`
   width: 18px;
   height: 18px;
-  border: 2.5px solid rgba(255,255,255,0.35);
+  border: 2.5px solid rgba(255,255,255,0.3);
   border-top-color: #fff;
   border-radius: 50%;
   display: inline-block;
@@ -254,7 +246,8 @@ export default function LoginPage() {
 
   return (
     <Page>
-      <Blobs />
+      <Blob1 />
+      <Blob2 />
       <Card>
         <AppIcon><PawIcon /></AppIcon>
         <AppName>Dog Imports</AppName>
