@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react'
+import { useState, useEffect, type FormEvent, type ChangeEvent, type FocusEvent } from 'react'
 import { X, Plus } from 'lucide-react'
 import { slugify } from '../../../utils/slugify'
 import Input from '../../../ui/Input/Input'
@@ -147,7 +147,7 @@ export default function ProductForm({
       <FormSection>
         <SectionTitle>Informações básicas</SectionTitle>
         <FormGrid>
-          <Input label="Nome" value={values.name} onChange={(e: ChangeEvent<HTMLInputElement>) => set('name', e.target.value)} fullWidth dark required />
+          <Input label="Nome" value={values.name} onChange={(e: ChangeEvent<HTMLInputElement>) => set('name', e.target.value)} onFocus={(e: FocusEvent<HTMLInputElement>) => { const len = e.target.value.length; e.target.setSelectionRange(len, len) }} fullWidth dark required />
           <Input label="Slug (URL)" value={values.slug} onChange={(e: ChangeEvent<HTMLInputElement>) => set('slug', e.target.value)} fullWidth dark required />
           <Input label="Marca" value={values.brand} onChange={(e: ChangeEvent<HTMLInputElement>) => set('brand', e.target.value)} fullWidth dark required />
           <Select

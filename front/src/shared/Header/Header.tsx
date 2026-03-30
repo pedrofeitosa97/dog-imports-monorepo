@@ -65,7 +65,7 @@ export default function Header({ transparent = false }: HeaderProps) {
     <>
       <HeaderWrapper $scrolled={scrolled} $transparent={isTransparent}>
         <TopBar>
-          <TopBarLink as={Link} to="/produtos">Guia de tamanhos</TopBarLink>
+          <TopBarLink as={Link} to="/guia-de-tamanhos">Guia de tamanhos</TopBarLink>
           <TopBarLink as={Link} to="/produtos">Lançamentos</TopBarLink>
           {user
             ? <TopBarLink as={Link} to="/admin">Dashboard</TopBarLink>

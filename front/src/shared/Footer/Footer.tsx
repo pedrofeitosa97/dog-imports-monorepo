@@ -29,7 +29,7 @@ export default function Footer() {
 
         <FooterCol>
           <FooterTitle>Ajuda</FooterTitle>
-          <FooterLink>Guia de tamanhos</FooterLink>
+          <FooterLink as={Link} to="/guia-de-tamanhos">Guia de tamanhos</FooterLink>
           <FooterLink as={Link} to="/politica-de-trocas">Política de trocas</FooterLink>
           <FooterLink>Rastrear pedido</FooterLink>
           <FooterLink>Contato</FooterLink>
