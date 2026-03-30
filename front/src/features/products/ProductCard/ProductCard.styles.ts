@@ -22,6 +22,10 @@ export const ImageWrapper = styled.a`
   display: block;
   text-decoration: none;
 
+  @media (max-width: 479px) {
+    aspect-ratio: 2/3;
+  }
+
   &:hover img {
     transform: scale(1.04);
     transition: transform 420ms ease;
@@ -34,6 +38,11 @@ export const WishlistBtn = styled.button<{ $wishlisted?: boolean }>`
   right: 8px;
   width: 30px;
   height: 30px;
+
+  @media (max-width: 479px) {
+    width: 34px;
+    height: 34px;
+  }
   display: flex;
   align-items: center;
   justify-content: center;
@@ -61,6 +70,11 @@ export const Info = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2px;
+
+  @media (max-width: 479px) {
+    padding: 7px 8px 10px;
+    gap: 1px;
+  }
 `
 
 export const Brand = styled.a`
@@ -96,6 +110,10 @@ export const PriceRow = styled.div`
   gap: 6px;
   flex-wrap: wrap;
   margin-top: 5px;
+
+  @media (max-width: 479px) {
+    margin-top: 3px;
+  }
 `
 
 export const CurrentPrice = styled.span`

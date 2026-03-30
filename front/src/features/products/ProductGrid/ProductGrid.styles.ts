@@ -4,7 +4,11 @@ import { media } from '../../../styles/mixins'
 export const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 6px;
+
+  @media (min-width: 480px) {
+    gap: 10px;
+  }
 
   ${media.md`
     grid-template-columns: repeat(3, 1fr);

@@ -16,7 +16,11 @@ import styled from 'styled-components'
 const PageWrapper = styled.div`
   max-width: 1440px;
   margin: 0 auto;
-  padding: ${({ theme }) => `${theme.spacing[6]} ${theme.spacing[8]}`};
+  padding: ${({ theme }) => theme.spacing[4]} 8px;
+
+  @media (min-width: 480px) {
+    padding: ${({ theme }) => `${theme.spacing[6]} ${theme.spacing[8]}`};
+  }
 `
 
 const PageTop = styled.div`

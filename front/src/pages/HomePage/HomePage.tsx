@@ -131,9 +131,13 @@ const BrandName = styled.span`
 /* ── Featured Section ────────────────────────────────────────────────────── */
 
 const Section = styled.section`
-  padding: 40px clamp(16px, 5vw, 64px) 56px;
+  padding: 32px 8px 48px;
   max-width: 1440px;
   margin: 0 auto;
+
+  @media (min-width: 480px) {
+    padding: 40px clamp(16px, 5vw, 64px) 56px;
+  }
 `
 
 const SectionHeader = styled.div`
