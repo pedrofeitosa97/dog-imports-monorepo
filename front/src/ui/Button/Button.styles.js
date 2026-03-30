@@ -62,12 +62,12 @@ export const StyledButton = styled.button`
   transition: all ${({ theme }) => theme.transitions.fast};
   white-space: nowrap;
   text-decoration: none;
-  width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
+  width: ${({ $fullWidth }) => ($fullWidth ? '100%' : 'auto')};
   letter-spacing: ${({ theme }) => theme.typography.letterSpacing.wide};
   text-transform: uppercase;
 
-  ${({ variant = 'primary' }) => variants[variant]}
-  ${({ size = 'md' }) => sizes[size]}
+  ${({ $variant = 'primary' }) => variants[$variant]}
+  ${({ $size = 'md' }) => sizes[$size]}
 
   &:disabled {
     opacity: 0.5;

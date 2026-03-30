@@ -30,6 +30,11 @@ export default function ProductCreatePage() {
       Object.entries(values).forEach(([key, val]) => {
         if (key === 'images') {
           val.forEach((img) => { if (img.file) formData.append('images', img.file) })
+        } else if (key === 'category') {
+          const catId = typeof val === 'object' ? val?.id : val
+          if (catId != null && catId !== '') formData.append('categoryId', catId)
+        } else if (val === null || val === undefined) {
+          // não envia null/undefined
         } else {
           formData.append(key, val)
         }

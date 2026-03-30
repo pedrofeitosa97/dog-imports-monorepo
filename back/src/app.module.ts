@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
@@ -15,12 +16,35 @@ import { SeedService } from './database/seed.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'dog_imports.db',
-      entities: [User, Product, ProductSize, ProductColor, Category],
-      synchronize: true,
+    ConfigModule.forRoot({ isGlobal: true }),
+
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (config: ConfigService) => {
+        const databaseUrl = config.get<string>('DATABASE_URL');
+
+        if (databaseUrl) {
+          // Produção: PostgreSQL (Railway)
+          return {
+            type: 'postgres',
+            url: databaseUrl,
+            entities: [User, Product, ProductSize, ProductColor, Category],
+            synchronize: true,
+            ssl: { rejectUnauthorized: false },
+          };
+        }
+
+        // Desenvolvimento local: SQLite
+        return {
+          type: 'sqlite',
+          database: 'dog_imports.db',
+          entities: [User, Product, ProductSize, ProductColor, Category],
+          synchronize: true,
+        };
+      },
+      inject: [ConfigService],
     }),
+
     TypeOrmModule.forFeature([User, Product, ProductSize, ProductColor, Category]),
     AuthModule,
     UsersModule,

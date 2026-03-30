@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useWishlist } from '../../../hooks/useWishlist'
 import Badge from '../../../ui/Badge/Badge'
 import { formatCurrency } from '../../../utils/formatCurrency'
+import { getImageUrl } from '../../../utils/getImageUrl'
 import {
   Card,
   ImageWrapper,
@@ -32,7 +33,7 @@ export default function ProductCard({ id, slug, name, brand, category, price, or
     <Card>
       <ImageWrapper as={Link} to={`/produtos/${slug}`}>
         <ProductImage
-          src={images[0] || '/placeholder.jpg'}
+          src={getImageUrl(images[0]) || '/placeholder.jpg'}
           alt={name}
           loading="lazy"
         />
@@ -43,7 +44,7 @@ export default function ProductCard({ id, slug, name, brand, category, price, or
         )}
         <WishlistBtn
           onClick={(e) => { e.preventDefault(); toggle(id) }}
-          wishlisted={wishlisted}
+          $wishlisted={wishlisted}
           aria-label={wishlisted ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
         >
           <Heart size={20} fill={wishlisted ? 'currentColor' : 'none'} />

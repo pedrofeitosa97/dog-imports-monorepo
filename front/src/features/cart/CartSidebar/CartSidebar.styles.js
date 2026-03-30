@@ -19,7 +19,7 @@ export const Drawer = styled.div`
   z-index: ${({ theme }) => theme.zIndex.modal};
   display: flex;
   flex-direction: column;
-  transform: ${({ isOpen }) => (isOpen ? 'translateX(0)' : 'translateX(100%)')};
+  transform: ${({ $isOpen }) => ($isOpen ? 'translateX(0)' : 'translateX(100%)')};
   transition: transform ${({ theme }) => theme.transitions.normal};
 `
 

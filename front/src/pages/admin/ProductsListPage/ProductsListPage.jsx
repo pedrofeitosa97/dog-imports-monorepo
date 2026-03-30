@@ -6,19 +6,22 @@ import Button from '../../../ui/Button/Button'
 import Badge from '../../../ui/Badge/Badge'
 import Modal from '../../../ui/Modal/Modal'
 import { productService } from '../../../services/productService'
+import { getImageUrl } from '../../../utils/getImageUrl'
 import styled from 'styled-components'
 
 const PageHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  gap: 12px;
+  flex-wrap: wrap;
 `
 
 const Title = styled.h2`
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
-  color: #fff;
+  color: #f5f5f7;
 `
 
 const ActionBtns = styled.div`
@@ -34,12 +37,12 @@ const IconBtn = styled.button`
   height: 32px;
   border-radius: 6px;
   cursor: pointer;
-  color: ${({ danger }) => danger ? '#ff6b6b' : 'rgba(255,255,255,0.6)'};
+  color: ${({ $danger }) => $danger ? '#ff6b6b' : 'rgba(255,255,255,0.6)'};
   transition: all 150ms;
 
   &:hover {
     background: rgba(255,255,255,0.08);
-    color: ${({ danger }) => danger ? '#ff4444' : '#fff'};
+    color: ${({ $danger }) => $danger ? '#ff4444' : '#fff'};
   }
 `
 
@@ -82,8 +85,8 @@ export default function ProductsListPage() {
 
   useEffect(() => {
     setLoading(true)
-    productService.getAll()
-      .then((data) => setProducts(data.items || data))
+    productService.getAll({ showAll: true, limit: 100 })
+      .then((data) => setProducts(Array.isArray(data) ? data : (data.data ?? [])))
       .catch(() => setProducts(mockProducts))
       .finally(() => setLoading(false))
   }, [])
@@ -106,7 +109,7 @@ export default function ProductsListPage() {
       key: 'images',
       label: '',
       width: '60px',
-      render: (images) => <ProductThumb src={images?.[0]} alt="" />,
+      render: (images) => <ProductThumb src={getImageUrl(images?.[0])} alt="" />,
     },
     { key: 'name', label: 'Nome', sortable: true },
     { key: 'brand', label: 'Marca', sortable: true },
@@ -139,7 +142,7 @@ export default function ProductsListPage() {
           <IconBtn onClick={() => navigate(`/admin/produtos/${row.id}/editar`)}>
             <Pencil size={15} />
           </IconBtn>
-          <IconBtn danger onClick={() => setDeleteTarget(row)}>
+          <IconBtn $danger onClick={() => setDeleteTarget(row)}>
             <Trash2 size={15} />
           </IconBtn>
         </ActionBtns>

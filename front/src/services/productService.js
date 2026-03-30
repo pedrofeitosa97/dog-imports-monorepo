@@ -32,4 +32,8 @@ export const productService = {
   getFeatured() {
     return api.get('/products/featured').then((r) => r.data)
   },
+
+  getStats() {
+    return api.get('/products/stats').then((r) => r.data)
+  },
 }

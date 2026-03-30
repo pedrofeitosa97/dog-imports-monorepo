@@ -25,10 +25,10 @@ export const Thumb = styled.img`
   height: 72px;
   object-fit: cover;
   border-radius: ${({ theme }) => theme.borderRadius.base};
-  border: 2px solid ${({ theme, active }) => active ? theme.colors.brand : 'transparent'};
+  border: 2px solid ${({ theme, $active }) => $active ? theme.colors.brand : 'transparent'};
   cursor: pointer;
   flex-shrink: 0;
-  opacity: ${({ active }) => active ? 1 : 0.6};
+  opacity: ${({ $active }) => $active ? 1 : 0.6};
   transition: all ${({ theme }) => theme.transitions.fast};
 
   &:hover {

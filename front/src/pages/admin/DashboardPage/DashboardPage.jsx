@@ -1,79 +1,95 @@
+import { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { Package, Tag, TrendingUp, ShoppingBag } from 'lucide-react'
+import { Package, Tag, AlertTriangle, XCircle } from 'lucide-react'
+import { productService } from '../../../services/productService'
+import Spinner from '../../../ui/Spinner/Spinner'
 
-const Title = styled.h2`
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 24px;
-  color: #fff;
-`
+const BORDER = 'rgba(255,255,255,0.07)'
+const MUTED  = 'rgba(255,255,255,0.45)'
 
 const CardsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
-  margin-bottom: 32px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+
+  @media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 480px)  { grid-template-columns: 1fr; }
 `
 
 const Card = styled.div`
-  background: ${({ theme }) => theme.colors.adminSidebar};
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
-  padding: 24px;
+  background: #141416;
+  border: 1px solid ${BORDER};
+  border-radius: 14px;
+  padding: 20px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 `
 
-const CardIcon = styled.div`
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  background: ${({ theme }) => theme.colors.adminAccent};
+const Icon = styled.div`
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: ${({ $color }) => $color}22;
+  border: 1px solid ${({ $color }) => $color}44;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: ${({ $color }) => $color};
   flex-shrink: 0;
 `
 
-const CardInfo = styled.div``
-
 const CardValue = styled.p`
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 700;
-  color: #fff;
+  color: #f5f5f7;
   line-height: 1;
 `
 
 const CardLabel = styled.p`
-  font-size: 13px;
-  color: rgba(255,255,255,0.5);
-  margin-top: 4px;
+  font-size: 12px;
+  color: ${MUTED};
+  margin-top: 3px;
+  font-weight: 500;
 `
 
-const stats = [
-  { label: 'Produtos', value: '48', icon: <Package size={22} /> },
-  { label: 'Categorias', value: '12', icon: <Tag size={22} /> },
-  { label: 'Vendas (mês)', value: 'R$ 24.850', icon: <TrendingUp size={22} /> },
-  { label: 'Pedidos', value: '137', icon: <ShoppingBag size={22} /> },
-]
+const Center = styled.div`
+  display: flex;
+  justify-content: center;
+  padding: 80px;
+`
 
 export default function DashboardPage() {
+  const [stats, setStats] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    productService.getStats()
+      .then(setStats)
+      .catch(() => setStats({ totalProducts: 0, activeProducts: 0, outOfStock: 0, lowStock: 0, totalCategories: 0 }))
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading) return <Center><Spinner size="lg" color="#fff" /></Center>
+
+  const cards = [
+    { label: 'Total de Produtos', value: stats.totalProducts, icon: <Package size={20} />, color: '#60a5fa' },
+    { label: 'Produtos Ativos',   value: stats.activeProducts, icon: <Package size={20} />, color: '#34d399' },
+    { label: 'Categorias',        value: stats.totalCategories, icon: <Tag size={20} />, color: '#a78bfa' },
+    { label: 'Estoque Esgotado',  value: stats.outOfStock, icon: <XCircle size={20} />, color: '#f87171' },
+  ]
+
   return (
-    <>
-      <Title>Dashboard</Title>
-      <CardsGrid>
-        {stats.map((stat) => (
-          <Card key={stat.label}>
-            <CardIcon>{stat.icon}</CardIcon>
-            <CardInfo>
-              <CardValue>{stat.value}</CardValue>
-              <CardLabel>{stat.label}</CardLabel>
-            </CardInfo>
-          </Card>
-        ))}
-      </CardsGrid>
-    </>
+    <CardsGrid>
+      {cards.map((c) => (
+        <Card key={c.label}>
+          <Icon $color={c.color}>{c.icon}</Icon>
+          <div>
+            <CardValue>{c.value}</CardValue>
+            <CardLabel>{c.label}</CardLabel>
+          </div>
+        </Card>
+      ))}
+    </CardsGrid>
   )
 }

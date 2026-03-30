@@ -1,14 +1,15 @@
 import { ThemeProvider } from 'styled-components'
-import { theme } from './styles/theme'
 import { GlobalStyles } from './styles/GlobalStyles'
+import { ThemeContextProvider, useThemeContext } from './contexts/ThemeContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { CartProvider } from './contexts/CartContext'
 import { WishlistProvider } from './contexts/WishlistContext'
 import AppRoutes from './routes/index'
 
-export default function App() {
+function ThemedApp() {
+  const { activeTheme } = useThemeContext()
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={activeTheme}>
       <GlobalStyles />
       <AuthProvider>
         <CartProvider>
@@ -18,5 +19,13 @@ export default function App() {
         </CartProvider>
       </AuthProvider>
     </ThemeProvider>
+  )
+}
+
+export default function App() {
+  return (
+    <ThemeContextProvider>
+      <ThemedApp />
+    </ThemeContextProvider>
   )
 }

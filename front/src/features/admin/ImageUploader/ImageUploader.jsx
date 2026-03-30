@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { Upload, X, Star } from 'lucide-react'
 import Badge from '../../../ui/Badge/Badge'
+import { getImageUrl } from '../../../utils/getImageUrl'
 import {
   UploaderWrapper,
   DropZone,
@@ -61,7 +62,7 @@ export default function ImageUploader({ images = [], onAdd, onRemove, maxFiles =
         <PreviewGrid>
           {images.map((img, idx) => (
             <PreviewItem key={idx}>
-              <PreviewImg src={img.preview || img.url} alt={`Foto ${idx + 1}`} />
+              <PreviewImg src={getImageUrl(img.preview) || getImageUrl(img.url)} alt={`Foto ${idx + 1}`} />
               {idx === 0 && (
                 <CoverBadge>
                   <Badge variant="dark" size="sm">Capa</Badge>

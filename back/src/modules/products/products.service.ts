@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { ProductSize } from './entities/product-size.entity';
 import { ProductColor } from './entities/product-color.entity';
+import { Category } from '../categories/entities/category.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductFiltersDto } from './dto/product-filters.dto';
@@ -15,17 +16,23 @@ export class ProductsService {
     @InjectRepository(Product) private productRepo: Repository<Product>,
     @InjectRepository(ProductSize) private sizeRepo: Repository<ProductSize>,
     @InjectRepository(ProductColor) private colorRepo: Repository<ProductColor>,
+    @InjectRepository(Category) private categoryRepo: Repository<Category>,
   ) {}
 
   async findAll(filters: ProductFiltersDto) {
-    const { brand, category, sizes, priceMin, priceMax, gender, sortBy, page = 1, limit = 12 } = filters;
+    const { brand, category, sizes, priceMin, priceMax, gender, sortBy, showAll } = filters;
+    const page = Number.isFinite(Number(filters.page)) ? Math.max(1, Number(filters.page)) : 1;
+    const limit = Number.isFinite(Number(filters.limit)) ? Math.max(1, Number(filters.limit)) : 12;
 
     const qb = this.productRepo
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.sizes', 'sizes')
-      .leftJoinAndSelect('product.colors', 'colors')
-      .where('product.isActive = :isActive', { isActive: true });
+      .leftJoinAndSelect('product.colors', 'colors');
+
+    if (!showAll) {
+      qb.where('product.isActive = :isActive', { isActive: true });
+    }
 
     if (brand) qb.andWhere('product.brand = :brand', { brand });
     if (category) qb.andWhere('category.slug = :category', { category });
@@ -49,16 +56,16 @@ export class ProductsService {
     }
 
     const [data, total] = await qb
-      .skip((Number(page) - 1) * Number(limit))
-      .take(Number(limit))
+      .skip((page - 1) * limit)
+      .take(limit)
       .getManyAndCount();
 
     return {
       data,
       total,
-      page: Number(page),
-      limit: Number(limit),
-      totalPages: Math.ceil(total / Number(limit)),
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
     };
   }
 
@@ -137,6 +144,27 @@ export class ProductsService {
     const product = await this.findById(id);
     await this.productRepo.remove(product);
     return { message: 'Produto removido com sucesso' };
+  }
+
+  async getStats() {
+    const [totalProducts, activeProducts, outOfStock, lowStock, totalCategories] = await Promise.all([
+      this.productRepo.count(),
+      this.productRepo.count({ where: { isActive: true } }),
+      this.productRepo.count({ where: { stock: 0, isActive: true } }),
+      this.productRepo
+        .createQueryBuilder('p')
+        .where('p.stock > 0 AND p.stock <= 5 AND p.isActive = 1')
+        .getCount(),
+      this.categoryRepo.count(),
+    ]);
+
+    return {
+      totalProducts,
+      activeProducts,
+      outOfStock,
+      lowStock,
+      totalCategories,
+    };
   }
 
   private async generateSlug(name: string): Promise<string> {

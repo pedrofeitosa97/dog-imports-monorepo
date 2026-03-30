@@ -18,9 +18,9 @@ export default function Button({
     <StyledButton
       as={as}
       to={to}
-      variant={variant}
-      size={size}
-      fullWidth={fullWidth}
+      $variant={variant}
+      $size={size}
+      $fullWidth={fullWidth}
       disabled={disabled || loading}
       type={type}
       onClick={onClick}

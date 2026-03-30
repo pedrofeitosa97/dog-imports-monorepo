@@ -19,16 +19,20 @@ const SectionHeader = styled.div`
 
 const SectionTitle = styled.h2`
   font-size: ${({ theme }) => theme.typography.size['2xl']};
-  font-weight: ${({ theme }) => theme.typography.weight.bold};
+  font-weight: ${({ theme }) => theme.typography.weight.extrabold};
+  letter-spacing: ${({ theme }) => theme.typography.letterSpacing.tight};
 `
 
 const SeeAll = styled.a`
   font-size: ${({ theme }) => theme.typography.size.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  text-decoration: underline;
+  font-weight: ${({ theme }) => theme.typography.weight.medium};
+  color: ${({ theme }) => theme.colors.brand};
+  text-decoration: none;
   cursor: pointer;
+  letter-spacing: ${({ theme }) => theme.typography.letterSpacing.wide};
+  transition: opacity ${({ theme }) => theme.transitions.fast};
 
-  &:hover { color: ${({ theme }) => theme.colors.textPrimary}; }
+  &:hover { opacity: 0.75; }
 `
 
 const mockProducts = Array.from({ length: 9 }, (_, i) => ({

@@ -4,25 +4,30 @@ export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[1]};
-  width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
+  width: ${({ $fullWidth }) => ($fullWidth ? '100%' : 'auto')};
 `
 
 export const Label = styled.label`
   font-size: ${({ theme }) => theme.typography.size.sm};
   font-weight: ${({ theme }) => theme.typography.weight.medium};
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: ${({ theme, $dark }) => $dark ? theme.colors.adminText : theme.colors.textPrimary};
 `
 
 export const InputRow = styled.div`
   display: flex;
   align-items: center;
-  border: 1.5px solid ${({ theme, hasError }) => hasError ? theme.colors.accentRed : theme.colors.border};
+  border: 1.5px solid ${({ theme, $hasError, $dark }) =>
+    $hasError ? theme.colors.accentRed : $dark ? theme.colors.adminBorder : theme.colors.border};
   border-radius: ${({ theme }) => theme.borderRadius.base};
-  background: ${({ theme, disabled }) => disabled ? theme.colors.surface : theme.colors.background};
+  background: ${({ theme, disabled, $dark }) =>
+    disabled
+      ? ($dark ? 'rgba(255,255,255,0.04)' : theme.colors.surface)
+      : ($dark ? 'rgba(255,255,255,0.06)' : theme.colors.background)};
   transition: border-color ${({ theme }) => theme.transitions.fast};
 
   &:focus-within {
-    border-color: ${({ theme, hasError }) => hasError ? theme.colors.accentRed : theme.colors.textPrimary};
+    border-color: ${({ theme, $hasError, $dark }) =>
+      $hasError ? theme.colors.accentRed : $dark ? 'rgba(255,255,255,0.3)' : theme.colors.textPrimary};
   }
 `
 
@@ -33,10 +38,10 @@ export const StyledInput = styled.input`
   outline: none;
   background: transparent;
   font-size: ${({ theme }) => theme.typography.size.base};
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: ${({ theme, $dark }) => $dark ? theme.colors.adminText : theme.colors.textPrimary};
 
   &::placeholder {
-    color: ${({ theme }) => theme.colors.textDisabled};
+    color: ${({ theme, $dark }) => $dark ? theme.colors.adminTextMuted : theme.colors.textDisabled};
   }
 
   &:disabled {
@@ -59,5 +64,5 @@ export const Suffix = styled.span`
 
 export const HelperText = styled.span`
   font-size: ${({ theme }) => theme.typography.size.xs};
-  color: ${({ theme, hasError }) => hasError ? theme.colors.accentRed : theme.colors.textSecondary};
+  color: ${({ theme, $hasError }) => $hasError ? theme.colors.accentRed : theme.colors.textSecondary};
 `

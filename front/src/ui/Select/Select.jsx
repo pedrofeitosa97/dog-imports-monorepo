@@ -10,14 +10,15 @@ export default function Select({
   disabled = false,
   error,
   fullWidth = false,
+  dark = false,
   id,
 }) {
   const selectId = id || label?.toLowerCase().replace(/\s+/g, '-')
   return (
-    <Wrapper fullWidth={fullWidth}>
-      {label && <Label htmlFor={selectId}>{label}</Label>}
-      <SelectWrapper hasError={!!error} disabled={disabled}>
-        <StyledSelect id={selectId} value={value} onChange={onChange} disabled={disabled}>
+    <Wrapper $fullWidth={fullWidth}>
+      {label && <Label htmlFor={selectId} $dark={dark}>{label}</Label>}
+      <SelectWrapper $hasError={!!error} disabled={disabled} $dark={dark}>
+        <StyledSelect id={selectId} value={value} onChange={onChange} disabled={disabled} $dark={dark}>
           <option value="">{placeholder}</option>
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -25,7 +26,7 @@ export default function Select({
             </option>
           ))}
         </StyledSelect>
-        <ChevronIcon>
+        <ChevronIcon $dark={dark}>
           <ChevronDown size={16} />
         </ChevronIcon>
       </SelectWrapper>

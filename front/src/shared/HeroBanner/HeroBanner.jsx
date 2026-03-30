@@ -7,6 +7,7 @@ import {
   SlideImage,
   SlideOverlay,
   SlideContent,
+  SlideEyebrow,
   SlideTitle,
   SlideSubtitle,
   NavBtn,
@@ -15,12 +16,36 @@ import {
 } from './HeroBanner.styles'
 
 const defaultSlides = [
-  { id: 1, imageUrl: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=1440&q=80', title: 'Nova Coleção', subtitle: 'As melhores marcas de grife importadas', cta: 'Ver coleção', to: '/produtos' },
-  { id: 2, imageUrl: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=1440&q=80', title: 'Lançamentos', subtitle: 'As últimas tendências direto das passarelas', cta: 'Comprar agora', to: '/produtos?sortBy=newest' },
-  { id: 3, imageUrl: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1440&q=80', title: 'Estilo exclusivo', subtitle: 'Autenticidade garantida em cada peça', cta: 'Explorar', to: '/produtos' },
+  {
+    id: 1,
+    imageUrl: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=1440&q=80',
+    eyebrow: 'Nova coleção 2025',
+    title: 'Estilo que\nfala por você',
+    subtitle: 'As melhores marcas de grife importadas com autenticidade garantida.',
+    cta: 'Ver coleção',
+    to: '/produtos',
+  },
+  {
+    id: 2,
+    imageUrl: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=1440&q=80',
+    eyebrow: 'Lançamentos',
+    title: 'Últimas\ntendências',
+    subtitle: 'Direto das passarelas internacionais para o seu guarda-roupa.',
+    cta: 'Comprar agora',
+    to: '/produtos?sortBy=newest',
+  },
+  {
+    id: 3,
+    imageUrl: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1440&q=80',
+    eyebrow: 'Exclusividade',
+    title: 'Cada peça,\numa história',
+    subtitle: 'Autenticidade e qualidade em cada item da nossa curadoria.',
+    cta: 'Explorar',
+    to: '/produtos',
+  },
 ]
 
-export default function HeroBanner({ slides = defaultSlides, autoPlay = true, interval = 5000 }) {
+export default function HeroBanner({ slides = defaultSlides, autoPlay = true, interval = 5500 }) {
   const [active, setActive] = useState(0)
   const timer = useRef(null)
 
@@ -45,29 +70,32 @@ export default function HeroBanner({ slides = defaultSlides, autoPlay = true, in
   return (
     <BannerWrapper>
       {slides.map((slide, idx) => (
-        <Slide key={slide.id} active={idx === active}>
+        <Slide key={slide.id} $active={idx === active}>
           <SlideImage src={slide.imageUrl} alt={slide.title} />
           <SlideOverlay />
           <SlideContent>
-            <SlideTitle>{slide.title}</SlideTitle>
+            {slide.eyebrow && <SlideEyebrow>{slide.eyebrow}</SlideEyebrow>}
+            <SlideTitle style={{ whiteSpace: 'pre-line' }}>{slide.title}</SlideTitle>
             <SlideSubtitle>{slide.subtitle}</SlideSubtitle>
-            <Button as="a" href={slide.to} variant="secondary" size="lg" style={{ color: '#fff', borderColor: '#fff' }}>
-              {slide.cta}
-            </Button>
+            <div>
+              <Button as="a" href={slide.to} variant="primary" size="lg">
+                {slide.cta}
+              </Button>
+            </div>
           </SlideContent>
         </Slide>
       ))}
 
-      <NavBtn side="left" onClick={() => go(active - 1)}>
-        <ChevronLeft size={28} />
+      <NavBtn $side="left" onClick={() => go(active - 1)}>
+        <ChevronLeft size={24} />
       </NavBtn>
-      <NavBtn side="right" onClick={() => go(active + 1)}>
-        <ChevronRight size={28} />
+      <NavBtn $side="right" onClick={() => go(active + 1)}>
+        <ChevronRight size={24} />
       </NavBtn>
 
       <DotsRow>
         {slides.map((_, idx) => (
-          <Dot key={idx} active={idx === active} onClick={() => go(idx)} />
+          <Dot key={idx} $active={idx === active} onClick={() => go(idx)} />
         ))}
       </DotsRow>
     </BannerWrapper>

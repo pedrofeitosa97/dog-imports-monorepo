@@ -51,4 +51,9 @@ export class ProductFiltersDto {
   @Type(() => Number)
   @IsNumber()
   limit?: number = 12;
+
+  @ApiPropertyOptional({ description: 'Admin: lista todos os produtos incluindo inativos' })
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  showAll?: boolean;
 }

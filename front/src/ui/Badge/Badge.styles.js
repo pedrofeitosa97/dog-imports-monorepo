@@ -42,6 +42,6 @@ export const StyledBadge = styled.span`
   border-radius: ${({ theme }) => theme.borderRadius.sm};
   font-weight: ${({ theme }) => theme.typography.weight.semibold};
   white-space: nowrap;
-  ${({ variant = 'green' }) => variants[variant]}
-  ${({ size = 'md' }) => sizes[size]}
+  ${({ $variant = 'green' }) => variants[$variant]}
+  ${({ $size = 'md' }) => sizes[$size]}
 `

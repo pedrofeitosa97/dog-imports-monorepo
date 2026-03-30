@@ -10,7 +10,10 @@
       "WebFetch(domain:i.imgur.com)",
       "Bash(curl -L \"https://i.imgur.com/YFPJDZ5.png\" -o /tmp/logo_brand.png)",
       "Read(//tmp/**)",
-      "Bash(curl -L \"https://i.imgur.com/YFPJDZ5.png\" -o \"C:/Users/Pedro/Desktop/workspace/dog-imports-monorepo/logo_temp.png\")"
+      "Bash(curl -L \"https://i.imgur.com/YFPJDZ5.png\" -o \"C:/Users/Pedro/Desktop/workspace/dog-imports-monorepo/logo_temp.png\")",
+      "Bash(grep -r VITE_API_URL /c/Users/Pedro/Desktop/workspace/dog-imports-monorepo/front/src --include=*.jsx --include=*.js)",
+      "Bash(find /c/Users/Pedro/Desktop/workspace/dog-imports-monorepo -maxdepth 2 -name README* -o -name *.md)",
+      "Bash(npm install:*)"
     ]
   }
 }

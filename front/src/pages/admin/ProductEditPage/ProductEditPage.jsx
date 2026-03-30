@@ -45,9 +45,15 @@ export default function ProductEditPage() {
       const formData = new FormData()
       Object.entries(values).forEach(([key, val]) => {
         if (key === 'images') {
-          val.forEach((img) => { if (img.file) formData.append('newImages', img.file) })
+          val.forEach((img) => { if (img.file) formData.append('images', img.file) })
           const existingUrls = val.filter((img) => img.url && !img.file).map((img) => img.url)
           formData.append('existingImages', JSON.stringify(existingUrls))
+        } else if (key === 'category') {
+          // O backend espera categoryId (number), não category (object)
+          const catId = typeof val === 'object' ? val?.id : val
+          if (catId != null && catId !== '') formData.append('categoryId', catId)
+        } else if (val === null || val === undefined) {
+          // Não envia null/undefined — evita parseFloat("null") = NaN no backend
         } else {
           formData.append(key, val)
         }

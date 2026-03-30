@@ -16,7 +16,7 @@ export default function ImageGallery({ images = [] }) {
               key={idx}
               src={src}
               alt={`Foto ${idx + 1}`}
-              active={idx === active}
+              $active={idx === active}
               onClick={() => setActive(idx)}
             />
           ))}

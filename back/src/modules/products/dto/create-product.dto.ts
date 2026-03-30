@@ -41,13 +41,13 @@ export class CreateProductDto {
   gender?: string;
 
   @ApiProperty({ example: 189.9 })
-  @Transform(({ value }) => parseFloat(value))
+  @Transform(({ value }) => { const n = parseFloat(value); return isNaN(n) ? 0 : n; })
   @IsNumber()
   price: number;
 
   @ApiPropertyOptional({ example: 249.9 })
   @IsOptional()
-  @Transform(({ value }) => (value ? parseFloat(value) : null))
+  @Transform(({ value }) => { if (value === null || value === undefined || value === '' || value === 'null') return null; const n = parseFloat(value); return isNaN(n) ? null : n; })
   originalPrice?: number;
 
   @ApiPropertyOptional()
@@ -62,7 +62,7 @@ export class CreateProductDto {
 
   @ApiPropertyOptional({ example: 50 })
   @IsOptional()
-  @Transform(({ value }) => (value !== undefined ? parseInt(value) : 0))
+  @Transform(({ value }) => { if (value === null || value === undefined || value === '') return 0; const n = parseInt(value); return isNaN(n) ? 0 : n; })
   @IsNumber()
   stock?: number;
 
@@ -80,7 +80,7 @@ export class CreateProductDto {
 
   @ApiPropertyOptional({ example: 1 })
   @IsOptional()
-  @Transform(({ value }) => (value ? parseInt(value) : null))
+  @Transform(({ value }) => { if (!value || value === 'null' || value === '') return null; const n = parseInt(value); return isNaN(n) ? null : n; })
   categoryId?: number;
 
   @ApiPropertyOptional({

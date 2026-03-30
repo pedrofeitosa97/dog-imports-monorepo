@@ -4,7 +4,7 @@ import {
   UseInterceptors, UploadedFiles, ForbiddenException,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { diskStorage, memoryStorage } from 'multer';
 import { extname, join } from 'path';
 import { ApiTags, ApiBearerAuth, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
@@ -13,25 +13,44 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductFiltersDto } from './dto/product-filters.dto';
 import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
-const multerConfig = {
-  storage: diskStorage({
-    destination: join(process.cwd(), 'uploads', 'products'),
-    filename: (_req, file, cb) => {
-      const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-      cb(null, `${unique}${extname(file.originalname)}`);
-    },
-  }),
-  fileFilter: (_req: any, file: Express.Multer.File, cb: any) => {
-    const allowed = /\.(jpg|jpeg|png|webp)$/i;
-    cb(null, allowed.test(file.originalname));
-  },
+const imageFilter = (_req: any, file: Express.Multer.File, cb: any) => {
+  const allowed = /\.(jpg|jpeg|png|webp)$/i;
+  cb(null, allowed.test(file.originalname));
 };
+
+// Em produção usa memoryStorage (upload vai para Cloudinary).
+// Em desenvolvimento usa diskStorage (salva em ./uploads/products/).
+const storageConfig = process.env.DATABASE_URL
+  ? memoryStorage()
+  : diskStorage({
+      destination: join(process.cwd(), 'uploads', 'products'),
+      filename: (_req, file, cb) => {
+        const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+        cb(null, `${unique}${extname(file.originalname)}`);
+      },
+    });
 
 @ApiTags('Products')
 @Controller('products')
 export class ProductsController {
-  constructor(private productsService: ProductsService) {}
+  constructor(
+    private productsService: ProductsService,
+    private cloudinaryService: CloudinaryService,
+  ) {}
+
+  private async resolveImagePaths(files: Express.Multer.File[]): Promise<string[]> {
+    if (!files?.length) return [];
+
+    // Produção: upload para Cloudinary
+    if (this.cloudinaryService.isConfigured()) {
+      return Promise.all(files.map((f) => this.cloudinaryService.uploadBuffer(f.buffer)));
+    }
+
+    // Desenvolvimento: arquivo já salvo em disco
+    return files.map((f) => `/uploads/products/${f.filename}`);
+  }
 
   @Public()
   @Get()
@@ -48,6 +67,13 @@ export class ProductsController {
   }
 
   @Public()
+  @Get('stats')
+  @ApiOperation({ summary: 'Estatísticas do dashboard admin' })
+  getStats() {
+    return this.productsService.getStats();
+  }
+
+  @Public()
   @Get(':slugOrId')
   @ApiOperation({ summary: 'Busca produto por slug (público) ou ID (admin)' })
   findOne(@Param('slugOrId') slugOrId: string) {
@@ -59,31 +85,31 @@ export class ProductsController {
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @Post()
-  @UseInterceptors(FilesInterceptor('images', 10, multerConfig))
+  @UseInterceptors(FilesInterceptor('images', 10, { storage: storageConfig, fileFilter: imageFilter }))
   @ApiOperation({ summary: '[Admin] Cria produto (multipart/form-data)' })
-  create(
+  async create(
     @Body() dto: CreateProductDto,
     @UploadedFiles() files: Express.Multer.File[],
     @CurrentUser() user: any,
   ) {
     if (!user.isAdmin) throw new ForbiddenException('Apenas admins');
-    const imagePaths = (files || []).map((f) => `/uploads/products/${f.filename}`);
+    const imagePaths = await this.resolveImagePaths(files);
     return this.productsService.create(dto, imagePaths);
   }
 
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @Put(':id')
-  @UseInterceptors(FilesInterceptor('images', 10, multerConfig))
+  @UseInterceptors(FilesInterceptor('images', 10, { storage: storageConfig, fileFilter: imageFilter }))
   @ApiOperation({ summary: '[Admin] Edita produto (multipart/form-data)' })
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateProductDto,
     @UploadedFiles() files: Express.Multer.File[],
     @CurrentUser() user: any,
   ) {
     if (!user.isAdmin) throw new ForbiddenException('Apenas admins');
-    const imagePaths = files?.length ? files.map((f) => `/uploads/products/${f.filename}`) : undefined;
+    const imagePaths = files?.length ? await this.resolveImagePaths(files) : undefined;
     return this.productsService.update(id, dto, imagePaths);
   }
 

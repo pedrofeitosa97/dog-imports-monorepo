@@ -34,7 +34,7 @@ export default function DataTable({ columns = [], rows = [], loading = false, on
             {columns.map((col) => (
               <Th
                 key={col.key}
-                sortable={col.sortable}
+                $sortable={col.sortable}
                 onClick={() => handleSort(col)}
                 style={{ width: col.width }}
               >
@@ -65,7 +65,7 @@ export default function DataTable({ columns = [], rows = [], loading = false, on
             </EmptyRow>
           ) : (
             rows.map((row, idx) => (
-              <Tr key={row.id ?? idx} clickable={!!onRowClick} onClick={() => onRowClick?.(row)}>
+              <Tr key={row.id ?? idx} $clickable={!!onRowClick} onClick={() => onRowClick?.(row)}>
                 {columns.map((col) => (
                   <Td key={col.key}>
                     {col.render ? col.render(row[col.key], row) : row[col.key]}

@@ -25,11 +25,11 @@ export const AccordionTitle = styled.span`
 export const ChevronWrapper = styled.span`
   color: ${({ theme }) => theme.colors.textSecondary};
   transition: transform ${({ theme }) => theme.transitions.fast};
-  transform: ${({ isOpen }) => (isOpen ? 'rotate(180deg)' : 'rotate(0)')};
+  transform: ${({ $isOpen }) => ($isOpen ? 'rotate(180deg)' : 'rotate(0)')};
   display: flex;
 `
 
 export const AccordionBody = styled.div`
-  display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
+  display: ${({ $isOpen }) => ($isOpen ? 'block' : 'none')};
   padding-bottom: ${({ theme }) => theme.spacing[4]};
 `

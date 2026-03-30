@@ -23,7 +23,7 @@ export default function CartSidebar() {
   return (
     <>
       {isOpen && <Overlay onClick={closeCart} />}
-      <Drawer isOpen={isOpen}>
+      <Drawer $isOpen={isOpen}>
         <DrawerHeader>
           <DrawerTitle>Carrinho ({totalItems})</DrawerTitle>
           <CloseBtn onClick={closeCart}><X size={20} /></CloseBtn>

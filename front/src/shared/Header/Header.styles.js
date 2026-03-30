@@ -4,29 +4,38 @@ export const HeaderWrapper = styled.header`
   position: sticky;
   top: 0;
   z-index: ${({ theme }) => theme.zIndex.sticky};
-  background: ${({ theme, transparent }) => transparent ? 'transparent' : theme.colors.background};
-  box-shadow: ${({ theme, scrolled }) => scrolled ? theme.shadows.base : 'none'};
-  transition: all ${({ theme }) => theme.transitions.normal};
+  background: ${({ theme, $transparent }) => $transparent ? 'transparent' : theme.colors.headerBg};
+  backdrop-filter: ${({ $transparent }) => $transparent ? 'none' : 'blur(20px)'};
+  -webkit-backdrop-filter: ${({ $transparent }) => $transparent ? 'none' : 'blur(20px)'};
+  border-bottom: 1px solid ${({ theme, $transparent }) => $transparent ? 'transparent' : theme.colors.headerBorder};
+  box-shadow: ${({ theme, $scrolled, $transparent }) => ($scrolled && !$transparent) ? theme.shadows.base : 'none'};
+  transition: background ${({ theme }) => theme.transitions.normal},
+              box-shadow ${({ theme }) => theme.transitions.normal},
+              border-color ${({ theme }) => theme.transitions.normal};
 `
 
 export const TopBar = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: ${({ theme }) => theme.spacing[4]};
+  gap: ${({ theme }) => theme.spacing[5]};
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[8]}`};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   background: ${({ theme }) => theme.colors.surface};
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `
 
 export const TopBarLink = styled.a`
   font-size: ${({ theme }) => theme.typography.size.xs};
   color: ${({ theme }) => theme.colors.textSecondary};
   text-decoration: none;
+  letter-spacing: ${({ theme }) => theme.typography.letterSpacing.wide};
 
   &:hover {
     color: ${({ theme }) => theme.colors.textPrimary};
-    text-decoration: underline;
   }
 `
 
@@ -34,10 +43,14 @@ export const MainHeader = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[6]};
-  padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[8]}`};
+  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[8]}`};
   max-width: 1440px;
   margin: 0 auto;
   width: 100%;
+
+  @media (max-width: 768px) {
+    padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
+  }
 `
 
 export const Logo = styled.a`
@@ -47,7 +60,7 @@ export const Logo = styled.a`
   flex-shrink: 0;
 
   img {
-    height: 48px;
+    height: 44px;
     width: auto;
     display: block;
   }
@@ -68,24 +81,26 @@ export const Nav = styled.nav`
 export const NavItem = styled.a`
   font-size: ${({ theme }) => theme.typography.size.sm};
   font-weight: ${({ theme }) => theme.typography.weight.medium};
-  color: ${({ theme, transparent }) => transparent ? '#fff' : theme.colors.textPrimary};
+  color: ${({ theme, $transparent }) => $transparent ? 'rgba(255,255,255,0.9)' : theme.colors.textPrimary};
   text-decoration: none;
   letter-spacing: ${({ theme }) => theme.typography.letterSpacing.wide};
   white-space: nowrap;
   padding-bottom: 2px;
   border-bottom: 2px solid transparent;
-  transition: border-color ${({ theme }) => theme.transitions.fast};
+  transition: color ${({ theme }) => theme.transitions.fast},
+              border-color ${({ theme }) => theme.transitions.fast};
 
   &:hover,
   &.active {
-    border-bottom-color: currentColor;
+    color: ${({ theme, $transparent }) => $transparent ? '#fff' : theme.colors.brand};
+    border-bottom-color: ${({ theme }) => theme.colors.brand};
   }
 `
 
 export const IconsGroup = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
+  gap: ${({ theme }) => theme.spacing[1]};
   margin-left: auto;
 `
 
@@ -93,22 +108,44 @@ export const IconBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme, transparent }) => transparent ? '#fff' : theme.colors.textPrimary};
+  width: 38px;
+  height: 38px;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  color: ${({ theme, $transparent }) => $transparent ? 'rgba(255,255,255,0.85)' : theme.colors.textPrimary};
   cursor: pointer;
-  padding: ${({ theme }) => theme.spacing[1]};
-  transition: opacity ${({ theme }) => theme.transitions.fast};
+  transition: background ${({ theme }) => theme.transitions.fast},
+              color ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    opacity: 0.7;
+    background: ${({ theme }) => theme.colors.surface};
+    color: ${({ theme }) => theme.colors.brand};
+  }
+`
+
+export const ThemeToggle = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  color: ${({ theme, $transparent }) => $transparent ? 'rgba(255,255,255,0.85)' : theme.colors.textSecondary};
+  cursor: pointer;
+  transition: background ${({ theme }) => theme.transitions.fast},
+              color ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.surface};
+    color: ${({ theme }) => theme.colors.brand};
   }
 `
 
 export const CountBadge = styled.span`
   position: absolute;
-  top: -6px;
-  right: -6px;
-  min-width: 18px;
-  height: 18px;
+  top: -4px;
+  right: -4px;
+  min-width: 17px;
+  height: 17px;
   background: ${({ theme }) => theme.colors.brand};
   color: #fff;
   border-radius: ${({ theme }) => theme.borderRadius.full};
@@ -117,14 +154,23 @@ export const CountBadge = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 4px;
+  padding: 0 3px;
 `
 
 export const Hamburger = styled.button`
   display: flex;
   align-items: center;
-  color: ${({ theme, transparent }) => transparent ? '#fff' : theme.colors.textPrimary};
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  color: ${({ theme, $transparent }) => $transparent ? 'rgba(255,255,255,0.85)' : theme.colors.textPrimary};
   cursor: pointer;
+  transition: background ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.surface};
+  }
 
   @media (min-width: 1024px) {
     display: none;
@@ -134,7 +180,8 @@ export const Hamburger = styled.button`
 export const MobileOverlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
   z-index: ${({ theme }) => theme.zIndex.overlay};
 `
 
@@ -143,32 +190,33 @@ export const MobileMenu = styled.div`
   top: 0;
   left: 0;
   bottom: 0;
-  width: 280px;
-  background: ${({ theme }) => theme.colors.background};
+  width: 300px;
+  background: ${({ theme }) => theme.colors.mobileMenuBg};
   z-index: ${({ theme }) => theme.zIndex.modal};
   padding: ${({ theme }) => theme.spacing[6]};
   display: flex;
   flex-direction: column;
-  transform: ${({ isOpen }) => isOpen ? 'translateX(0)' : 'translateX(-100%)'};
+  transform: ${({ $isOpen }) => $isOpen ? 'translateX(0)' : 'translateX(-100%)'};
   transition: transform ${({ theme }) => theme.transitions.normal};
   box-shadow: ${({ theme }) => theme.shadows.xl};
+  border-right: 1px solid ${({ theme }) => theme.colors.border};
 `
 
 export const MobileNav = styled.nav`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[1]};
 `
 
 export const MobileNavItem = styled.a`
-  font-size: ${({ theme }) => theme.typography.size.md};
+  font-size: ${({ theme }) => theme.typography.size.base};
   font-weight: ${({ theme }) => theme.typography.weight.medium};
   color: ${({ theme }) => theme.colors.textPrimary};
   text-decoration: none;
-  padding: ${({ theme }) => `${theme.spacing[3]} 0`};
+  padding: ${({ theme }) => `${theme.spacing[4]} 0`};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  transition: color ${({ theme }) => theme.transitions.fast};
 
-  &:hover {
-    color: ${({ theme }) => theme.colors.textSecondary};
+  &:hover, &.active {
+    color: ${({ theme }) => theme.colors.brand};
   }
 `

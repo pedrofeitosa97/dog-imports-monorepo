@@ -24,6 +24,10 @@ export const GlobalStyles = createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
   }
 
+  * {
+    font-family: ${({ theme }) => theme.typography.fontFamily};
+  }
+
   img, picture, video, canvas, svg {
     display: block;
     max-width: 100%;
@@ -63,7 +67,7 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   ::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.colors.borderDark};
+    background: ${({ theme }) => theme.colors.borderMedium};
     border-radius: ${({ theme }) => theme.borderRadius.full};
   }
 

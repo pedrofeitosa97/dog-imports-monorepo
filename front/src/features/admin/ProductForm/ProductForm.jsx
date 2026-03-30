@@ -57,15 +57,16 @@ export default function ProductForm({ initialValues = {}, onSubmit, categories =
       <FormSection>
         <SectionTitle>Informações básicas</SectionTitle>
         <FormGrid>
-          <Input label="Nome" value={values.name} onChange={(e) => set('name', e.target.value)} fullWidth required />
-          <Input label="Slug (URL)" value={values.slug} onChange={(e) => set('slug', e.target.value)} fullWidth required />
-          <Input label="Marca" value={values.brand} onChange={(e) => set('brand', e.target.value)} fullWidth required />
+          <Input label="Nome" value={values.name} onChange={(e) => set('name', e.target.value)} fullWidth dark required />
+          <Input label="Slug (URL)" value={values.slug} onChange={(e) => set('slug', e.target.value)} fullWidth dark required />
+          <Input label="Marca" value={values.brand} onChange={(e) => set('brand', e.target.value)} fullWidth dark required />
           <Select
             label="Categoria"
             options={categories.map((c) => ({ value: c.id, label: c.name }))}
             value={values.category}
             onChange={(e) => set('category', e.target.value)}
             fullWidth
+            dark
           />
         </FormGrid>
         <FormGroup>
@@ -82,9 +83,9 @@ export default function ProductForm({ initialValues = {}, onSubmit, categories =
       <FormSection>
         <SectionTitle>Preço e estoque</SectionTitle>
         <FormGrid>
-          <Input label="Preço (R$)" type="number" value={values.price} onChange={(e) => set('price', e.target.value)} prefix="R$" fullWidth required />
-          <Input label="Preço original (R$)" type="number" value={values.originalPrice} onChange={(e) => set('originalPrice', e.target.value)} prefix="R$" fullWidth />
-          <Input label="Estoque" type="number" value={values.stock} onChange={(e) => set('stock', e.target.value)} fullWidth required />
+          <Input label="Preço (R$)" type="number" value={values.price} onChange={(e) => set('price', e.target.value)} prefix="R$" fullWidth dark required />
+          <Input label="Preço original (R$)" type="number" value={values.originalPrice} onChange={(e) => set('originalPrice', e.target.value)} prefix="R$" fullWidth dark />
+          <Input label="Estoque" type="number" value={values.stock} onChange={(e) => set('stock', e.target.value)} fullWidth dark required />
         </FormGrid>
       </FormSection>
 

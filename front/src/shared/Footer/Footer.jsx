@@ -1,14 +1,19 @@
 import { Link } from 'react-router-dom'
-import { FooterWrapper, FooterGrid, FooterCol, FooterTitle, FooterLink, FooterBottom, Copyright } from './Footer.styles'
+import {
+  FooterWrapper, FooterGrid, FooterBrand, FooterTagline,
+  FooterCol, FooterTitle, FooterLink, FooterBottom, Copyright, FooterAccent,
+} from './Footer.styles'
 
 export default function Footer() {
   return (
     <FooterWrapper>
       <FooterGrid>
-        <FooterCol>
-          <FooterTitle>DOG IMPORTS</FooterTitle>
-          <FooterLink>Roupas importadas e marcas de grife com autenticidade garantida.</FooterLink>
-        </FooterCol>
+        <FooterBrand>
+          <img src="/logo.png" alt="Dog Imports" />
+          <FooterTagline>
+            Roupas importadas e marcas de grife com autenticidade garantida. Estilo que fala por você.
+          </FooterTagline>
+        </FooterBrand>
 
         <FooterCol>
           <FooterTitle>Comprar</FooterTitle>
@@ -35,7 +40,10 @@ export default function Footer() {
       </FooterGrid>
 
       <FooterBottom>
-        <Copyright>© {new Date().getFullYear()} Dog Imports. Todos os direitos reservados.</Copyright>
+        <Copyright>
+          © {new Date().getFullYear()} <FooterAccent>Dog Imports</FooterAccent>. Todos os direitos reservados.
+        </Copyright>
+        <Copyright>Feito com dedicação.</Copyright>
       </FooterBottom>
     </FooterWrapper>
   )

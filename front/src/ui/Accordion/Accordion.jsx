@@ -9,11 +9,11 @@ export default function Accordion({ title, children, defaultOpen = false }) {
     <AccordionWrapper>
       <AccordionHeader onClick={() => setIsOpen((v) => !v)}>
         <AccordionTitle>{title}</AccordionTitle>
-        <ChevronWrapper isOpen={isOpen}>
+        <ChevronWrapper $isOpen={isOpen}>
           <ChevronDown size={18} />
         </ChevronWrapper>
       </AccordionHeader>
-      <AccordionBody isOpen={isOpen}>{children}</AccordionBody>
+      <AccordionBody $isOpen={isOpen}>{children}</AccordionBody>
     </AccordionWrapper>
   )
 }
