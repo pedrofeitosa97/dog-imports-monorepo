@@ -1,4 +1,3 @@
-import { useReducer, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 export interface FiltersState {
@@ -15,76 +14,51 @@ export interface FiltersState {
 
 type ArrayFilterKey = 'gender' | 'sizes' | 'brands' | 'categories' | 'colors'
 
-type FiltersAction =
-  | { type: 'SET'; key: keyof FiltersState; value: FiltersState[keyof FiltersState] }
-  | { type: 'TOGGLE_ARRAY'; key: ArrayFilterKey; value: string }
-  | { type: 'SET_PAGE'; page: number }
-  | { type: 'CLEAR' }
-
-const initialState: FiltersState = {
-  gender: [],
-  sizes: [],
-  priceMin: 0,
-  priceMax: 9999,
-  brands: [],
-  categories: [],
-  colors: [],
-  sortBy: 'relevance',
-  page: 1,
-}
-
-function filtersReducer(state: FiltersState, action: FiltersAction): FiltersState {
-  switch (action.type) {
-    case 'SET':
-      return { ...state, [action.key]: action.value, page: 1 }
-    case 'TOGGLE_ARRAY': {
-      const arr = state[action.key]
-      const exists = arr.includes(action.value)
-      return {
-        ...state,
-        [action.key]: exists ? arr.filter((v) => v !== action.value) : [...arr, action.value],
-        page: 1,
-      }
-    }
-    case 'SET_PAGE':
-      return { ...state, page: action.page }
-    case 'CLEAR':
-      return { ...initialState }
-    default:
-      return state
-  }
+function buildParams(filters: FiltersState): Record<string, string> {
+  const params: Record<string, string> = {}
+  if (filters.sortBy !== 'relevance') params.sortBy = filters.sortBy
+  if (filters.page > 1) params.page = String(filters.page)
+  if (filters.brands.length) params.brands = filters.brands.join(',')
+  if (filters.categories.length) params.categories = filters.categories.join(',')
+  if (filters.sizes.length) params.sizes = filters.sizes.join(',')
+  if (filters.gender.length) params.gender = filters.gender.join(',')
+  if (filters.colors.length) params.colors = filters.colors.join(',')
+  return params
 }
 
 export function useFilters() {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const [filters, dispatch] = useReducer(filtersReducer, undefined, () => ({
-    ...initialState,
+  // URL is the single source of truth — derived on every render
+  const filters: FiltersState = {
     gender:     searchParams.get('gender')?.split(',').filter(Boolean)     ?? [],
     brands:     searchParams.get('brands')?.split(',').filter(Boolean)     ?? [],
     categories: searchParams.get('categories')?.split(',').filter(Boolean) ?? [],
     sizes:      searchParams.get('sizes')?.split(',').filter(Boolean)      ?? [],
+    colors:     searchParams.get('colors')?.split(',').filter(Boolean)     ?? [],
     sortBy:     searchParams.get('sortBy') ?? 'relevance',
     page:       Number(searchParams.get('page')) || 1,
-  }))
+    priceMin:   Number(searchParams.get('priceMin')) || 0,
+    priceMax:   Number(searchParams.get('priceMax')) || 9999,
+  }
 
-  useEffect(() => {
-    const params: Record<string, string> = {}
-    if (filters.sortBy !== 'relevance') params.sortBy = filters.sortBy
-    if (filters.page > 1) params.page = String(filters.page)
-    if (filters.brands.length) params.brands = filters.brands.join(',')
-    if (filters.categories.length) params.categories = filters.categories.join(',')
-    if (filters.sizes.length) params.sizes = filters.sizes.join(',')
-    if (filters.gender.length) params.gender = filters.gender.join(',')
-    setSearchParams(params, { replace: true })
-  }, [filters, setSearchParams])
+  const setFilter = (key: keyof FiltersState, value: FiltersState[keyof FiltersState]) => {
+    setSearchParams(buildParams({ ...filters, [key]: value, page: 1 }), { replace: true })
+  }
 
-  const setFilter = (key: keyof FiltersState, value: FiltersState[keyof FiltersState]) =>
-    dispatch({ type: 'SET', key, value })
-  const toggleFilter = (key: ArrayFilterKey, value: string) =>
-    dispatch({ type: 'TOGGLE_ARRAY', key, value })
-  const setPage = (page: number) => dispatch({ type: 'SET_PAGE', page })
-  const clearFilters = () => dispatch({ type: 'CLEAR' })
+  const toggleFilter = (key: ArrayFilterKey, value: string) => {
+    const arr = filters[key]
+    const next = arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value]
+    setSearchParams(buildParams({ ...filters, [key]: next, page: 1 }), { replace: true })
+  }
+
+  const setPage = (page: number) => {
+    setSearchParams(buildParams({ ...filters, page }), { replace: true })
+  }
+
+  const clearFilters = () => {
+    setSearchParams({}, { replace: true })
+  }
 
   return { filters, setFilter, toggleFilter, setPage, clearFilters }
 }
