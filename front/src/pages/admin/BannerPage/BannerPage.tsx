@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, type ChangeEvent } from 'react'
-import { Plus, Trash2, GripVertical, Upload, Link as LinkIcon, Eye, EyeOff } from 'lucide-react'
+import { Plus, Trash2, GripVertical, Upload, Link as LinkIcon, Eye, EyeOff, Info } from 'lucide-react'
 import styled from 'styled-components'
 import Button from '../../../ui/Button/Button'
 import Modal from '../../../ui/Modal/Modal'
@@ -236,6 +236,24 @@ const FormFooter = styled.div`
   padding-top: 4px;
 `
 
+const HintBox = styled.div`
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(249,115,22,0.07);
+  border-radius: 8px;
+  font-size: 12px;
+  color: rgba(249,115,22,0.85);
+  line-height: 1.55;
+  svg { flex-shrink: 0; margin-top: 1px; }
+`
+
+const PageSubtitle = styled.p`
+  font-size: 12px;
+  color: rgba(235,235,245,0.35);
+  margin: -16px 0 24px;
+`
+
 /* ── Component ───────────────────────────────────────────────────────────── */
 
 const emptyForm = (): BannerFormData => ({
@@ -357,6 +375,7 @@ export default function BannerPage() {
           <Plus size={16} /> Novo banner
         </Button>
       </PageHeader>
+      <PageSubtitle>Resolução mínima recomendada: 1440 × 520px · Proporção 16:4 · JPG ou WEBP</PageSubtitle>
 
       {loading
         ? <Empty>Carregando...</Empty>
@@ -408,6 +427,10 @@ export default function BannerPage() {
           {/* Imagem */}
           <FormRow>
             <Label>Imagem</Label>
+            <HintBox>
+              <Info size={14} />
+              <span>Mínimo recomendado: <strong>1440 × 520px</strong>, proporção 16:4. Use JPG ou WEBP para melhor performance. A imagem é exibida com <em>object-fit: cover</em>, então evite elementos importantes nas bordas.</span>
+            </HintBox>
             <ImageSection>
               <ImageTabs>
                 <TabBtn $active={imageTab === 'url'} onClick={() => setImageTab('url')}>
