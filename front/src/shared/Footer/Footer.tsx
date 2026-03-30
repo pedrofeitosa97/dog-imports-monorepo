@@ -26,15 +26,15 @@ export default function Footer() {
         <FooterCol>
           <FooterTitle>Ajuda</FooterTitle>
           <FooterLink>Guia de tamanhos</FooterLink>
-          <FooterLink>Política de trocas</FooterLink>
+          <FooterLink as={Link} to="/politica-de-trocas">Política de trocas</FooterLink>
           <FooterLink>Rastrear pedido</FooterLink>
           <FooterLink>Contato</FooterLink>
         </FooterCol>
 
         <FooterCol>
           <FooterTitle>Dog Imports</FooterTitle>
-          <FooterLink>Sobre nós</FooterLink>
-          <FooterLink>Autenticidade</FooterLink>
+          <FooterLink as={Link} to="/sobre-nos">Sobre nós</FooterLink>
+          <FooterLink as={Link} to="/sobre-nos#pilares">Autenticidade</FooterLink>
           <FooterLink as={Link} to="/admin">Admin</FooterLink>
         </FooterCol>
       </FooterGrid>

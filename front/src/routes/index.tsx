@@ -9,6 +9,8 @@ import ProductListingPage from '../pages/ProductListingPage/ProductListingPage'
 import ProductDetailPage from '../pages/ProductDetailPage/ProductDetailPage'
 import CartPage from '../pages/CartPage/CartPage'
 import FavoritesPage from '../pages/FavoritesPage/FavoritesPage'
+import AboutPage from '../pages/AboutPage/AboutPage'
+import ReturnPolicyPage from '../pages/ReturnPolicyPage/ReturnPolicyPage'
 
 import LoginPage from '../pages/admin/LoginPage/LoginPage'
 import DashboardPage from '../pages/admin/DashboardPage/DashboardPage'
@@ -30,6 +32,8 @@ export default function AppRoutes() {
           <Route path="/favoritos" element={<FavoritesPage />} />
           <Route path="/marcas/:brand" element={<ProductListingPage />} />
           <Route path="/categorias/:category" element={<ProductListingPage />} />
+          <Route path="/sobre-nos" element={<AboutPage />} />
+          <Route path="/politica-de-trocas" element={<ReturnPolicyPage />} />
         </Route>
 
         <Route element={<AuthLayout />}>
