@@ -5,6 +5,7 @@ import { useCart } from '../../hooks/useCart'
 import { useWishlist } from '../../hooks/useWishlist'
 import { useScrollPosition } from '../../hooks/useScrollPosition'
 import { useThemeContext } from '../../hooks/useTheme'
+import SearchOverlay from '../SearchOverlay/SearchOverlay'
 import {
   HeaderWrapper, TopBar, TopBarLink, MainHeader, Logo, Nav, NavItem,
   IconsGroup, IconBtn, ThemeToggle, CountBadge, MobileMenu, MobileOverlay,
@@ -49,6 +50,7 @@ export default function Header({ transparent = false }: HeaderProps) {
   const isDark = themeCtx?.isDark ?? true
   const toggleTheme = themeCtx?.toggleTheme ?? (() => undefined)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const isActive = useIsActive()
 
   const scrolled = scrollY > 60
@@ -81,7 +83,7 @@ export default function Header({ transparent = false }: HeaderProps) {
           </Nav>
 
           <IconsGroup>
-            <IconBtn $transparent={isTransparent}>
+            <IconBtn $transparent={isTransparent} onClick={() => setSearchOpen(true)} aria-label="Buscar">
               <Search size={20} />
             </IconBtn>
 
@@ -101,6 +103,8 @@ export default function Header({ transparent = false }: HeaderProps) {
           </IconsGroup>
         </MainHeader>
       </HeaderWrapper>
+
+      {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
 
       {mobileOpen && <MobileOverlay onClick={() => setMobileOpen(false)} />}
       <MobileMenu $isOpen={mobileOpen}>

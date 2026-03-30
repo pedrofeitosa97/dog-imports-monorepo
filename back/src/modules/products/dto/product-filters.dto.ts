@@ -3,6 +3,11 @@ import { Transform, Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ProductFiltersDto {
+  @ApiPropertyOptional({ example: 'camiseta', description: 'Busca por nome, marca ou descrição' })
+  @IsOptional()
+  @IsString()
+  search?: string;
+
   @ApiPropertyOptional({ example: 'Nike' })
   @IsOptional()
   @IsString()

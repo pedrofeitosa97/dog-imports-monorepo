@@ -20,7 +20,7 @@ export class ProductsService {
   ) {}
 
   async findAll(filters: ProductFiltersDto) {
-    const { brand, category, sizes, priceMin, priceMax, gender, sortBy, showAll } = filters;
+    const { brand, category, sizes, priceMin, priceMax, gender, sortBy, showAll, search } = filters;
     const page = Number.isFinite(Number(filters.page)) ? Math.max(1, Number(filters.page)) : 1;
     const limit = Number.isFinite(Number(filters.limit)) ? Math.max(1, Number(filters.limit)) : 12;
 
@@ -32,6 +32,14 @@ export class ProductsService {
 
     if (!showAll) {
       qb.where('product.isActive = :isActive', { isActive: true });
+    }
+
+    if (search) {
+      const term = `%${search}%`;
+      qb.andWhere(
+        '(LOWER(product.name) LIKE LOWER(:term) OR LOWER(product.brand) LIKE LOWER(:term) OR LOWER(product.description) LIKE LOWER(:term))',
+        { term },
+      );
     }
 
     if (brand) qb.andWhere('product.brand = :brand', { brand });
