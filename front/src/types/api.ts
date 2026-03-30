@@ -104,6 +104,7 @@ export interface Banner {
 export interface SiteSettings {
   logo_header?: string | null
   logo_footer?: string | null
+  favicon?: string | null
   [key: string]: string | null | undefined
 }
 

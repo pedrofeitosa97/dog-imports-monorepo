@@ -158,9 +158,11 @@ interface LogoFieldProps {
   previewH: number
   previewLabel: string
   currentUrl: string | null | undefined
+  accept?: string
+  uploadLabel?: string
 }
 
-function LogoField({ settingKey, label, hint, previewW, previewH, previewLabel, currentUrl }: LogoFieldProps) {
+function LogoField({ settingKey, label, hint, previewW, previewH, previewLabel, currentUrl, accept = 'image/png,image/jpeg,image/webp,image/svg+xml', uploadLabel = 'Clique para enviar arquivo (PNG, SVG, WEBP)' }: LogoFieldProps) {
   const { refresh } = useSiteSettings()
   const { toast } = useToast()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -250,9 +252,9 @@ function LogoField({ settingKey, label, hint, previewW, previewH, previewLabel, 
           <OrDivider>ou faça upload direto para o S3</OrDivider>
 
           <DropZone>
-            <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={handleFile} />
+            <input ref={fileRef} type="file" accept={accept} onChange={handleFile} />
             <Upload size={16} />
-            Clique para enviar arquivo (PNG, SVG, WEBP)
+            {uploadLabel}
           </DropZone>
         </Controls>
       </LogoRow>
@@ -285,6 +287,18 @@ export default function SettingsPage() {
         previewH={72}
         previewLabel="72 × 72px"
         currentUrl={settings.logo_footer}
+      />
+
+      <LogoField
+        settingKey="favicon"
+        label="Favicon"
+        hint="Recomendado: 64×64px ou 32×32px, PNG ou ICO com fundo transparente. Aparece na aba do navegador e em favoritos."
+        previewW={48}
+        previewH={48}
+        previewLabel="32 × 32px"
+        currentUrl={settings.favicon}
+        accept="image/png,image/x-icon,image/vnd.microsoft.icon,image/svg+xml,image/webp"
+        uploadLabel="Clique para enviar arquivo (PNG, ICO, SVG)"
       />
     </Page>
   )

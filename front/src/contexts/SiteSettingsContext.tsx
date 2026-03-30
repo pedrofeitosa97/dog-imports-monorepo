@@ -23,6 +23,17 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => { load() }, [])
 
+  useEffect(() => {
+    if (!settings.favicon) return
+    let link = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
+    if (!link) {
+      link = document.createElement('link')
+      link.rel = 'icon'
+      document.head.appendChild(link)
+    }
+    link.href = settings.favicon
+  }, [settings.favicon])
+
   return (
     <SiteSettingsContext.Provider value={{ settings, refresh: load }}>
       {children}
