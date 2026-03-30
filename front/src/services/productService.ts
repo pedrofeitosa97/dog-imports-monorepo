@@ -26,6 +26,14 @@ export const productService = {
     }).then((r) => r.data)
   },
 
+  toggleActive(id: number, isActive: boolean): Promise<Product> {
+    const fd = new FormData()
+    fd.append('isActive', String(isActive))
+    return api.put<Product>(`/products/${id}`, fd, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then((r) => r.data)
+  },
+
   remove(id: number): Promise<void> {
     return api.delete(`/products/${id}`).then(() => undefined)
   },

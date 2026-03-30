@@ -4,6 +4,7 @@ import { Plus, Pencil, Trash2 } from 'lucide-react'
 import DataTable, { type TableColumn } from '../../../features/admin/DataTable/DataTable'
 import Button from '../../../ui/Button/Button'
 import Badge from '../../../ui/Badge/Badge'
+import Toggle from '../../../ui/Toggle/Toggle'
 import Modal from '../../../ui/Modal/Modal'
 import { productService } from '../../../services/productService'
 import { getImageUrl } from '../../../utils/getImageUrl'
@@ -103,6 +104,17 @@ export default function ProductsListPage() {
       .finally(() => setLoading(false))
   }, [])
 
+  const handleToggleActive = async (product: Product) => {
+    const next = !product.isActive
+    setProducts((prev) => prev.map((p) => p.id === product.id ? { ...p, isActive: next } : p))
+    try {
+      await productService.toggleActive(product.id, next)
+    } catch {
+      setProducts((prev) => prev.map((p) => p.id === product.id ? { ...p, isActive: product.isActive } : p))
+      toast('Erro ao atualizar produto', 'error')
+    }
+  }
+
   const handleDelete = async () => {
     if (!deleteTarget) return
     setDeleting(true)
@@ -150,11 +162,11 @@ export default function ProductsListPage() {
     },
     {
       key: 'isActive',
-      label: 'Status',
-      render: (v: unknown) => {
-        const active = v as boolean
-        return <Badge variant={active ? 'green' : 'gray'} size="sm">{active ? 'Ativo' : 'Inativo'}</Badge>
-      },
+      label: 'Ativo',
+      width: '70px',
+      render: (v: unknown, row: Product) => (
+        <Toggle checked={v as boolean} onChange={() => handleToggleActive(row)} />
+      ),
     },
     {
       key: 'actions',

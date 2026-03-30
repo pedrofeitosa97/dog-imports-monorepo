@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, type ChangeEvent } from 'react'
-import { Plus, Trash2, Upload, Link as LinkIcon, Eye, EyeOff, Edit2 } from 'lucide-react'
+import { Plus, Trash2, Upload, Link as LinkIcon, Edit2 } from 'lucide-react'
+import Toggle from '../../../ui/Toggle/Toggle'
 import styled from 'styled-components'
 import Button from '../../../ui/Button/Button'
 import Modal from '../../../ui/Modal/Modal'
@@ -38,22 +39,23 @@ const PopupList = styled.div`
 `
 
 const PopupCard = styled.div<{ $inactive?: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 16px;
   background: rgba(255,255,255,0.04);
   border-radius: 14px;
   padding: 14px 16px;
-  opacity: ${({ $inactive }) => $inactive ? 0.5 : 1};
+  opacity: ${({ $inactive }) => $inactive ? 0.55 : 1};
   transition: opacity 150ms;
+`
 
-  @media (max-width: 640px) { flex-wrap: wrap; }
+const PopupCardRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 14px;
 `
 
 const PopupThumb = styled.div`
-  width: 100px;
-  height: 68px;
-  border-radius: 8px;
+  width: 80px;
+  height: 54px;
+  border-radius: 6px;
   overflow: hidden;
   flex-shrink: 0;
   background: rgba(255,255,255,0.07);
@@ -61,15 +63,15 @@ const PopupThumb = styled.div`
 `
 
 const NoThumb = styled.div`
-  width: 100px;
-  height: 68px;
-  border-radius: 8px;
+  width: 80px;
+  height: 54px;
+  border-radius: 6px;
   background: rgba(255,255,255,0.05);
   display: flex;
   align-items: center;
   justify-content: center;
   color: rgba(255,255,255,0.2);
-  font-size: 11px;
+  font-size: 10px;
   flex-shrink: 0;
 `
 
@@ -83,32 +85,40 @@ const PopupTitle = styled.p`
   font-weight: 600;
   color: #f5f5f7;
   margin: 0 0 2px;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 `
 
 const PopupMeta = styled.p`
-  font-size: 12px;
+  font-size: 11px;
   color: rgba(235,235,245,0.35);
   margin: 0;
-`
-
-const ActiveBadge = styled.span`
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #4ade80;
-  background: rgba(74,222,128,0.12);
-  border-radius: 4px;
-  padding: 2px 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `
 
 const CardActions = styled.div`
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
   flex-shrink: 0;
+`
+
+const ToggleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 12px;
+  margin-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+`
+
+const ToggleLabel = styled.span`
+  font-size: 12px;
+  color: rgba(235,235,245,0.45);
+  flex: 1;
 `
 
 const IconBtn = styled.button<{ $danger?: boolean }>`
@@ -356,31 +366,31 @@ export default function PopupPage() {
                 const img = getImageUrl(p.imageUrl ?? '')
                 return (
                   <PopupCard key={p.id} $inactive={!p.isActive}>
-                    {img
-                      ? <PopupThumb><img src={img} alt={p.title} /></PopupThumb>
-                      : <NoThumb>Sem imagem</NoThumb>
-                    }
-                    <PopupInfo>
-                      <PopupTitle>
-                        {p.title}
-                        {p.isActive && <ActiveBadge style={{ marginLeft: 8 }}>Ativo</ActiveBadge>}
-                      </PopupTitle>
-                      <PopupMeta>
-                        Delay: {p.delaySeconds}s · Cooldown: {p.cooldownHours}h
-                        {p.ctaUrl ? ` · ${p.ctaUrl}` : ''}
-                      </PopupMeta>
-                    </PopupInfo>
-                    <CardActions>
-                      <IconBtn onClick={() => toggleActive(p)} title={p.isActive ? 'Desativar' : 'Ativar'}>
-                        {p.isActive ? <Eye size={15} /> : <EyeOff size={15} />}
-                      </IconBtn>
-                      <IconBtn onClick={() => openEdit(p)} title="Editar">
-                        <Edit2 size={15} />
-                      </IconBtn>
-                      <IconBtn $danger onClick={() => handleDelete(p)} title="Remover">
-                        <Trash2 size={15} />
-                      </IconBtn>
-                    </CardActions>
+                    <PopupCardRow>
+                      {img
+                        ? <PopupThumb><img src={img} alt={p.title} /></PopupThumb>
+                        : <NoThumb>Sem imagem</NoThumb>
+                      }
+                      <PopupInfo>
+                        <PopupTitle>{p.title}</PopupTitle>
+                        <PopupMeta>
+                          Delay: {p.delaySeconds}s · Cooldown: {p.cooldownHours}h{p.ctaUrl ? ` · ${p.ctaUrl}` : ''}
+                        </PopupMeta>
+                      </PopupInfo>
+                      <CardActions>
+                        <IconBtn onClick={() => openEdit(p)} title="Editar">
+                          <Edit2 size={15} />
+                        </IconBtn>
+                        <IconBtn $danger onClick={() => handleDelete(p)} title="Remover">
+                          <Trash2 size={15} />
+                        </IconBtn>
+                      </CardActions>
+                    </PopupCardRow>
+
+                    <ToggleRow>
+                      <ToggleLabel>{p.isActive ? 'Popup ativo — visível no site' : 'Popup inativo — oculto no site'}</ToggleLabel>
+                      <Toggle checked={p.isActive} onChange={() => toggleActive(p)} />
+                    </ToggleRow>
                   </PopupCard>
                 )
               })}
