@@ -3,12 +3,12 @@ import styled from 'styled-components'
 export const BannerOuter = styled.div`
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 clamp(16px, 5vw, 64px) 0;
+  padding: 0 clamp(16px, 6vw, 80px) 0;
 `
 
 export const BannerWrapper = styled.div`
   position: relative;
-  height: clamp(300px, 44vh, 460px);
+  height: clamp(320px, 50vh, 520px);
   overflow: hidden;
   background: #080808;
   border-radius: ${({ theme }) => theme.borderRadius.md};
