@@ -3,9 +3,13 @@ import styled, { keyframes, css } from 'styled-components'
 
 /* ── shimmer animation ───────────────────────────────────────────────────── */
 
+/*
+ * Usar transform: translateX ao invés de background-position
+ * para manter a animação na camada de compositing (GPU) e evitar repaints.
+ */
 const shimmer = keyframes`
-  0%   { background-position: -400px 0; }
-  100% { background-position:  400px 0; }
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
 `
 
 /* ── styled ──────────────────────────────────────────────────────────────── */
@@ -16,23 +20,31 @@ const Wrapper = styled.div<{ $radius?: string }>`
   height: 100%;
   overflow: hidden;
   border-radius: ${({ $radius }) => $radius ?? '0'};
+  background: rgba(255, 255, 255, 0.05);
 `
 
 const Skeleton = styled.div<{ $visible: boolean }>`
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.04) 25%,
-    rgba(255, 255, 255, 0.10) 50%,
-    rgba(255, 255, 255, 0.04) 75%
-  );
-  background-size: 800px 100%;
-  animation: ${shimmer} 1.4s infinite linear;
-  transition: opacity 300ms ease;
+  overflow: hidden;
+  transition: opacity 280ms ease;
   opacity: ${({ $visible }) => $visible ? 1 : 0};
   pointer-events: none;
   z-index: 1;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.08) 50%,
+      transparent 100%
+    );
+    animation: ${shimmer} 1.5s infinite ease-in-out;
+    will-change: transform;
+  }
 `
 
 const Img = styled.img<{ $loaded: boolean }>`

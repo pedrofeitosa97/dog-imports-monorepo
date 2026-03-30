@@ -14,32 +14,46 @@ const fadeIn = keyframes`
 `
 
 const slideDown = keyframes`
-  from { opacity: 0; transform: translateY(-12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translate3d(0, -14px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
 `
 
 /* ── styled components ───────────────────────────────────────────────────── */
 
+/*
+ * backdrop-filter: blur é pesado no Chrome quando combinado com animação —
+ * separamos o blur num pseudo-elemento estático (não animado) para que o
+ * browser possa compô-lo numa camada GPU independente.
+ */
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
   z-index: ${({ theme }) => theme.zIndex.modal};
-  animation: ${fadeIn} 180ms ease both;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-top: 80px;
   padding-bottom: 40px;
   overflow-y: auto;
+  animation: ${fadeIn} 160ms ease both;
+
+  &::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: -1;
+  }
 `
 
 const Panel = styled.div`
   width: 100%;
   max-width: 680px;
   padding: 0 16px;
-  animation: ${slideDown} 220ms cubic-bezier(.22,.68,0,1.05) both;
+  will-change: transform, opacity;
+  animation: ${slideDown} 200ms cubic-bezier(.2, .8, .2, 1) both;
 `
 
 const SearchBar = styled.div`
