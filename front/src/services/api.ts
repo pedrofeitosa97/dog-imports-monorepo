@@ -4,6 +4,17 @@ import { STORAGE_KEYS } from '../utils/constants'
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
   headers: { 'Content-Type': 'application/json' },
+  paramsSerializer: {
+    serialize: (params: Record<string, unknown>) =>
+      Object.entries(params)
+        .filter(([, v]) => v !== undefined && v !== null && v !== '')
+        .flatMap(([k, v]) =>
+          Array.isArray(v)
+            ? v.map((item) => `${encodeURIComponent(k)}=${encodeURIComponent(item)}`)
+            : [`${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`],
+        )
+        .join('&'),
+  },
 })
 
 api.interceptors.request.use((config) => {

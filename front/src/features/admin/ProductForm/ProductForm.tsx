@@ -37,10 +37,8 @@ export interface ProductFormValues {
 }
 
 const GENDER_OPTIONS = [
-  { value: '', label: 'Selecione...' },
   { value: 'masculino', label: 'Masculino' },
   { value: 'feminino', label: 'Feminino' },
-  { value: 'unissex', label: 'Unissex' },
 ]
 
 const SIZE_PRESETS = [
@@ -72,7 +70,7 @@ export default function ProductForm({
     originalPrice: '',
     stock: '',
     brand: '',
-    gender: '',
+    gender: 'masculino',
     category: '',
     sizes: [],
     isActive: true,
