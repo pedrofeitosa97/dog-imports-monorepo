@@ -1,5 +1,13 @@
-import styled from 'styled-components'
-import { Package, Tag, ShoppingBag } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import styled, { keyframes } from 'styled-components'
+import { Package, Tag, CheckCircle, AlertTriangle } from 'lucide-react'
+import { productService } from '../../../services/productService'
+import type { ProductStats } from '../../../types/api'
+
+const pulse = keyframes`
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+`
 
 const Grid = styled.div`
   display: grid;
@@ -38,19 +46,57 @@ const Label = styled.div`
   color: ${({ theme }) => theme.colors.textSecondary};
 `
 
-const stats = [
-  { label: 'Produtos', value: 42, color: '#4f9cf9', Icon: Package },
-  { label: 'Categorias', value: 6, color: '#a78bfa', Icon: Tag },
-  { label: 'Pedidos hoje', value: 3, color: '#34d399', Icon: ShoppingBag },
+const Skeleton = styled.div`
+  height: 28px;
+  width: 60px;
+  border-radius: 6px;
+  background: ${({ theme }) => theme.colors.border};
+  animation: ${pulse} 1.4s ease-in-out infinite;
+`
+
+const ErrorMsg = styled.p`
+  color: #ff453a;
+  font-size: 13px;
+  margin: 0;
+`
+
+interface StatConfig {
+  key: keyof ProductStats
+  label: string
+  color: string
+  Icon: React.ElementType
+}
+
+const statConfigs: StatConfig[] = [
+  { key: 'totalProducts',   label: 'Produtos',        color: '#4f9cf9', Icon: Package },
+  { key: 'activeProducts',  label: 'Ativos',          color: '#34d399', Icon: CheckCircle },
+  { key: 'totalCategories', label: 'Categorias',      color: '#a78bfa', Icon: Tag },
+  { key: 'outOfStock',      label: 'Sem estoque',     color: '#f87171', Icon: AlertTriangle },
 ]
 
 export default function DashboardPage() {
+  const [stats, setStats] = useState<ProductStats | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    productService.getStats()
+      .then(setStats)
+      .catch(() => setError('Não foi possível carregar as estatísticas.'))
+      .finally(() => setLoading(false))
+  }, [])
+
   return (
     <Grid>
-      {stats.map(({ label, value, color, Icon }) => (
-        <Card key={label}>
+      {statConfigs.map(({ key, label, color, Icon }) => (
+        <Card key={key}>
           <IconBox $color={color}><Icon size={20} /></IconBox>
-          <Value>{value}</Value>
+          {loading
+            ? <Skeleton />
+            : error
+              ? <ErrorMsg>{error}</ErrorMsg>
+              : <Value>{stats?.[key] ?? 0}</Value>
+          }
           <Label>{label}</Label>
         </Card>
       ))}

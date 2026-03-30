@@ -153,7 +153,7 @@ export class ProductsService {
       this.productRepo.count({ where: { stock: 0, isActive: true } }),
       this.productRepo
         .createQueryBuilder('p')
-        .where('p.stock > 0 AND p.stock <= 5 AND p.isActive = 1')
+        .where('p.stock > :min AND p.stock <= :max AND p.isActive = :active', { min: 0, max: 5, active: true })
         .getCount(),
       this.categoryRepo.count(),
     ]);

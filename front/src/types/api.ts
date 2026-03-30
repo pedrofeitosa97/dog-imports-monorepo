@@ -80,6 +80,8 @@ export interface ProductStats {
   totalProducts: number
   totalCategories: number
   activeProducts: number
+  outOfStock: number
+  lowStock: number
 }
 
 export interface CategoryFormData {
