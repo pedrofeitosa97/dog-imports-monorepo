@@ -4,6 +4,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class SizeDto {
   label: string;
+  stock: number;
   available: boolean;
 }
 

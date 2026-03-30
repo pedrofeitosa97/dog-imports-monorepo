@@ -9,6 +9,9 @@ export class ProductSize {
   @Column()
   label: string;
 
+  @Column({ default: 0 })
+  stock: number;
+
   @Column({ default: true })
   available: boolean;
 

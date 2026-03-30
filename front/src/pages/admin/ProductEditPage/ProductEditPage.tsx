@@ -5,7 +5,7 @@ import Spinner from '../../../ui/Spinner/Spinner'
 import { productService } from '../../../services/productService'
 import { categoryService } from '../../../services/categoryService'
 import type { Category } from '../../../types/api'
-import type { ProductFormValues } from '../../../features/admin/ProductForm/ProductForm'
+import type { ProductFormValues, SizeRow } from '../../../features/admin/ProductForm/ProductForm'
 import styled from 'styled-components'
 
 const Title = styled.h2`
@@ -41,6 +41,11 @@ export default function ProductEditPage() {
       const catValue = typeof prod.category === 'object' && prod.category !== null
         ? (prod.category as { id?: number }).id ?? ''
         : prod.category ?? ''
+      const loadedSizes: SizeRow[] = (prod.sizes ?? []).map((s: { label: string; stock?: number; available?: boolean }) => ({
+        label: s.label,
+        stock: s.stock ?? 0,
+        available: s.available ?? true,
+      }))
       setProduct({
         name: prod.name ?? '',
         slug: prod.slug ?? '',
@@ -51,13 +56,14 @@ export default function ProductEditPage() {
         brand: prod.brand ?? '',
         gender: prod.gender ?? '',
         category: catValue,
+        sizes: loadedSizes,
         isActive: prod.isActive ?? true,
         isFeatured: prod.isFeatured ?? false,
         images: (prod.images ?? []).map((url: string) => ({ url, preview: url })),
       })
       setCategories(cats)
     }).catch(() => {
-      setProduct({ name: '', slug: '', description: '', price: '', originalPrice: '', stock: '', brand: '', gender: '', category: '', isActive: true, isFeatured: false, images: [] })
+      setProduct({ name: '', slug: '', description: '', price: '', originalPrice: '', stock: '', brand: '', gender: '', category: '', sizes: [], isActive: true, isFeatured: false, images: [] })
     }).finally(() => setLoading(false))
   }, [id])
 
@@ -74,6 +80,11 @@ export default function ProductEditPage() {
         } else if (key === 'category') {
           const catId = typeof val === 'object' && val !== null ? (val as { id?: number }).id : val
           if (catId != null && catId !== '') formData.append('categoryId', String(catId))
+        } else if (key === 'sizes') {
+          formData.append('sizes', JSON.stringify(val))
+        } else if (key === 'stock' && values.sizes.length > 0) {
+          const total = values.sizes.reduce((acc, s) => acc + (Number(s.stock) || 0), 0)
+          formData.append('stock', String(total))
         } else if (val == null) {
           // não envia null/undefined
         } else {

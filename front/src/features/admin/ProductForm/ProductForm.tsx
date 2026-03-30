@@ -1,4 +1,5 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react'
+import { X, Plus } from 'lucide-react'
 import { slugify } from '../../../utils/slugify'
 import Input from '../../../ui/Input/Input'
 import Select from '../../../ui/Select/Select'
@@ -8,7 +9,16 @@ import type { Category } from '../../../types/api'
 import {
   FormWrapper, FormGrid, FormGroup, FormLabel, FormSection,
   SectionTitle, ActionsRow, TextArea, ToggleRow, ToggleLabel,
+  PresetGroup, PresetGroupLabel, PresetChips, PresetChip,
+  SizeList, SizeRow, SizeBadge, SizeStockInput, SizeAvailToggle,
+  SizeRemoveBtn, AddCustomRow, AddCustomInput, StockSummary,
 } from './ProductForm.styles'
+
+export interface SizeRow {
+  label: string
+  stock: number
+  available: boolean
+}
 
 export interface ProductFormValues {
   name: string
@@ -20,6 +30,7 @@ export interface ProductFormValues {
   brand: string
   gender: string
   category: string | number
+  sizes: SizeRow[]
   isActive: boolean
   isFeatured: boolean
   images: ImagePreview[]
@@ -30,6 +41,12 @@ const GENDER_OPTIONS = [
   { value: 'masculino', label: 'Masculino' },
   { value: 'feminino', label: 'Feminino' },
   { value: 'unissex', label: 'Unissex' },
+]
+
+const SIZE_PRESETS = [
+  { label: 'Roupas', sizes: ['PP', 'P', 'M', 'G', 'GG', 'XGG'] },
+  { label: 'Calçados', sizes: ['34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44'] },
+  { label: 'Infantil', sizes: ['2', '4', '6', '8', '10', '12', '14', '16'] },
 ]
 
 interface ProductFormProps {
@@ -57,11 +74,13 @@ export default function ProductForm({
     brand: '',
     gender: '',
     category: '',
+    sizes: [],
     isActive: true,
     isFeatured: false,
     images: [],
     ...initialValues,
   })
+  const [customLabel, setCustomLabel] = useState('')
 
   useEffect(() => {
     if (mode === 'create' && values.name) {
@@ -84,6 +103,35 @@ export default function ProductForm({
   const handleRemoveImage = (idx: number) => {
     set('images', values.images.filter((_, i) => i !== idx))
   }
+
+  /* ── size helpers ──────────────────────────────────────────────────────── */
+
+  const hasSize = (label: string) => values.sizes.some((s) => s.label === label)
+
+  const togglePreset = (label: string) => {
+    if (hasSize(label)) {
+      set('sizes', values.sizes.filter((s) => s.label !== label))
+    } else {
+      set('sizes', [...values.sizes, { label, stock: 0, available: true }])
+    }
+  }
+
+  const addCustom = () => {
+    const label = customLabel.trim().toUpperCase()
+    if (!label || hasSize(label)) return
+    set('sizes', [...values.sizes, { label, stock: 0, available: true }])
+    setCustomLabel('')
+  }
+
+  const updateSize = (idx: number, patch: Partial<SizeRow>) => {
+    set('sizes', values.sizes.map((s, i) => i === idx ? { ...s, ...patch } : s))
+  }
+
+  const removeSize = (idx: number) => {
+    set('sizes', values.sizes.filter((_, i) => i !== idx))
+  }
+
+  const totalSizeStock = values.sizes.reduce((acc, s) => acc + (Number(s.stock) || 0), 0)
 
   return (
     <FormWrapper onSubmit={handleSubmit}>
@@ -135,8 +183,80 @@ export default function ProductForm({
         <FormGrid>
           <Input label="Preço (R$)" type="number" value={values.price} onChange={(e: ChangeEvent<HTMLInputElement>) => set('price', e.target.value)} prefix="R$" fullWidth dark required />
           <Input label="Preço original (R$)" type="number" value={values.originalPrice} onChange={(e: ChangeEvent<HTMLInputElement>) => set('originalPrice', e.target.value)} prefix="R$" fullWidth dark />
-          <Input label="Estoque" type="number" value={values.stock} onChange={(e: ChangeEvent<HTMLInputElement>) => set('stock', e.target.value)} fullWidth dark required />
+          <Input
+            label={values.sizes.length > 0 ? 'Estoque geral (fallback)' : 'Estoque'}
+            type="number"
+            value={values.sizes.length > 0 ? String(totalSizeStock) : values.stock}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => set('stock', e.target.value)}
+            fullWidth
+            dark
+            required={values.sizes.length === 0}
+            disabled={values.sizes.length > 0}
+          />
         </FormGrid>
+        {values.sizes.length > 0 && (
+          <StockSummary>Estoque total calculado automaticamente pela soma dos tamanhos: {totalSizeStock} unidades</StockSummary>
+        )}
+      </FormSection>
+
+      <FormSection>
+        <SectionTitle>Tamanhos e estoque por tamanho</SectionTitle>
+
+        {/* Presets */}
+        {SIZE_PRESETS.map((group) => (
+          <PresetGroup key={group.label}>
+            <PresetGroupLabel>{group.label}</PresetGroupLabel>
+            <PresetChips>
+              {group.sizes.map((s) => (
+                <PresetChip key={s} $added={hasSize(s)} type="button" onClick={() => togglePreset(s)}>
+                  {s}
+                </PresetChip>
+              ))}
+            </PresetChips>
+          </PresetGroup>
+        ))}
+
+        {/* Custom size */}
+        <AddCustomRow>
+          <AddCustomInput
+            placeholder="Ex: XXXG, 45…"
+            value={customLabel}
+            onChange={(e) => setCustomLabel(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustom() } }}
+          />
+          <Button type="button" variant="ghost" size="sm" onClick={addCustom} disabled={!customLabel.trim()}>
+            <Plus size={14} /> Adicionar
+          </Button>
+        </AddCustomRow>
+
+        {/* Size list */}
+        {values.sizes.length > 0 && (
+          <SizeList>
+            {values.sizes.map((s, idx) => (
+              <SizeRow key={s.label}>
+                <SizeBadge>{s.label}</SizeBadge>
+                <SizeStockInput
+                  type="number"
+                  min={0}
+                  value={s.stock}
+                  onChange={(e) => updateSize(idx, { stock: Math.max(0, Number(e.target.value)) })}
+                  title="Estoque deste tamanho"
+                />
+                <SizeAvailToggle>
+                  <input
+                    type="checkbox"
+                    checked={s.available}
+                    onChange={(e) => updateSize(idx, { available: e.target.checked })}
+                  />
+                  Disponível
+                </SizeAvailToggle>
+                <SizeRemoveBtn type="button" onClick={() => removeSize(idx)} title="Remover tamanho">
+                  <X size={14} />
+                </SizeRemoveBtn>
+              </SizeRow>
+            ))}
+          </SizeList>
+        )}
       </FormSection>
 
       <FormSection>

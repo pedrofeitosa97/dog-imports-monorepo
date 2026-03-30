@@ -42,6 +42,11 @@ export default function ProductCreatePage() {
         } else if (key === 'category') {
           const catId = typeof val === 'object' && val !== null ? (val as { id?: number }).id : val
           if (catId != null && catId !== '') formData.append('categoryId', String(catId))
+        } else if (key === 'sizes') {
+          formData.append('sizes', JSON.stringify(val))
+        } else if (key === 'stock' && values.sizes.length > 0) {
+          const total = values.sizes.reduce((acc, s) => acc + (Number(s.stock) || 0), 0)
+          formData.append('stock', String(total))
         } else if (val == null) {
           // não envia null/undefined
         } else {
