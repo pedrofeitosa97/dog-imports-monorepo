@@ -24,6 +24,6 @@
     "lint-staged": "^16.4.0"
   },
   "lint-staged": {
-    "front/src/**/*.{js,jsx}": "yarn --cwd front eslint --max-warnings 0"
+    "front/src/**/*.{ts,tsx}": "yarn --cwd front eslint --max-warnings 0"
   }
 }
