@@ -51,8 +51,7 @@ export class S3Service {
         Key:         key,
         Body:        buffer,
         ContentType: mimetype,
-        // Para acesso público via URL direta:
-        // CacheControl: 'max-age=31536000',
+        CacheControl: 'max-age=31536000',
       }),
     );
 

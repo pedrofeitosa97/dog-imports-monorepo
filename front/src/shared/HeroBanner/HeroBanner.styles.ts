@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const BannerWrapper = styled.div`
   position: relative;
-  height: clamp(480px, 70vh, 680px);
+  height: clamp(300px, 44vh, 460px);
   overflow: hidden;
   background: #080808;
 `
@@ -11,7 +11,7 @@ export const Slide = styled.div<{ $active?: boolean }>`
   position: absolute;
   inset: 0;
   opacity: ${({ $active }) => $active ? 1 : 0};
-  transition: opacity 900ms ease;
+  transition: opacity 800ms ease;
   pointer-events: ${({ $active }) => $active ? 'auto' : 'none'};
 `
 
@@ -25,10 +25,10 @@ export const SlideOverlay = styled.div`
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    105deg,
-    rgba(0,0,0,0.75) 0%,
-    rgba(0,0,0,0.35) 55%,
-    rgba(0,0,0,0.10) 100%
+    100deg,
+    rgba(0,0,0,0.72) 0%,
+    rgba(0,0,0,0.28) 50%,
+    rgba(0,0,0,0.06) 100%
   );
 `
 
@@ -38,79 +38,78 @@ export const SlideContent = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 0 clamp(24px, 8vw, 112px);
-  gap: ${({ theme }) => theme.spacing[5]};
-  max-width: 680px;
+  padding: 0 clamp(20px, 7vw, 96px);
+  gap: 12px;
+  max-width: 580px;
 `
 
 export const SlideEyebrow = styled.span`
-  font-size: ${({ theme }) => theme.typography.size.xs};
-  font-weight: ${({ theme }) => theme.typography.weight.semibold};
+  font-size: 10px;
+  font-weight: 700;
   color: ${({ theme }) => theme.colors.brand};
-  letter-spacing: ${({ theme }) => theme.typography.letterSpacing.wider};
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 `
 
 export const SlideTitle = styled.h1`
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: ${({ theme }) => theme.typography.weight.extrabold};
+  font-size: clamp(1.6rem, 3.8vw, 2.8rem);
+  font-weight: 800;
   color: #ffffff;
-  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
-  letter-spacing: ${({ theme }) => theme.typography.letterSpacing.tight};
+  line-height: 1.12;
+  letter-spacing: -0.02em;
 `
 
 export const SlideSubtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.size.md};
-  color: rgba(255,255,255,0.75);
-  line-height: ${({ theme }) => theme.typography.lineHeight.normal};
-  max-width: 480px;
+  font-size: ${({ theme }) => theme.typography.size.sm};
+  color: rgba(255,255,255,0.65);
+  line-height: 1.55;
+  max-width: 380px;
 `
 
 export const NavBtn = styled.button<{ $side: 'left' | 'right' }>`
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  ${({ $side }) => $side === 'left' ? 'left: 20px;' : 'right: 20px;'}
-  width: 44px;
-  height: 44px;
+  ${({ $side }) => $side === 'left' ? 'left: 16px;' : 'right: 16px;'}
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.12);
-  color: #fff;
+  background: rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.8);
   border-radius: 50%;
   cursor: pointer;
-  transition: background ${({ theme }) => theme.transitions.fast};
+  transition: all 140ms ease;
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.15);
 
   &:hover {
-    background: rgba(249,115,22,0.75);
+    background: #f97316;
     border-color: transparent;
+    color: #fff;
   }
 
-  @media (max-width: 768px) {
-    display: none;
-  }
+  @media (max-width: 768px) { display: none; }
 `
 
 export const DotsRow = styled.div`
   position: absolute;
-  bottom: 24px;
-  left: clamp(24px, 8vw, 112px);
+  bottom: 16px;
+  left: clamp(20px, 7vw, 96px);
   display: flex;
-  gap: ${({ theme }) => theme.spacing[2]};
+  gap: 6px;
 `
 
 export const Dot = styled.button<{ $active?: boolean }>`
-  width: ${({ $active }) => $active ? '28px' : '8px'};
-  height: 8px;
-  border-radius: ${({ theme }) => theme.borderRadius.full};
-  background: ${({ $active }) => $active ? '#f97316' : 'rgba(255,255,255,0.4)'};
+  width: ${({ $active }) => $active ? '20px' : '6px'};
+  height: 6px;
+  border-radius: 999px;
+  background: ${({ $active }) => $active ? '#f97316' : 'rgba(255,255,255,0.35)'};
   cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.normal};
+  transition: all 240ms ease;
 
   &:hover {
-    background: ${({ $active }) => $active ? '#f97316' : 'rgba(255,255,255,0.7)'};
+    background: ${({ $active }) => $active ? '#f97316' : 'rgba(255,255,255,0.6)'};
   }
 `

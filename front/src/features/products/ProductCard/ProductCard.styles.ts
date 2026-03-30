@@ -4,17 +4,13 @@ export const Card = styled.article`
   display: flex;
   flex-direction: column;
   background: ${({ theme }) => theme.colors.card};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
+  border-radius: ${({ theme }) => theme.borderRadius.base};
   overflow: hidden;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  transition: box-shadow ${({ theme }) => theme.transitions.normal},
-              transform ${({ theme }) => theme.transitions.normal},
-              border-color ${({ theme }) => theme.transitions.normal};
+  transition: transform 200ms ease, box-shadow 200ms ease;
 
   &:hover {
+    transform: translateY(-3px);
     box-shadow: ${({ theme }) => theme.shadows.md};
-    transform: translateY(-2px);
-    border-color: ${({ theme }) => theme.colors.borderMedium};
   }
 `
 
@@ -27,7 +23,7 @@ export const ImageWrapper = styled.a`
   text-decoration: none;
 
   &:hover img {
-    transform: scale(1.05);
+    transform: scale(1.04);
   }
 `
 
@@ -35,116 +31,110 @@ export const ProductImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform ${({ theme }) => theme.transitions.slow};
+  transition: transform 420ms ease;
 `
 
 export const WishlistBtn = styled.button<{ $wishlisted?: boolean }>`
   position: absolute;
-  top: ${({ theme }) => theme.spacing[3]};
-  right: ${({ theme }) => theme.spacing[3]};
-  width: 34px;
-  height: 34px;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${({ theme }) => theme.mode === 'dark' ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.9)'};
+  background: ${({ theme }) => theme.mode === 'dark' ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.88)'};
   border-radius: 50%;
   cursor: pointer;
-  color: ${({ theme, $wishlisted }) => $wishlisted ? theme.colors.accentRed : theme.colors.textPrimary};
-  transition: all ${({ theme }) => theme.transitions.fast};
-  backdrop-filter: blur(4px);
+  color: ${({ theme, $wishlisted }) => $wishlisted ? theme.colors.accentRed : theme.colors.textSecondary};
+  transition: all 140ms ease;
+  backdrop-filter: blur(6px);
 
   &:hover {
-    background: ${({ theme }) => theme.mode === 'dark' ? 'rgba(0,0,0,0.85)' : '#fff'};
+    color: ${({ theme }) => theme.colors.accentRed};
     transform: scale(1.1);
   }
 `
 
 export const BadgeWrapper = styled.div`
   position: absolute;
-  top: ${({ theme }) => theme.spacing[3]};
-  left: ${({ theme }) => theme.spacing[3]};
+  top: 8px;
+  left: 8px;
 `
 
 export const Info = styled.div`
-  padding: ${({ theme }) => theme.spacing[3]};
+  padding: 10px 10px 12px;
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[1]};
+  gap: 2px;
+`
+
+export const Brand = styled.a`
+  font-size: 10px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  font-weight: 600;
+
+  &:hover { color: ${({ theme }) => theme.colors.brand}; }
 `
 
 export const Name = styled.a`
   font-size: ${({ theme }) => theme.typography.size.sm};
-  font-weight: ${({ theme }) => theme.typography.weight.medium};
+  font-weight: 500;
   color: ${({ theme }) => theme.colors.textPrimary};
   text-decoration: none;
-  line-height: 1.35;
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  transition: color ${({ theme }) => theme.transitions.fast};
+  margin-top: 1px;
+  transition: color 140ms ease;
 
-  &:hover {
-    color: ${({ theme }) => theme.colors.brand};
-  }
-`
-
-export const Brand = styled.a`
-  font-size: ${({ theme }) => theme.typography.size.xs};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  text-transform: uppercase;
-  letter-spacing: ${({ theme }) => theme.typography.letterSpacing.wide};
-  text-decoration: none;
-  font-weight: ${({ theme }) => theme.typography.weight.semibold};
-
-  &:hover {
-    color: ${({ theme }) => theme.colors.brand};
-  }
+  &:hover { color: ${({ theme }) => theme.colors.brand}; }
 `
 
 export const PriceRow = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[2]};
+  gap: 6px;
   flex-wrap: wrap;
-  margin-top: ${({ theme }) => theme.spacing[1]};
+  margin-top: 5px;
 `
 
 export const CurrentPrice = styled.span`
-  font-size: ${({ theme }) => theme.typography.size.base};
-  font-weight: ${({ theme }) => theme.typography.weight.bold};
+  font-size: ${({ theme }) => theme.typography.size.sm};
+  font-weight: 700;
   color: ${({ theme }) => theme.colors.textPrimary};
 `
 
 export const OriginalPrice = styled.span`
-  font-size: ${({ theme }) => theme.typography.size.sm};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  font-size: ${({ theme }) => theme.typography.size.xs};
+  color: ${({ theme }) => theme.colors.textDisabled};
   text-decoration: line-through;
 `
 
 export const DiscountBadge = styled.span`
-  font-size: ${({ theme }) => theme.typography.size.xs};
-  font-weight: ${({ theme }) => theme.typography.weight.bold};
+  font-size: 10px;
+  font-weight: 700;
   color: ${({ theme }) => theme.colors.accentGreen};
-  background: ${({ theme }) => theme.mode === 'dark' ? 'rgba(34,197,94,0.12)' : 'rgba(22,163,74,0.1)'};
-  padding: 1px 6px;
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
 `
 
 export const RatingRow = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[1]};
-  margin-top: ${({ theme }) => theme.spacing[1]};
+  gap: 4px;
+  margin-top: 3px;
 `
 
 export const Stars = styled.span`
-  font-size: 13px;
+  font-size: 11px;
   line-height: 1;
 `
 
 export const ReviewCount = styled.span`
-  font-size: ${({ theme }) => theme.typography.size.xs};
+  font-size: 10px;
   color: ${({ theme }) => theme.colors.textSecondary};
 `
