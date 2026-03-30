@@ -1,9 +1,6 @@
-/* eslint-disable react-refresh/only-export-components */
-import { createContext } from 'react'
+import { WishlistContext } from './wishlist.context'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { STORAGE_KEYS } from '../utils/constants'
-
-export const WishlistContext = createContext(null)
 
 export function WishlistProvider({ children }) {
   const [items, setItems] = useLocalStorage(STORAGE_KEYS.wishlist, [])

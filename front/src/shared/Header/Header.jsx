@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useCart } from '../../hooks/useCart'
 import { useWishlist } from '../../hooks/useWishlist'
 import { useScrollPosition } from '../../hooks/useScrollPosition'
-import { useThemeContext } from '../../contexts/ThemeContext'
+import { useThemeContext } from '../../hooks/useTheme'
 import {
   HeaderWrapper,
   TopBar,

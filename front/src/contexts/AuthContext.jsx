@@ -1,9 +1,7 @@
-/* eslint-disable react-refresh/only-export-components */
-import { createContext, useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { AuthContext } from './auth.context'
 import { authService } from '../services/authService'
 import { STORAGE_KEYS } from '../utils/constants'
-
-export const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)

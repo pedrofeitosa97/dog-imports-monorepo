@@ -1,9 +1,7 @@
-/* eslint-disable react-refresh/only-export-components */
-import { createContext, useReducer, useEffect, useState } from 'react'
+import { useReducer, useEffect, useState } from 'react'
+import { CartContext } from './cart.context'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { STORAGE_KEYS } from '../utils/constants'
-
-export const CartContext = createContext(null)
 
 function cartReducer(state, action) {
   switch (action.type) {
