@@ -228,9 +228,13 @@ const PageTitle = styled.h1`
 
 const Main = styled.main`
   flex: 1;
-  padding: 28px 28px 40px;
+  padding: 32px 40px 48px;
   overflow-y: auto;
   color: ${TEXT};
+
+  @media (max-width: 1280px) {
+    padding: 28px 28px 40px;
+  }
 
   @media (max-width: 640px) {
     padding: 20px 16px 32px;
