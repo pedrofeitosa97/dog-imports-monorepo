@@ -21,8 +21,8 @@ interface NavLinkDef {
 
 const navLinks: NavLinkDef[] = [
   { label: 'Novidades', to: '/produtos?sortBy=newest' },
-  { label: 'Masculino', to: '/categorias/masculino' },
-  { label: 'Feminino', to: '/categorias/feminino' },
+  { label: 'Masculino', to: '/produtos?gender=masculino' },
+  { label: 'Feminino', to: '/produtos?gender=feminino' },
   { label: 'Marcas', to: '/produtos' },
   { label: 'Promoções', to: '/produtos?discount=true' },
 ]
