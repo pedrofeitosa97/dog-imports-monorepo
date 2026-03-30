@@ -31,8 +31,9 @@ export const FooterBrand = styled.div`
   gap: ${({ theme }) => theme.spacing[4]};
 
   img {
-    height: 40px;
-    width: auto;
+    height: 72px;
+    width: 72px;
+    object-fit: contain;
   }
 `
 

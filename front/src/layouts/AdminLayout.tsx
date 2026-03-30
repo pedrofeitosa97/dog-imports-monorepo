@@ -71,11 +71,12 @@ const LogoMark = styled.div`
 `
 
 const LogoImg = styled.img`
-  width: 32px;
-  height: 32px;
+  width: 42px;
+  height: 42px;
   border-radius: 8px;
   flex-shrink: 0;
-  object-fit: cover;
+  object-fit: contain;
+  background: #000;
 `
 
 const LogoText = styled.span<{ $collapsed?: boolean }>`
