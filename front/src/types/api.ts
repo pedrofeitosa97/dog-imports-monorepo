@@ -24,6 +24,7 @@ export interface Product {
   slug: string
   name: string
   brand: string
+  gender?: string | null
   price: number
   originalPrice?: number | null
   discountPct?: number
