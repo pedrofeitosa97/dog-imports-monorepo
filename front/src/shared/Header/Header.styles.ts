@@ -60,8 +60,8 @@ export const Logo = styled.a`
   flex-shrink: 0;
 
   img {
-    height: 200px;
-    width: 200px;
+    height: 140px;
+    width: 140px;
     object-fit: contain;
     display: block;
 
