@@ -79,7 +79,7 @@ export default function Header({ transparent = false }: HeaderProps) {
           </Hamburger>
 
           <Logo as={Link} to="/">
-            {headerLogo && <img src={headerLogo} alt="Dog Imports" height="80" />}
+            {headerLogo && <img src={headerLogo} alt="Dog Imports" height="120" />}
           </Logo>
 
           <Nav>
