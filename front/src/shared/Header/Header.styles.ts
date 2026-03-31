@@ -43,13 +43,13 @@ export const MainHeader = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[6]};
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[8]}`};
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[8]}`};
   max-width: 1440px;
   margin: 0 auto;
   width: 100%;
 
   @media (max-width: 768px) {
-    padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
+    padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[4]}`};
   }
 `
 
@@ -60,8 +60,8 @@ export const Logo = styled.a`
   flex-shrink: 0;
 
   img {
-    height: 120px;
-    width: 120px;
+    height: 140px;
+    width: 140px;
     object-fit: contain;
     display: block;
   }
