@@ -272,10 +272,10 @@ export default function SettingsPage() {
       <LogoField
         settingKey="logo_header"
         label="Logo do Header"
-        hint="Recomendado: 200×200px ou maior, quadrado, PNG com fundo transparente. Exibido a 64×64px no header e 42×42px na sidebar do admin."
-        previewW={64}
-        previewH={64}
-        previewLabel="64 × 64px"
+        hint="Recomendado: 200×200px ou maior, quadrado, PNG com fundo transparente. Exibido a 80×80px no header e 42×42px na sidebar do admin."
+        previewW={80}
+        previewH={80}
+        previewLabel="80 × 80px"
         currentUrl={settings.logo_header}
       />
 
