@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useCart } from '../../../hooks/useCart'
 import { formatCurrency } from '../../../utils/formatCurrency'
 import CartItem from '../CartItem/CartItem'
@@ -34,7 +35,7 @@ export default function CartSidebar() {
               <TotalLabel>Total</TotalLabel>
               <TotalValue>{formatCurrency(totalPrice)}</TotalValue>
             </TotalRow>
-            <Button variant="primary" fullWidth size="lg">
+            <Button as={Link} to="/checkout" variant="primary" fullWidth size="lg" onClick={closeCart}>
               Finalizar pedido
             </Button>
           </DrawerFooter>

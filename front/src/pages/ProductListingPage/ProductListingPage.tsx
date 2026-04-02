@@ -74,19 +74,18 @@ const Main = styled.div`
 const SortBar = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  flex-wrap: wrap;
 `
 
 const ActiveChips = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  flex: 1;
+  margin-bottom: 20px;
 `
 
 const Chip = styled.button`
@@ -252,13 +251,6 @@ export default function ProductListingPage() {
 
         <Main>
           <SortBar>
-            <ActiveChips>
-              {chipDefs.map((chip) => (
-                <Chip key={`${chip.key}-${chip.value}`} onClick={() => toggleFilter(chip.key, chip.value)}>
-                  {chip.label} <X size={10} />
-                </Chip>
-              ))}
-            </ActiveChips>
             <InlineSortSelect
               value={filters.sortBy}
               onChange={(e) => setFilter('sortBy', e.target.value)}
@@ -268,6 +260,15 @@ export default function ProductListingPage() {
               ))}
             </InlineSortSelect>
           </SortBar>
+          {chipDefs.length > 0 && (
+            <ActiveChips>
+              {chipDefs.map((chip) => (
+                <Chip key={`${chip.key}-${chip.value}`} onClick={() => toggleFilter(chip.key, chip.value)}>
+                  {chip.label} <X size={10} />
+                </Chip>
+              ))}
+            </ActiveChips>
+          )}
 
           <ProductGrid products={products} loading={loading} />
           <PaginationWrapper>
