@@ -26,7 +26,7 @@ function cartItemsToPayload(items: CartItem[]) {
     productName: i.product.name,
     productBrand: i.product.brand,
     productImage: i.product.images?.[0] ?? undefined,
-    price: i.product.price,
+    price: Number(i.product.price),
     quantity: i.quantity,
     size: i.selectedSize || undefined,
     color: i.selectedColor || undefined,

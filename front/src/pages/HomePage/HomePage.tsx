@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ShieldCheck, RefreshCw, Truck, CreditCard, ChevronRight, User, Users, Sparkles, Tag } from 'lucide-react'
+import { ShieldCheck, RefreshCw, Truck, CreditCard, ChevronRight } from 'lucide-react'
 import HeroBanner from '../../shared/HeroBanner/HeroBanner'
 import ProductGrid from '../../features/products/ProductGrid/ProductGrid'
 import { productService } from '../../services/productService'
@@ -322,19 +322,19 @@ export default function HomePage() {
       <CatsSection>
         <CatsInner>
           <CatCard to="/produtos?gender=masculino">
-            <User size={16} />
+            <span>👨</span>
             <CatLabel>Masculino</CatLabel>
           </CatCard>
           <CatCard to="/produtos?gender=feminino">
-            <Users size={16} />
+            <span>👩</span>
             <CatLabel>Feminino</CatLabel>
           </CatCard>
           <CatCard to="/produtos?sortBy=newest">
-            <Sparkles size={16} />
+            <span>✨</span>
             <CatLabel>Novidades</CatLabel>
           </CatCard>
           <CatCard to="/produtos?discount=true">
-            <Tag size={16} />
+            <span>🏷️</span>
             <CatLabel>Promoções</CatLabel>
           </CatCard>
         </CatsInner>
