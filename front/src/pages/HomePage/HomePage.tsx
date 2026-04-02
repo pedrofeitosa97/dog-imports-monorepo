@@ -89,16 +89,15 @@ const CatsInner = styled.div`
   margin: 0 auto;
   padding: 0 clamp(16px, 5vw, 64px);
   display: flex;
-  flex-wrap: wrap;
-  gap: 0;
 `
 
 const CatCard = styled(Link)`
+  flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  padding: 18px 28px 18px 0;
-  margin-right: 32px;
+  padding: 18px 0;
   text-decoration: none;
   color: ${({ theme }) => theme.colors.textSecondary};
   position: relative;
@@ -121,8 +120,8 @@ const CatCard = styled(Link)`
   }
 
   @media (max-width: 640px) {
-    padding: 14px 16px 14px 0;
-    margin-right: 20px;
+    padding: 14px 0;
+    gap: 6px;
   }
 `
 
