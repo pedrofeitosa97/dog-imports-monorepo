@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { ShoppingBag, Heart, Search, Menu, X, Sun, Moon } from 'lucide-react'
+import { ShoppingBag, Heart, Search, Menu, X, Sun, Moon, User } from 'lucide-react'
 import { useCart } from '../../hooks/useCart'
 import { useWishlist } from '../../hooks/useWishlist'
 import { useScrollPosition } from '../../hooks/useScrollPosition'
@@ -67,9 +67,11 @@ export default function Header({ transparent = false }: HeaderProps) {
         <TopBar>
           <TopBarLink as={Link} to="/guia-de-tamanhos">Guia de tamanhos</TopBarLink>
           <TopBarLink as={Link} to="/produtos">Lançamentos</TopBarLink>
-          {user
+          {user?.isAdmin
             ? <TopBarLink as={Link} to="/admin">Dashboard</TopBarLink>
-            : <TopBarLink as={Link} to="/admin/login">Admin</TopBarLink>
+            : user
+              ? <TopBarLink as={Link} to="/minha-conta">Minha conta</TopBarLink>
+              : <TopBarLink as={Link} to="/login">Entrar</TopBarLink>
           }
         </TopBar>
 
@@ -105,6 +107,10 @@ export default function Header({ transparent = false }: HeaderProps) {
               {totalItems > 0 && <CountBadge>{totalItems}</CountBadge>}
             </IconBtn>
 
+            <IconBtn as={Link} to={user?.isAdmin ? '/admin' : user ? '/minha-conta' : '/login'} $transparent={isTransparent} aria-label="Minha conta">
+              <User size={20} />
+            </IconBtn>
+
             <ThemeToggle onClick={toggleTheme} $transparent={isTransparent} aria-label="Alternar tema">
               {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </ThemeToggle>
@@ -126,7 +132,15 @@ export default function Header({ transparent = false }: HeaderProps) {
             </MobileNavItem>
           ))}
         </MobileNav>
-        <div style={{ marginTop: 'auto', paddingTop: '24px' }}>
+        <div style={{ marginTop: 'auto', paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <MobileNavItem
+            as={Link}
+            to={user ? '/minha-conta' : '/login'}
+            onClick={() => setMobileOpen(false)}
+            $active={false}
+          >
+            {user ? 'Minha conta' : 'Entrar / Criar conta'}
+          </MobileNavItem>
           <ThemeToggle onClick={toggleTheme} style={{ gap: '10px', width: '100%', justifyContent: 'flex-start', padding: '12px 0' }}>
             {isDark ? <><Sun size={18} /> Modo claro</> : <><Moon size={18} /> Modo escuro</>}
           </ThemeToggle>

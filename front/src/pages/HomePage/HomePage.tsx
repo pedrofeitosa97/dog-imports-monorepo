@@ -79,7 +79,9 @@ const TrustSub = styled.span`
 /* ── Categories Strip ────────────────────────────────────────────────────── */
 
 const CatsSection = styled.section`
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${({ theme }) => theme.colors.surface};
 `
 
 const CatsInner = styled.div`
@@ -88,27 +90,39 @@ const CatsInner = styled.div`
   padding: 0 clamp(16px, 5vw, 64px);
   display: flex;
   flex-wrap: wrap;
+  gap: 0;
 `
 
 const CatCard = styled(Link)`
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 22px 32px 22px 0;
-  margin-right: 40px;
+  gap: 10px;
+  padding: 18px 28px 18px 0;
+  margin-right: 32px;
   text-decoration: none;
   color: ${({ theme }) => theme.colors.textSecondary};
-  border-bottom: 2px solid transparent;
-  transition: color ${({ theme }) => theme.transitions.fast}, border-color ${({ theme }) => theme.transitions.fast};
+  position: relative;
+  transition: color ${({ theme }) => theme.transitions.fast};
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: transparent;
+    transition: background ${({ theme }) => theme.transitions.fast};
+  }
 
   &:hover {
     color: ${({ theme }) => theme.colors.textPrimary};
-    border-bottom-color: ${({ theme }) => theme.colors.brand};
+    &::after { background: ${({ theme }) => theme.colors.brand}; }
   }
 
   @media (max-width: 640px) {
-    padding: 16px 20px 16px 0;
-    margin-right: 24px;
+    padding: 14px 16px 14px 0;
+    margin-right: 20px;
   }
 `
 
@@ -117,23 +131,6 @@ const CatLabel = styled.span`
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-`
-
-/* ── Editorial Band ──────────────────────────────────────────────────────── */
-
-const EditorialBand = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  padding: 20px 0;
-  text-align: center;
-`
-
-const EditorialText = styled.p`
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: ${({ theme }) => theme.colors.textSecondary};
 `
 
 /* ── Brands Strip ────────────────────────────────────────────────────────── */
@@ -342,11 +339,6 @@ export default function HomePage() {
           </CatCard>
         </CatsInner>
       </CatsSection>
-
-      {/* Editorial band */}
-      <EditorialBand>
-        <EditorialText>Produtos importados diretamente dos EUA — Autenticidade garantida</EditorialText>
-      </EditorialBand>
 
       {/* Brands marquee */}
       <BrandsSection>

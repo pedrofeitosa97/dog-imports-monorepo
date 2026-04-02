@@ -2,6 +2,7 @@ import { Controller, Post, Get, Body, HttpCode } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
@@ -16,6 +17,14 @@ export class AuthController {
   @ApiOperation({ summary: 'Login — retorna token JWT' })
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto.email, dto.password);
+  }
+
+  @Public()
+  @Post('register')
+  @HttpCode(201)
+  @ApiOperation({ summary: 'Cadastro de novo cliente' })
+  register(@Body() dto: RegisterDto) {
+    return this.authService.register(dto.name, dto.email, dto.password);
   }
 
   @ApiBearerAuth()

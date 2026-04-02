@@ -14,6 +14,9 @@ import AboutPage from '../pages/AboutPage/AboutPage'
 import ReturnPolicyPage from '../pages/ReturnPolicyPage/ReturnPolicyPage'
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage'
 import SizeGuidePage from '../pages/SizeGuidePage/SizeGuidePage'
+import CustomerLoginPage from '../pages/LoginPage/LoginPage'
+import RegisterPage from '../pages/RegisterPage/RegisterPage'
+import AccountPage from '../pages/AccountPage/AccountPage'
 
 import LoginPage from '../pages/admin/LoginPage/LoginPage'
 import DashboardPage from '../pages/admin/DashboardPage/DashboardPage'
@@ -41,6 +44,9 @@ export default function AppRoutes() {
           <Route path="/sobre-nos" element={<AboutPage />} />
           <Route path="/politica-de-trocas" element={<ReturnPolicyPage />} />
           <Route path="/guia-de-tamanhos" element={<SizeGuidePage />} />
+          <Route path="/login" element={<CustomerLoginPage />} />
+          <Route path="/cadastro" element={<RegisterPage />} />
+          <Route path="/minha-conta" element={<AccountPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
 
