@@ -10,7 +10,7 @@ export const BannerSkeleton = styled.div`
   overflow: hidden;
   background: #111;
   border-radius: ${({ theme }) => theme.borderRadius.md};
-  height: clamp(320px, 50vh, 520px);
+  height: clamp(480px, 70vh, 760px);
 
   &::after {
     content: '';
@@ -30,7 +30,7 @@ export const BannerOuter = styled.div`
 
 export const BannerWrapper = styled.div`
   position: relative;
-  height: clamp(320px, 50vh, 520px);
+  height: clamp(480px, 70vh, 760px);
   overflow: hidden;
   background: #080808;
   border-radius: ${({ theme }) => theme.borderRadius.md};
@@ -70,7 +70,7 @@ export const SlideContent = styled.div`
   justify-content: center;
   padding: 0 clamp(20px, 7vw, 96px);
   gap: 12px;
-  max-width: 580px;
+  max-width: 640px;
 `
 
 export const SlideEyebrow = styled.span`

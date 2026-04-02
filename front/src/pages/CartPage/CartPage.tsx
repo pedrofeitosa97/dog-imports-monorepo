@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ShoppingBag } from 'lucide-react'
 import CartItem from '../../features/cart/CartItem/CartItem'
 import Button from '../../ui/Button/Button'
 import { useCart } from '../../hooks/useCart'
@@ -8,13 +10,36 @@ import styled from 'styled-components'
 const PageWrapper = styled.div`
   max-width: 1100px;
   margin: 0 auto;
-  padding: ${({ theme }) => `${theme.spacing[8]} ${theme.spacing[8]}`};
+  padding: ${({ theme }) => `${theme.spacing[8]} 8px`};
+
+  @media (min-width: 480px) {
+    padding: ${({ theme }) => `${theme.spacing[8]} clamp(16px, 5vw, 48px)`};
+  }
+`
+
+const PageLabel = styled.p`
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: 6px;
 `
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.size['2xl']};
-  font-weight: ${({ theme }) => theme.typography.weight.bold};
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
   margin-bottom: ${({ theme }) => theme.spacing[8]};
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+`
+
+const CartCount = styled.span`
+  font-size: 14px;
+  font-weight: 400;
+  color: ${({ theme }) => theme.colors.textSecondary};
 `
 
 const Layout = styled.div`
@@ -28,7 +53,7 @@ const Layout = styled.div`
 `
 
 const Summary = styled.div`
-  background: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.borderRadius.md};
   padding: ${({ theme }) => theme.spacing[6]};
   display: flex;
@@ -39,8 +64,11 @@ const Summary = styled.div`
 `
 
 const SummaryTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.size.md};
-  font-weight: ${({ theme }) => theme.typography.weight.semibold};
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.textSecondary};
   padding-bottom: ${({ theme }) => theme.spacing[3]};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 `
@@ -53,32 +81,115 @@ const SummaryRow = styled.div<{ $total?: boolean }>`
   font-weight: ${({ $total, theme }) => $total ? theme.typography.weight.bold : theme.typography.weight.regular};
 `
 
-const EmptyCart = styled.div`
-  text-align: center;
-  padding: ${({ theme }) => theme.spacing[16]};
+const Divider = styled.hr`
+  border: none;
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  margin: 0;
+`
 
-  h2 { margin-bottom: ${({ theme }) => theme.spacing[4]}; }
-  p { color: ${({ theme }) => theme.colors.textSecondary}; margin-bottom: ${({ theme }) => theme.spacing[6]}; }
+const CouponRow = styled.div`
+  display: flex;
+  gap: 8px;
+  padding-top: 4px;
+`
+
+const CouponInput = styled.input`
+  flex: 1;
+  background: transparent;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.base};
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  outline: none;
+  transition: border-color ${({ theme }) => theme.transitions.fast};
+
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.textSecondary};
+  }
+
+  &:focus {
+    border-color: ${({ theme }) => theme.colors.brand};
+  }
+`
+
+const CouponBtn = styled.button`
+  padding: 10px 16px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.base};
+  font-size: 11px;
+  font-family: inherit;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color ${({ theme }) => theme.transitions.fast}, color ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.brand};
+    color: ${({ theme }) => theme.colors.brand};
+  }
+`
+
+const EmptyWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: ${({ theme }) => `${theme.spacing[20]} ${theme.spacing[4]}`};
+  gap: ${({ theme }) => theme.spacing[4]};
+`
+
+const EmptyLabel = styled.p`
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`
+
+const EmptyTitle = styled.h2`
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: ${({ theme }) => theme.colors.textPrimary};
+`
+
+const EmptyBody = styled.p`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  max-width: 320px;
+  line-height: 1.65;
 `
 
 export default function CartPage() {
   const { items, totalPrice, totalItems } = useCart()
+  const [couponCode, setCouponCode] = useState('')
 
   if (items.length === 0) {
     return (
       <PageWrapper>
-        <EmptyCart>
-          <h2>Seu carrinho está vazio</h2>
-          <p>Adicione produtos para continuar comprando.</p>
-          <Button as={Link} to="/produtos" variant="primary" size="lg">Ver produtos</Button>
-        </EmptyCart>
+        <EmptyWrapper>
+          <ShoppingBag size={48} strokeWidth={1} color="currentColor" style={{ opacity: 0.3 }} />
+          <EmptyLabel>Carrinho vazio</EmptyLabel>
+          <EmptyTitle>Sua sacola está vazia</EmptyTitle>
+          <EmptyBody>Explore nosso catálogo e descubra produtos importados com autenticidade garantida.</EmptyBody>
+          <Button as={Link} to="/produtos" variant="primary" size="lg">Explorar catálogo</Button>
+        </EmptyWrapper>
       </PageWrapper>
     )
   }
 
   return (
     <PageWrapper>
-      <Title>Carrinho ({totalItems})</Title>
+      <PageLabel>Compras</PageLabel>
+      <Title>
+        Minha sacola <CartCount>({totalItems})</CartCount>
+      </Title>
+
       <Layout>
         <div>
           {items.map((item, idx) => <CartItem key={idx} item={item} />)}
@@ -94,6 +205,16 @@ export default function CartPage() {
             <span>Frete</span>
             <span>Calcular</span>
           </SummaryRow>
+          <Divider />
+          <CouponRow>
+            <CouponInput
+              placeholder="Código de desconto"
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value)}
+            />
+            <CouponBtn type="button">Aplicar</CouponBtn>
+          </CouponRow>
+          <Divider />
           <SummaryRow $total>
             <span>Total</span>
             <span>{formatCurrency(totalPrice)}</span>

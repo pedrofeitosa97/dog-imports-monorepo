@@ -6,10 +6,9 @@ export const Card = styled.article`
   background: ${({ theme }) => theme.colors.card};
   border-radius: ${({ theme }) => theme.borderRadius.base};
   overflow: hidden;
-  transition: transform 200ms ease, box-shadow 200ms ease;
+  transition: box-shadow 280ms ease;
 
   &:hover {
-    transform: translateY(-3px);
     box-shadow: ${({ theme }) => theme.shadows.md};
   }
 `
@@ -26,9 +25,12 @@ export const ImageWrapper = styled.a`
     aspect-ratio: 2/3;
   }
 
+  img {
+    transition: transform 420ms ease;
+  }
+
   &:hover img {
     transform: scale(1.04);
-    transition: transform 420ms ease;
   }
 `
 

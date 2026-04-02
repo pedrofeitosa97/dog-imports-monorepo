@@ -9,12 +9,17 @@ import { GalleryWrapper, Thumbnails, Thumb } from './ImageGallery.styles'
 
 const MainImageWrapper = styled.div`
   width: 100%;
-  aspect-ratio: 1/1;
+  aspect-ratio: 4/5;
   border-radius: ${({ theme }) => theme.borderRadius.md};
   overflow: hidden;
   background: ${({ theme }) => theme.colors.surface};
   position: relative;
   cursor: zoom-in;
+
+  @media (min-width: 768px) {
+    flex: 1;
+    width: auto;
+  }
 
   &:hover > span {
     opacity: 1;

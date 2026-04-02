@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ShieldCheck, RefreshCw, Truck, CreditCard, ChevronRight } from 'lucide-react'
+import { ShieldCheck, RefreshCw, Truck, CreditCard, ChevronRight, User, Users, Sparkles, Tag } from 'lucide-react'
 import HeroBanner from '../../shared/HeroBanner/HeroBanner'
 import ProductGrid from '../../features/products/ProductGrid/ProductGrid'
 import { productService } from '../../services/productService'
@@ -12,7 +12,6 @@ import styled, { keyframes } from 'styled-components'
 const TrustStrip = styled.div`
   border-top: 1px solid ${({ theme }) => theme.colors.border};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  background: ${({ theme }) => theme.colors.surface};
 `
 
 const TrustInner = styled.div`
@@ -21,7 +20,6 @@ const TrustInner = styled.div`
   padding: 0 clamp(16px, 5vw, 64px);
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0;
 
   @media (min-width: 768px) {
     grid-template-columns: repeat(4, 1fr);
@@ -32,7 +30,7 @@ const TrustItem = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 0;
+  padding: 18px 0;
   border-right: 1px solid ${({ theme }) => theme.colors.border};
 
   &:nth-child(even) {
@@ -52,28 +50,25 @@ const TrustItem = styled.div`
 `
 
 const TrustIcon = styled.div`
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: ${({ theme }) => theme.colors.brandLight};
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.colors.brand};
+  color: ${({ theme }) => theme.colors.textSecondary};
   flex-shrink: 0;
 `
 
 const TrustText = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
 `
 
 const TrustTitle = styled.span`
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.textPrimary};
-  letter-spacing: 0.01em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 `
 
 const TrustSub = styled.span`
@@ -81,10 +76,70 @@ const TrustSub = styled.span`
   color: ${({ theme }) => theme.colors.textSecondary};
 `
 
+/* ── Categories Strip ────────────────────────────────────────────────────── */
+
+const CatsSection = styled.section`
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+`
+
+const CatsInner = styled.div`
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 5vw, 64px);
+  display: flex;
+  flex-wrap: wrap;
+`
+
+const CatCard = styled(Link)`
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 32px 22px 0;
+  margin-right: 40px;
+  text-decoration: none;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  border-bottom: 2px solid transparent;
+  transition: color ${({ theme }) => theme.transitions.fast}, border-color ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.textPrimary};
+    border-bottom-color: ${({ theme }) => theme.colors.brand};
+  }
+
+  @media (max-width: 640px) {
+    padding: 16px 20px 16px 0;
+    margin-right: 24px;
+  }
+`
+
+const CatLabel = styled.span`
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+`
+
+/* ── Editorial Band ──────────────────────────────────────────────────────── */
+
+const EditorialBand = styled.div`
+  background: ${({ theme }) => theme.colors.surface};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 20px 0;
+  text-align: center;
+`
+
+const EditorialText = styled.p`
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`
+
 /* ── Brands Strip ────────────────────────────────────────────────────────── */
 
 const BrandsSection = styled.section`
-  padding: 28px clamp(16px, 5vw, 64px);
+  padding: 32px clamp(16px, 5vw, 64px);
   max-width: 1440px;
   margin: 0 auto;
   overflow: hidden;
@@ -93,10 +148,10 @@ const BrandsSection = styled.section`
 const BrandsLabel = styled.p`
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 `
 
 const scroll = keyframes`
@@ -108,35 +163,35 @@ const BrandsTrack = styled.div`
   display: flex;
   gap: 0;
   width: max-content;
-  animation: ${scroll} 28s linear infinite;
+  animation: ${scroll} 30s linear infinite;
 
   &:hover { animation-play-state: paused; }
 `
 
 const BrandName = styled.span`
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: ${({ theme }) => theme.colors.textSecondary};
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0 32px;
+  padding: 0 40px;
   white-space: nowrap;
-  opacity: 0.45;
+  opacity: 0.35;
   transition: opacity 140ms ease;
   cursor: default;
 
   &:hover { opacity: 1; color: ${({ theme }) => theme.colors.brand}; }
 `
 
-/* ── Featured Section ────────────────────────────────────────────────────── */
+/* ── Section ─────────────────────────────────────────────────────────────── */
 
 const Section = styled.section`
-  padding: 32px 8px 48px;
+  padding: 40px 8px 56px;
   max-width: 1440px;
   margin: 0 auto;
 
   @media (min-width: 480px) {
-    padding: 40px clamp(16px, 5vw, 64px) 56px;
+    padding: 48px clamp(16px, 5vw, 64px) 64px;
   }
 `
 
@@ -144,78 +199,47 @@ const SectionHeader = styled.div`
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
   gap: 12px;
 `
 
+const SectionMeta = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`
+
+const SectionLabel = styled.span`
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`
+
 const SectionTitle = styled.h2`
-  font-size: ${({ theme }) => theme.typography.size.xl};
+  font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   color: ${({ theme }) => theme.colors.textPrimary};
+  line-height: 1.1;
 `
 
 const SeeAll = styled(Link)`
   display: flex;
   align-items: center;
   gap: 3px;
-  font-size: 12px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.brand};
-  text-decoration: none;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  transition: opacity 140ms ease;
-
-  &:hover { opacity: 0.75; }
-`
-
-/* ── Categories Row ──────────────────────────────────────────────────────── */
-
-const CatsSection = styled.section`
-  padding: 0 clamp(16px, 5vw, 64px) 40px;
-  max-width: 1440px;
-  margin: 0 auto;
-`
-
-const CatsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-
-  @media (min-width: 640px) { grid-template-columns: repeat(4, 1fr); }
-`
-
-const CatCard = styled(Link)`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 20px 12px;
-  background: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  text-decoration: none;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  transition: border-color 140ms ease, background 140ms ease;
-
-  &:hover {
-    border-color: ${({ theme }) => theme.colors.brand};
-    background: ${({ theme }) => theme.colors.brandLight};
-  }
-`
-
-const CatEmoji = styled.span`
-  font-size: 22px;
-  line-height: 1;
-`
-
-const CatLabel = styled.span`
   font-size: 11px;
   font-weight: 700;
+  color: ${({ theme }) => theme.colors.brand};
+  text-decoration: none;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  white-space: nowrap;
+  transition: opacity 140ms ease;
+  padding-bottom: 2px;
+
+  &:hover { opacity: 0.7; }
 `
 
 /* ── Mock data ───────────────────────────────────────────────────────────── */
@@ -267,28 +291,28 @@ export default function HomePage() {
       <TrustStrip>
         <TrustInner>
           <TrustItem>
-            <TrustIcon><ShieldCheck size={16} /></TrustIcon>
+            <TrustIcon><ShieldCheck size={18} /></TrustIcon>
             <TrustText>
               <TrustTitle>100% Autêntico</TrustTitle>
               <TrustSub>Garantia de originalidade</TrustSub>
             </TrustText>
           </TrustItem>
           <TrustItem>
-            <TrustIcon><Truck size={16} /></TrustIcon>
+            <TrustIcon><Truck size={18} /></TrustIcon>
             <TrustText>
               <TrustTitle>Frete grátis</TrustTitle>
               <TrustSub>Compras acima de R$ 500</TrustSub>
             </TrustText>
           </TrustItem>
           <TrustItem>
-            <TrustIcon><RefreshCw size={16} /></TrustIcon>
+            <TrustIcon><RefreshCw size={18} /></TrustIcon>
             <TrustText>
               <TrustTitle>Troca em 30 dias</TrustTitle>
               <TrustSub>Sem complicação</TrustSub>
             </TrustText>
           </TrustItem>
           <TrustItem>
-            <TrustIcon><CreditCard size={16} /></TrustIcon>
+            <TrustIcon><CreditCard size={18} /></TrustIcon>
             <TrustText>
               <TrustTitle>Pagamento seguro</TrustTitle>
               <TrustSub>Pix, cartão e boleto</TrustSub>
@@ -296,6 +320,33 @@ export default function HomePage() {
           </TrustItem>
         </TrustInner>
       </TrustStrip>
+
+      {/* Categories strip */}
+      <CatsSection>
+        <CatsInner>
+          <CatCard to="/produtos?gender=masculino">
+            <User size={16} />
+            <CatLabel>Masculino</CatLabel>
+          </CatCard>
+          <CatCard to="/produtos?gender=feminino">
+            <Users size={16} />
+            <CatLabel>Feminino</CatLabel>
+          </CatCard>
+          <CatCard to="/produtos?sortBy=newest">
+            <Sparkles size={16} />
+            <CatLabel>Novidades</CatLabel>
+          </CatCard>
+          <CatCard to="/produtos?discount=true">
+            <Tag size={16} />
+            <CatLabel>Promoções</CatLabel>
+          </CatCard>
+        </CatsInner>
+      </CatsSection>
+
+      {/* Editorial band */}
+      <EditorialBand>
+        <EditorialText>Produtos importados diretamente dos EUA — Autenticidade garantida</EditorialText>
+      </EditorialBand>
 
       {/* Brands marquee */}
       <BrandsSection>
@@ -307,32 +358,13 @@ export default function HomePage() {
         </BrandsTrack>
       </BrandsSection>
 
-      {/* Categories */}
-      <CatsSection>
-        <CatsGrid>
-          <CatCard to="/produtos?gender=masculino">
-            <CatEmoji>👔</CatEmoji>
-            <CatLabel>Masculino</CatLabel>
-          </CatCard>
-          <CatCard to="/produtos?gender=feminino">
-            <CatEmoji>👗</CatEmoji>
-            <CatLabel>Feminino</CatLabel>
-          </CatCard>
-          <CatCard to="/produtos?sortBy=newest">
-            <CatEmoji>✨</CatEmoji>
-            <CatLabel>Novidades</CatLabel>
-          </CatCard>
-          <CatCard to="/produtos">
-            <CatEmoji>🔥</CatEmoji>
-            <CatLabel>Promoções</CatLabel>
-          </CatCard>
-        </CatsGrid>
-      </CatsSection>
-
       {/* Featured products */}
       <Section>
         <SectionHeader>
-          <SectionTitle>Em destaque</SectionTitle>
+          <SectionMeta>
+            <SectionLabel>Seleção</SectionLabel>
+            <SectionTitle>Em Destaque</SectionTitle>
+          </SectionMeta>
           <SeeAll to="/produtos">
             Ver todos <ChevronRight size={14} />
           </SeeAll>

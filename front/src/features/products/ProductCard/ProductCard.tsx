@@ -59,8 +59,8 @@ export default function ProductCard({
       </ImageWrapper>
 
       <Info>
-        <Name as={Link} to={`/produtos/${slug}`}>{name}</Name>
         <Brand as={Link} to={`/marcas/${brand?.toLowerCase()}`}>{brand}</Brand>
+        <Name as={Link} to={`/produtos/${slug}`}>{name}</Name>
 
         <PriceRow>
           <CurrentPrice>{formatCurrency(price)}</CurrentPrice>
