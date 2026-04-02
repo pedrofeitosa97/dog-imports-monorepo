@@ -81,6 +81,33 @@ export interface PaginatedResponse<T> {
   totalPages: number
 }
 
+export type OrderStatus = 'pendente' | 'confirmado' | 'em_preparo' | 'enviado' | 'entregue' | 'cancelado'
+
+export interface OrderItem {
+  id: number
+  productId: number
+  productName: string
+  productBrand: string
+  productImage?: string
+  price: number
+  quantity: number
+  size?: string
+  color?: string
+}
+
+export interface Order {
+  id: number
+  customerName: string
+  customerEmail: string
+  address: string
+  paymentMethod: string
+  status: OrderStatus
+  totalPrice: number
+  items: OrderItem[]
+  createdAt: string
+  updatedAt: string
+}
+
 export interface ProductStats {
   totalProducts: number
   totalCategories: number

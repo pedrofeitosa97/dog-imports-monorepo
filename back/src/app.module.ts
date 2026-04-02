@@ -9,6 +9,9 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { BannersModule } from './modules/banners/banners.module';
 import { PopupsModule } from './modules/popups/popups.module';
 import { SettingsModule } from './modules/settings/settings.module';
+import { OrdersModule } from './modules/orders/orders.module';
+import { Order } from './modules/orders/entities/order.entity';
+import { OrderItem } from './modules/orders/entities/order-item.entity';
 import { S3Module } from './modules/s3/s3.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { User } from './modules/users/entities/user.entity';
@@ -35,7 +38,7 @@ import { SeedService } from './database/seed.service';
           return {
             type: 'postgres',
             url: databaseUrl,
-            entities: [User, Product, ProductSize, ProductColor, Category, Banner, Popup, Setting],
+            entities: [User, Product, ProductSize, ProductColor, Category, Banner, Popup, Setting, Order, OrderItem],
             synchronize: true,
             ssl: { rejectUnauthorized: false },
             extra: {
@@ -50,7 +53,7 @@ import { SeedService } from './database/seed.service';
         return {
           type: 'sqlite',
           database: 'dog_imports.db',
-          entities: [User, Product, ProductSize, ProductColor, Category, Banner, Popup, Setting],
+          entities: [User, Product, ProductSize, ProductColor, Category, Banner, Popup, Setting, Order, OrderItem],
           synchronize: true,
         };
       },
@@ -66,6 +69,7 @@ import { SeedService } from './database/seed.service';
     BannersModule,
     PopupsModule,
     SettingsModule,
+    OrdersModule,
   ],
   providers: [
     {

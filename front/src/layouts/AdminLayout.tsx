@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Package, Tag, Image, Settings, MessageSquare, LogOut, ExternalLink, Menu, X, ChevronLeft } from 'lucide-react'
+import { LayoutDashboard, Package, Tag, Image, Settings, MessageSquare, LogOut, ExternalLink, Menu, X, ChevronLeft, ShoppingCart } from 'lucide-react'
 import { useState, useEffect, type ReactNode } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useSiteSettings } from '../hooks/useSiteSettings'
@@ -285,6 +285,7 @@ interface NavItemConfig {
 
 const navItems: NavItemConfig[] = [
   { to: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={17} />, end: true },
+  { to: '/admin/pedidos', label: 'Pedidos', icon: <ShoppingCart size={17} /> },
   { to: '/admin/produtos', label: 'Produtos', icon: <Package size={17} /> },
   { to: '/admin/categorias', label: 'Categorias', icon: <Tag size={17} /> },
   { to: '/admin/banners', label: 'Banners', icon: <Image size={17} /> },
@@ -294,6 +295,7 @@ const navItems: NavItemConfig[] = [
 
 const pageTitles: Record<string, string> = {
   '/admin': 'Dashboard',
+  '/admin/pedidos': 'Pedidos',
   '/admin/produtos': 'Produtos',
   '/admin/produtos/novo': 'Novo produto',
   '/admin/categorias': 'Categorias',

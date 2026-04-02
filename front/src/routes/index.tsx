@@ -17,7 +17,10 @@ import SizeGuidePage from '../pages/SizeGuidePage/SizeGuidePage'
 import CustomerLoginPage from '../pages/LoginPage/LoginPage'
 import RegisterPage from '../pages/RegisterPage/RegisterPage'
 import AccountPage from '../pages/AccountPage/AccountPage'
+import CheckoutPage from '../pages/CheckoutPage/CheckoutPage'
+import OrderConfirmationPage from '../pages/OrderConfirmationPage/OrderConfirmationPage'
 
+import OrdersPage from '../pages/admin/OrdersPage/OrdersPage'
 import LoginPage from '../pages/admin/LoginPage/LoginPage'
 import DashboardPage from '../pages/admin/DashboardPage/DashboardPage'
 import ProductsListPage from '../pages/admin/ProductsListPage/ProductsListPage'
@@ -47,6 +50,8 @@ export default function AppRoutes() {
           <Route path="/login" element={<CustomerLoginPage />} />
           <Route path="/cadastro" element={<RegisterPage />} />
           <Route path="/minha-conta" element={<AccountPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/pedido-confirmado/:id" element={<OrderConfirmationPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
 
@@ -57,6 +62,7 @@ export default function AppRoutes() {
         <Route element={<AdminRoutes />}>
           <Route element={<AdminLayout />}>
             <Route path="/admin" element={<DashboardPage />} />
+            <Route path="/admin/pedidos" element={<OrdersPage />} />
             <Route path="/admin/produtos" element={<ProductsListPage />} />
             <Route path="/admin/produtos/novo" element={<ProductCreatePage />} />
             <Route path="/admin/produtos/:id/editar" element={<ProductEditPage />} />

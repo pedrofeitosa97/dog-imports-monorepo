@@ -219,7 +219,7 @@ export default function CartPage() {
             <span>Total</span>
             <span>{formatCurrency(totalPrice)}</span>
           </SummaryRow>
-          <Button variant="primary" size="lg" fullWidth>Finalizar pedido</Button>
+          <Button as={Link} to="/checkout" variant="primary" size="lg" fullWidth>Finalizar pedido</Button>
           <Button as={Link} to="/produtos" variant="ghost" size="md" fullWidth>Continuar comprando</Button>
         </Summary>
       </Layout>
