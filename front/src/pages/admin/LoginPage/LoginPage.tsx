@@ -215,7 +215,11 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
     try {
-      await login(email, password)
+      const user = await login(email, password)
+      if (!user.isAdmin) {
+        setError('Acesso negado. Esta área é exclusiva para administradores.')
+        return
+      }
       navigate(from, { replace: true })
     } catch {
       setError('Email ou senha inválidos. Tente novamente.')

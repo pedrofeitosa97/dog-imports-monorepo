@@ -33,11 +33,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     checkSession()
   }, [checkSession])
 
-  const login = async (email: string, password: string): Promise<void> => {
+  const login = async (email: string, password: string) => {
     setError(null)
     const data = await authService.login(email, password)
     localStorage.setItem(STORAGE_KEYS.token, data.token)
     setUser(data.user)
+    return data.user
   }
 
   const logout = async (): Promise<void> => {

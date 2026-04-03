@@ -48,6 +48,7 @@ export interface User {
   email: string
   name?: string
   isAdmin?: boolean
+  createdAt?: string
 }
 
 export interface AuthResponse {

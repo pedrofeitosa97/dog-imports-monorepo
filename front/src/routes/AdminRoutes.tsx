@@ -26,5 +26,9 @@ export default function AdminRoutes() {
     return <Navigate to="/admin/login" state={{ from: location }} replace />
   }
 
+  if (!user.isAdmin) {
+    return <Navigate to="/" replace />
+  }
+
   return <Outlet />
 }

@@ -10,6 +10,10 @@ export class UsersService {
     @InjectRepository(User) private userRepo: Repository<User>,
   ) {}
 
+  findAll(): Promise<Omit<User, 'password'>[]> {
+    return this.userRepo.find({ order: { createdAt: 'DESC' }, select: ['id', 'name', 'email', 'isAdmin', 'createdAt'] });
+  }
+
   findByEmail(email: string): Promise<User | null> {
     return this.userRepo.findOne({ where: { email } });
   }
@@ -22,5 +26,15 @@ export class UsersService {
     const hashed = await bcrypt.hash(data.password, 10);
     const user = this.userRepo.create({ ...data, password: hashed });
     return this.userRepo.save(user);
+  }
+
+  async setAdmin(id: number, isAdmin: boolean): Promise<Omit<User, 'password'>> {
+    await this.userRepo.update(id, { isAdmin });
+    const { password: _pw, ...user } = await this.userRepo.findOne({ where: { id } });
+    return user;
+  }
+
+  async remove(id: number): Promise<void> {
+    await this.userRepo.delete(id);
   }
 }
