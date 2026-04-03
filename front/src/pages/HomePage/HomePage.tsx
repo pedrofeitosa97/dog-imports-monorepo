@@ -5,7 +5,7 @@ import HeroBanner from '../../shared/HeroBanner/HeroBanner'
 import ProductGrid from '../../features/products/ProductGrid/ProductGrid'
 import { productService } from '../../services/productService'
 import type { Product } from '../../types/api'
-import styled, { keyframes } from 'styled-components'
+import styled from 'styled-components'
 
 /* ── Trust Strip ─────────────────────────────────────────────────────────── */
 
@@ -134,51 +134,6 @@ const CatLabel = styled.span`
 
 /* ── Brands Strip ────────────────────────────────────────────────────────── */
 
-const BrandsSection = styled.section`
-  padding: 32px clamp(16px, 5vw, 64px);
-  max-width: 1440px;
-  margin: 0 auto;
-  overflow: hidden;
-`
-
-const BrandsLabel = styled.p`
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-bottom: 18px;
-`
-
-const scroll = keyframes`
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-`
-
-const BrandsTrack = styled.div`
-  display: flex;
-  gap: 0;
-  width: max-content;
-  animation: ${scroll} 30s linear infinite;
-
-  &:hover { animation-play-state: paused; }
-`
-
-const BrandName = styled.span`
-  font-size: 12px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0 40px;
-  white-space: nowrap;
-  opacity: 0.35;
-  transition: opacity 140ms ease;
-  cursor: default;
-
-  &:hover { opacity: 1; color: ${({ theme }) => theme.colors.brand}; }
-`
-
 /* ── Section ─────────────────────────────────────────────────────────────── */
 
 const Section = styled.section`
@@ -239,11 +194,6 @@ const SeeAll = styled(Link)`
 `
 
 /* ── Mock data ───────────────────────────────────────────────────────────── */
-
-const BRANDS = [
-  'Tommy Hilfiger', 'Ralph Lauren', 'Calvin Klein', 'Gucci',
-  'Versace', 'Armani', 'Burberry', 'Michael Kors', 'Ray-Ban', 'Lacoste',
-]
 
 const mockProducts: Product[] = Array.from({ length: 8 }, (_, i) => ({
   id: i + 1,
@@ -338,16 +288,6 @@ export default function HomePage() {
           </CatCard>
         </CatsInner>
       </CatsSection>
-
-      {/* Brands marquee */}
-      <BrandsSection>
-        <BrandsLabel>Marcas disponíveis</BrandsLabel>
-        <BrandsTrack>
-          {[...BRANDS, ...BRANDS].map((b, i) => (
-            <BrandName key={i}>{b}</BrandName>
-          ))}
-        </BrandsTrack>
-      </BrandsSection>
 
       {/* Featured products */}
       <Section>
