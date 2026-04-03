@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
@@ -27,7 +28,19 @@ import { SeedService } from './database/seed.service';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: Joi.object({
+        JWT_SECRET: Joi.string().min(16).required(),
+        DATABASE_URL: Joi.string().optional(),
+        RESEND_API_KEY: Joi.string().optional(),
+        AWS_ACCESS_KEY_ID: Joi.string().optional(),
+        AWS_SECRET_ACCESS_KEY: Joi.string().optional(),
+        AWS_REGION: Joi.string().optional(),
+        AWS_S3_BUCKET: Joi.string().optional(),
+      }),
+      validationOptions: { abortEarly: false },
+    }),
 
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -40,7 +53,7 @@ import { SeedService } from './database/seed.service';
             type: 'postgres',
             url: databaseUrl,
             entities: [User, Product, ProductSize, ProductColor, Category, Banner, Popup, Setting, Order, OrderItem],
-            synchronize: true,
+            synchronize: config.get('NODE_ENV') !== 'production',
             ssl: { rejectUnauthorized: false },
             extra: {
               max: 10,

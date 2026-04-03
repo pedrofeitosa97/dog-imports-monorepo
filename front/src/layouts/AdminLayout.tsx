@@ -13,7 +13,8 @@ const MUTED   = 'rgba(255,255,255,0.45)'
 
 const Shell = styled.div`
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background: ${BG};
   font-family: 'Manrope', sans-serif;
 `
@@ -32,6 +33,7 @@ const Overlay = styled.div<{ $open?: boolean }>`
 
 const Sidebar = styled.aside<{ $collapsed?: boolean; $mobileOpen?: boolean }>`
   width: ${({ $collapsed }) => $collapsed ? '68px' : '220px'};
+  height: 100vh;
   background: ${SURFACE};
   border-right: 1px solid ${BORDER};
   display: flex;
@@ -208,6 +210,7 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 0;
+  height: 100vh;
   overflow: hidden;
 `
 
@@ -265,6 +268,7 @@ const Main = styled.main`
   flex: 1;
   padding: 32px 40px 48px;
   overflow-y: auto;
+  overflow-x: hidden;
   color: ${TEXT};
 
   @media (max-width: 1280px) {
