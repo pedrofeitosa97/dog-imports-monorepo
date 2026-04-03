@@ -19,6 +19,7 @@ import RegisterPage from '../pages/RegisterPage/RegisterPage'
 import AccountPage from '../pages/AccountPage/AccountPage'
 import CheckoutPage from '../pages/CheckoutPage/CheckoutPage'
 import OrderConfirmationPage from '../pages/OrderConfirmationPage/OrderConfirmationPage'
+import OrderDetailPage from '../pages/OrderDetailPage/OrderDetailPage'
 
 import OrdersPage from '../pages/admin/OrdersPage/OrdersPage'
 import LoginPage from '../pages/admin/LoginPage/LoginPage'
@@ -53,6 +54,7 @@ export default function AppRoutes() {
           <Route path="/minha-conta" element={<AccountPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/pedido-confirmado/:id" element={<OrderConfirmationPage />} />
+          <Route path="/meu-pedido/:id" element={<OrderDetailPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
 

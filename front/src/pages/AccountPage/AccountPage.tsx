@@ -305,7 +305,7 @@ export default function AccountPage() {
       ) : (
         <OrdersList>
           {orders.map((order) => (
-            <OrderCard key={order.id} to={`/pedido-confirmado/${order.id}`}>
+            <OrderCard key={order.id} to={`/meu-pedido/${order.id}`}>
               <OrderIcon><Package size={18} /></OrderIcon>
               <OrderInfo>
                 <OrderId>Pedido #{order.id.toString().padStart(5, '0')}</OrderId>
