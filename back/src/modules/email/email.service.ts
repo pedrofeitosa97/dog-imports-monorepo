@@ -141,12 +141,9 @@ export class EmailService {
   async sendTestEmail(to: string): Promise<void> {
     if (!this.resend) throw new Error('RESEND_API_KEY não configurada');
 
-    const s = await this.settings.getAll();
-    const fromName = s['email_from_name'] || 'Dog Imports';
-    const fromAddress = s['email_from_address'] || 'noreply@dogimports.com.br';
-
+    // onboarding@resend.dev funciona sem domínio verificado
     await this.resend.emails.send({
-      from: `${fromName} <${fromAddress}>`,
+      from: 'Dog Imports <onboarding@resend.dev>',
       to,
       subject: 'Teste de e-mail — Dog Imports',
       html: '<p>Seu e-mail está funcionando corretamente! 🐾</p>',
