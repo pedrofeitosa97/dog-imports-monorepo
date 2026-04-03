@@ -35,6 +35,8 @@ export class EmailController {
       email_from_address: all['email_from_address'] ?? '',
       email_order_subject: all['email_order_subject'] ?? '',
       email_order_template: all['email_order_template'] ?? '',
+      email_status_subject: all['email_status_subject'] ?? '',
+      email_status_template: all['email_status_template'] ?? '',
     };
   }
 
@@ -46,6 +48,8 @@ export class EmailController {
       email_from_address?: string;
       email_order_subject?: string;
       email_order_template?: string;
+      email_status_subject?: string;
+      email_status_template?: string;
     },
     @CurrentUser() user: any,
   ) {

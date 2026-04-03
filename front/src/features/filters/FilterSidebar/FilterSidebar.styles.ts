@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const SidebarWrapper = styled.aside`
-  width: 280px;
+  width: 100%;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;

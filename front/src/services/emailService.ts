@@ -5,6 +5,8 @@ export interface EmailSettings {
   email_from_address: string
   email_order_subject: string
   email_order_template: string
+  email_status_subject: string
+  email_status_template: string
 }
 
 export const emailService = {

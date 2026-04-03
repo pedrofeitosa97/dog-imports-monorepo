@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Send, TestTube, Settings2, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react'
+import { Send, TestTube, Settings2, CheckCircle2, AlertCircle, RefreshCw, Eye, EyeOff } from 'lucide-react'
 import styled from 'styled-components'
 import Button from '../../../ui/Button/Button'
 import { emailService, type EmailSettings } from '../../../services/emailService'
@@ -11,7 +11,7 @@ const Page = styled.div`
   display: flex;
   flex-direction: column;
   gap: 28px;
-  max-width: 800px;
+  max-width: 900px;
 `
 
 const SectionTitle = styled.h3`
@@ -86,7 +86,7 @@ const Textarea = styled.textarea`
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   outline: none;
   resize: vertical;
-  min-height: 260px;
+  min-height: 280px;
   line-height: 1.6;
   transition: border-color 150ms;
   &:focus { border-color: rgba(249,115,22,0.5); }
@@ -119,7 +119,10 @@ const VarChip = styled.code`
 
 const SaveRow = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 `
 
 const Divider = styled.hr`
@@ -128,9 +131,84 @@ const Divider = styled.hr`
   margin: 4px 0;
 `
 
-/* ── Component ────────────────────────────────────────────────────────────── */
+const Tabs = styled.div`
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 4px;
+`
 
-const DEFAULT_SUBJECT = 'Pedido #{{orderId}} confirmado — Dog Imports'
+const Tab = styled.button<{ $active: boolean }>`
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 150ms;
+  background: ${({ $active }) => $active ? 'rgba(249,115,22,0.18)' : 'transparent'};
+  color: ${({ $active }) => $active ? '#f97316' : 'rgba(235,235,245,0.4)'};
+  border: 1px solid ${({ $active }) => $active ? 'rgba(249,115,22,0.35)' : 'transparent'};
+
+  &:hover {
+    color: ${({ $active }) => $active ? '#f97316' : 'rgba(235,235,245,0.7)'};
+  }
+`
+
+const PreviewFrame = styled.iframe`
+  width: 100%;
+  height: 600px;
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 10px;
+  background: #ffffff;
+`
+
+const EditorActions = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: center;
+`
+
+/* ── Default templates ────────────────────────────────────────────────────── */
+
+const DEFAULT_ORDER_SUBJECT = 'Pedido #{{orderId}} confirmado — Dog Imports'
+const DEFAULT_STATUS_SUBJECT = 'Pedido #{{orderId}} — {{statusLabel}}'
+
+const SAMPLE_ITEMS_HTML = `
+  <tr>
+    <td style="padding:8px 0;border-bottom:1px solid #e5e7eb;">Camiseta Tommy Hilfiger — M / Branco</td>
+    <td style="padding:8px 0;border-bottom:1px solid #e5e7eb;text-align:center;">1x</td>
+    <td style="padding:8px 0;border-bottom:1px solid #e5e7eb;text-align:right;">R$ 599,00</td>
+  </tr>
+  <tr>
+    <td style="padding:8px 0;border-bottom:1px solid #e5e7eb;">Calça Ralph Lauren — 38 / Azul</td>
+    <td style="padding:8px 0;border-bottom:1px solid #e5e7eb;text-align:center;">1x</td>
+    <td style="padding:8px 0;border-bottom:1px solid #e5e7eb;text-align:right;">R$ 849,00</td>
+  </tr>`
+
+const SAMPLE_VARS_ORDER: Record<string, string> = {
+  customerName: 'Maria Silva',
+  orderId: '00042',
+  totalPrice: '1.448,00',
+  paymentMethod: 'Cartão de crédito',
+  address: 'Rua das Flores, 123, Apto 4 — Centro, São Paulo/SP, CEP 01310-100',
+  itemsHtml: SAMPLE_ITEMS_HTML,
+}
+
+const SAMPLE_VARS_STATUS: Record<string, string> = {
+  customerName: 'Maria Silva',
+  orderId: '00042',
+  statusLabel: 'Enviado',
+  statusMessage: 'Seu pedido foi despachado e está a caminho!',
+}
+
+function renderPreview(template: string, vars: Record<string, string>): string {
+  return template.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] ?? `{{${key}}}`)
+}
+
+/* ── Component ────────────────────────────────────────────────────────────── */
 
 export default function EmailPage() {
   const { toast } = useToast()
@@ -138,10 +216,14 @@ export default function EmailPage() {
   const [settings, setSettings] = useState<EmailSettings>({
     email_from_name: '',
     email_from_address: '',
-    email_order_subject: DEFAULT_SUBJECT,
+    email_order_subject: DEFAULT_ORDER_SUBJECT,
     email_order_template: '',
+    email_status_subject: DEFAULT_STATUS_SUBJECT,
+    email_status_template: '',
   })
   const [savingSettings, setSavingSettings] = useState(false)
+  const [activeTab, setActiveTab] = useState<'confirmacao' | 'status'>('confirmacao')
+  const [showPreview, setShowPreview] = useState(false)
 
   // Manual send
   const [orderId, setOrderId] = useState('')
@@ -166,7 +248,8 @@ export default function EmailPage() {
       setSettings((prev) => ({
         ...prev,
         ...s,
-        email_order_subject: s.email_order_subject || DEFAULT_SUBJECT,
+        email_order_subject: s.email_order_subject || DEFAULT_ORDER_SUBJECT,
+        email_status_subject: s.email_status_subject || DEFAULT_STATUS_SUBJECT,
       }))
     } catch {
       // silently ignore
@@ -220,6 +303,13 @@ export default function EmailPage() {
     }
   }
 
+  const previewHtml = (() => {
+    if (activeTab === 'confirmacao') {
+      return renderPreview(settings.email_order_template || DEFAULT_ORDER_TEMPLATE, SAMPLE_VARS_ORDER)
+    }
+    return renderPreview(settings.email_status_template || DEFAULT_STATUS_TEMPLATE, SAMPLE_VARS_STATUS)
+  })()
+
   return (
     <Page>
       {/* Status */}
@@ -269,41 +359,106 @@ export default function EmailPage() {
         </HintText>
       </Card>
 
-      {/* Order confirmation template */}
+      {/* Templates */}
       <Card>
-        <SectionTitle>Template — Confirmação de Pedido</SectionTitle>
+        <SectionTitle>Templates de E-mail</SectionTitle>
 
-        <Field>
-          Assunto do e-mail
-          <Input
-            placeholder={DEFAULT_SUBJECT}
-            value={settings.email_order_subject}
-            onChange={(e) => setSettings((p) => ({ ...p, email_order_subject: e.target.value }))}
-          />
-        </Field>
+        <Tabs>
+          <Tab $active={activeTab === 'confirmacao'} onClick={() => { setActiveTab('confirmacao'); setShowPreview(false) }}>
+            Confirmação de Pedido
+          </Tab>
+          <Tab $active={activeTab === 'status'} onClick={() => { setActiveTab('status'); setShowPreview(false) }}>
+            Atualização de Status
+          </Tab>
+        </Tabs>
 
-        <Field>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            Corpo do e-mail (HTML)
-            <span style={{ fontWeight: 400, color: 'rgba(235,235,245,0.35)', fontSize: 12 }}>
-              — deixe em branco para usar o template padrão
-            </span>
-          </span>
-          <Textarea
-            placeholder="<!DOCTYPE html>..."
-            value={settings.email_order_template}
-            onChange={(e) => setSettings((p) => ({ ...p, email_order_template: e.target.value }))}
-          />
-        </Field>
+        {activeTab === 'confirmacao' && (
+          <>
+            <Field>
+              Assunto do e-mail
+              <Input
+                placeholder={DEFAULT_ORDER_SUBJECT}
+                value={settings.email_order_subject}
+                onChange={(e) => setSettings((p) => ({ ...p, email_order_subject: e.target.value }))}
+              />
+            </Field>
+            <Field>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                Corpo do e-mail (HTML)
+                <span style={{ fontWeight: 400, color: 'rgba(235,235,245,0.35)', fontSize: 12 }}>
+                  — deixe em branco para usar o template padrão
+                </span>
+              </span>
+              <Textarea
+                placeholder="<!DOCTYPE html>..."
+                value={settings.email_order_template}
+                onChange={(e) => setSettings((p) => ({ ...p, email_order_template: e.target.value }))}
+              />
+            </Field>
+            <HintText>
+              Variáveis: <VarChip>{'{{customerName}}'}</VarChip>
+              <VarChip>{'{{orderId}}'}</VarChip> <VarChip>{'{{totalPrice}}'}</VarChip>
+              <VarChip>{'{{paymentMethod}}'}</VarChip> <VarChip>{'{{address}}'}</VarChip>
+              <VarChip>{'{{itemsHtml}}'}</VarChip>
+            </HintText>
+          </>
+        )}
 
-        <HintText>
-          Variáveis disponíveis: <VarChip>{'{{customerName}}'}</VarChip>
-          <VarChip>{'{{orderId}}'}</VarChip> <VarChip>{'{{totalPrice}}'}</VarChip>
-          <VarChip>{'{{paymentMethod}}'}</VarChip> <VarChip>{'{{address}}'}</VarChip>
-          <VarChip>{'{{itemsHtml}}'}</VarChip>
-        </HintText>
+        {activeTab === 'status' && (
+          <>
+            <Field>
+              Assunto do e-mail
+              <Input
+                placeholder={DEFAULT_STATUS_SUBJECT}
+                value={settings.email_status_subject}
+                onChange={(e) => setSettings((p) => ({ ...p, email_status_subject: e.target.value }))}
+              />
+            </Field>
+            <Field>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                Corpo do e-mail (HTML)
+                <span style={{ fontWeight: 400, color: 'rgba(235,235,245,0.35)', fontSize: 12 }}>
+                  — deixe em branco para usar o template padrão
+                </span>
+              </span>
+              <Textarea
+                placeholder="<!DOCTYPE html>..."
+                value={settings.email_status_template}
+                onChange={(e) => setSettings((p) => ({ ...p, email_status_template: e.target.value }))}
+              />
+            </Field>
+            <HintText>
+              Variáveis: <VarChip>{'{{customerName}}'}</VarChip>
+              <VarChip>{'{{orderId}}'}</VarChip> <VarChip>{'{{statusLabel}}'}</VarChip>
+              <VarChip>{'{{statusMessage}}'}</VarChip>
+            </HintText>
+          </>
+        )}
+
+        {showPreview && (
+          <div>
+            <HintText style={{ marginBottom: 8 }}>
+              Prévia com dados de exemplo — campos em branco usam o template padrão
+            </HintText>
+            <PreviewFrame
+              srcDoc={previewHtml}
+              title="Prévia do e-mail"
+              sandbox="allow-same-origin"
+            />
+          </div>
+        )}
 
         <SaveRow>
+          <EditorActions>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setShowPreview((v) => !v)}
+            >
+              {showPreview ? <EyeOff size={14} /> : <Eye size={14} />}
+              {showPreview ? 'Fechar prévia' : 'Ver prévia'}
+            </Button>
+          </EditorActions>
           <Button variant="primary" size="sm" onClick={handleSaveSettings} loading={savingSettings}>
             <Settings2 size={14} /> Salvar configurações
           </Button>
@@ -369,3 +524,72 @@ export default function EmailPage() {
     </Page>
   )
 }
+
+/* ── Default templates (inline, used for preview when field is empty) ─────── */
+
+const DEFAULT_ORDER_TEMPLATE = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;padding:32px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <tr><td style="background:#111827;padding:24px 32px;text-align:center;">
+          <h1 style="color:#ffffff;margin:0;font-size:20px;font-weight:700;">Dog Imports</h1>
+        </td></tr>
+        <tr><td style="padding:32px;">
+          <h2 style="margin:0 0 8px;font-size:22px;color:#111827;">Pedido Confirmado!</h2>
+          <p style="margin:0 0 24px;color:#6b7280;font-size:15px;">Olá, {{customerName}}! Recebemos seu pedido e estamos preparando tudo com carinho.</p>
+          <div style="background:#f3f4f6;border-radius:8px;padding:16px 20px;margin-bottom:24px;">
+            <p style="margin:0;font-size:13px;color:#6b7280;">Número do pedido</p>
+            <p style="margin:4px 0 0;font-size:20px;font-weight:700;color:#111827;">#{{orderId}}</p>
+          </div>
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+            <tr>
+              <th style="text-align:left;font-size:13px;color:#6b7280;padding-bottom:8px;font-weight:600;">Produto</th>
+              <th style="text-align:center;font-size:13px;color:#6b7280;padding-bottom:8px;font-weight:600;">Qtd</th>
+              <th style="text-align:right;font-size:13px;color:#6b7280;padding-bottom:8px;font-weight:600;">Valor</th>
+            </tr>
+            {{itemsHtml}}
+          </table>
+          <div style="text-align:right;margin-bottom:24px;">
+            <span style="font-size:16px;font-weight:700;color:#111827;">Total: R$ {{totalPrice}}</span>
+          </div>
+          <p style="margin:0;color:#6b7280;font-size:14px;">Em caso de dúvidas, entre em contato conosco.</p>
+        </td></tr>
+        <tr><td style="background:#f9fafb;padding:16px 32px;text-align:center;border-top:1px solid #e5e7eb;">
+          <p style="margin:0;font-size:12px;color:#9ca3af;">© Dog Imports — Todos os direitos reservados</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+
+const DEFAULT_STATUS_TEMPLATE = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;padding:32px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.1);">
+        <tr><td style="background:#111827;padding:24px 32px;text-align:center;">
+          <h1 style="color:#ffffff;margin:0;font-size:20px;font-weight:700;">Dog Imports</h1>
+        </td></tr>
+        <tr><td style="padding:32px;">
+          <h2 style="margin:0 0 8px;font-size:22px;color:#111827;">Atualização do pedido #{{orderId}}</h2>
+          <p style="margin:0 0 24px;color:#6b7280;font-size:15px;">Olá, {{customerName}}! {{statusMessage}}</p>
+          <div style="background:#f3f4f6;border-radius:8px;padding:16px 20px;margin-bottom:24px;display:inline-block;">
+            <p style="margin:0;font-size:13px;color:#6b7280;">Status atual</p>
+            <p style="margin:4px 0 0;font-size:20px;font-weight:700;color:#111827;">{{statusLabel}}</p>
+          </div>
+          <p style="margin:0;color:#6b7280;font-size:14px;">Em caso de dúvidas, entre em contato conosco.</p>
+        </td></tr>
+        <tr><td style="background:#f9fafb;padding:16px 32px;text-align:center;border-top:1px solid #e5e7eb;">
+          <p style="margin:0;font-size:12px;color:#9ca3af;">© Dog Imports — Todos os direitos reservados</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`

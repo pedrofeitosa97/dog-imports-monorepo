@@ -138,25 +138,8 @@ export class EmailService {
     }
   }
 
-  async sendStatusUpdate(order: Order, status: string): Promise<void> {
-    if (!this.resend) return;
-
-    const statusLabels: Record<string, { label: string; message: string }> = {
-      confirmado:  { label: 'Confirmado',     message: 'Seu pedido foi confirmado e em breve entrará em preparo.' },
-      em_preparo:  { label: 'Em Preparação',  message: 'Estamos preparando seu pedido com cuidado.' },
-      enviado:     { label: 'Enviado',         message: 'Seu pedido foi despachado e está a caminho!' },
-      entregue:    { label: 'Entregue',        message: 'Seu pedido foi entregue. Aproveite!' },
-      cancelado:   { label: 'Cancelado',       message: 'Seu pedido foi cancelado. Entre em contato se tiver dúvidas.' },
-    };
-
-    const info = statusLabels[status];
-    if (!info) return; // não envia para status sem template (ex: 'pendente')
-
-    const s = await this.settings.getAll();
-    const fromName = s['email_from_name'] || 'Dog Imports';
-    const fromAddress = s['email_from_address'] || 'noreply@dogimports.com.br';
-
-    const html = `<!DOCTYPE html>
+  private getDefaultStatusTemplate(): string {
+    return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:sans-serif;">
@@ -167,12 +150,12 @@ export class EmailService {
           <h1 style="color:#ffffff;margin:0;font-size:20px;font-weight:700;">Dog Imports</h1>
         </td></tr>
         <tr><td style="padding:32px;">
-          <h2 style="margin:0 0 8px;font-size:22px;color:#111827;">Atualização do pedido #${order.id}</h2>
-          <p style="margin:0 0 24px;color:#6b7280;font-size:15px;">Olá, ${order.customerName}! ${info.message}</p>
+          <h2 style="margin:0 0 8px;font-size:22px;color:#111827;">Atualização do pedido #{{orderId}}</h2>
+          <p style="margin:0 0 24px;color:#6b7280;font-size:15px;">Olá, {{customerName}}! {{statusMessage}}</p>
 
           <div style="background:#f3f4f6;border-radius:8px;padding:16px 20px;margin-bottom:24px;display:inline-block;">
             <p style="margin:0;font-size:13px;color:#6b7280;">Status atual</p>
-            <p style="margin:4px 0 0;font-size:20px;font-weight:700;color:#111827;">${info.label}</p>
+            <p style="margin:4px 0 0;font-size:20px;font-weight:700;color:#111827;">{{statusLabel}}</p>
           </div>
 
           <p style="margin:0;color:#6b7280;font-size:14px;">Em caso de dúvidas, entre em contato conosco.</p>
@@ -185,12 +168,43 @@ export class EmailService {
   </table>
 </body>
 </html>`;
+  }
+
+  async sendStatusUpdate(order: Order, status: string): Promise<void> {
+    if (!this.resend) return;
+
+    const statusLabels: Record<string, { label: string; message: string }> = {
+      confirmado:  { label: 'Confirmado',     message: 'Seu pedido foi confirmado e em breve entrará em preparo.' },
+      em_preparo:  { label: 'Em Preparação',  message: 'Estamos preparando seu pedido com cuidado.' },
+      enviado:     { label: 'Enviado',         message: 'Seu pedido foi despachado e está a caminho!' },
+      entregue:    { label: 'Entregue',        message: 'Seu pedido foi entregue. Aproveite!' },
+      cancelado:   { label: 'Cancelado',       message: 'Seu pedido foi cancelado. Entre em contato se tiver dúvidas.' },
+    };
+
+    const info = statusLabels[status];
+    if (!info) return;
+
+    const s = await this.settings.getAll();
+    const fromName = s['email_from_name'] || 'Dog Imports';
+    const fromAddress = s['email_from_address'] || 'noreply@dogimports.com.br';
+    const customSubject = s['email_status_subject'] || 'Pedido #{{orderId}} — {{statusLabel}}';
+    const template = s['email_status_template'] || this.getDefaultStatusTemplate();
+
+    const vars: Record<string, string> = {
+      customerName: order.customerName,
+      orderId: String(order.id),
+      statusLabel: info.label,
+      statusMessage: info.message,
+    };
+
+    const html = this.renderTemplate(template, vars);
+    const subject = this.renderTemplate(customSubject, vars);
 
     try {
       await this.resend.emails.send({
         from: `${fromName} <${fromAddress}>`,
         to: order.customerEmail,
-        subject: `Pedido #${order.id} — ${info.label}`,
+        subject,
         html,
       });
       this.logger.log(`Email de status "${status}" enviado para ${order.customerEmail} (pedido #${order.id})`);

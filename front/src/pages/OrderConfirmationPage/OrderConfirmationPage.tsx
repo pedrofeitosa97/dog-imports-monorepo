@@ -269,7 +269,12 @@ const InfoText = styled.p`
 const Actions = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing[3]};
-  flex-wrap: wrap;
+  justify-content: space-between;
+
+  @media (max-width: 479px) {
+    flex-direction: column;
+    & > * { width: 100%; }
+  }
 `
 
 const Center = styled.div`
