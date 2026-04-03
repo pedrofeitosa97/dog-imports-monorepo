@@ -85,11 +85,16 @@ export class OrdersService {
   }
 
   async updateStatus(orderId: number, status: OrderStatus): Promise<Order> {
-    const order = await this.orderRepo.findOne({ where: { id: orderId } });
+    const order = await this.orderRepo.findOne({ where: { id: orderId }, relations: ['items'] });
     if (!order) throw new NotFoundException('Pedido não encontrado');
 
     order.status = status;
-    return this.orderRepo.save(order);
+    const saved = await this.orderRepo.save(order);
+
+    // Notificar cliente por e-mail (fire-and-forget)
+    this.emailService.sendStatusUpdate(saved, status).catch(() => null);
+
+    return saved;
   }
 
   async updatePaymentStatus(paymentIntentId: string, paymentStatus: 'paid' | 'failed'): Promise<void> {

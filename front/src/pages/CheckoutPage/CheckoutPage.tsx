@@ -302,6 +302,33 @@ const StripeNote = styled.p`
   margin-top: 4px;
 `
 
+const CepWrapper = styled.div`
+  position: relative;
+  max-width: 200px;
+`
+
+const CepSpinner = styled.div`
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  border: 2px solid ${({ theme }) => theme.colors.border};
+  border-top-color: ${({ theme }) => theme.colors.brand};
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  pointer-events: none;
+
+  @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+`
+
+const CepError = styled.p`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.accentRed};
+  margin-top: 2px;
+`
+
 const PAYMENT_METHODS = [
   { value: 'pix',    label: 'PIX',                desc: '5% de desconto',        icon: <QrCode size={20} /> },
   { value: 'cartao', label: 'Cartão de crédito',  desc: 'Em até 12x sem juros',  icon: <CreditCard size={20} /> },
@@ -344,6 +371,35 @@ function CheckoutForm(props: FormProps) {
   const [error, setError] = useState('')
   const [focusedField, setFocusedField] = useState<string | null>(null)
   const [cardName, setCardName] = useState('')
+  const [cepLoading, setCepLoading] = useState(false)
+  const [cepError, setCepError] = useState('')
+
+  const handleCepChange = async (raw: string) => {
+    const digits = raw.replace(/\D/g, '')
+    const formatted = digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5, 8)}` : digits
+    setCep(formatted)
+    setCepError('')
+
+    if (digits.length === 8) {
+      setCepLoading(true)
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${digits}/json/`)
+        const data = await res.json() as { erro?: boolean; logradouro?: string; bairro?: string; localidade?: string; uf?: string }
+        if (data.erro) {
+          setCepError('CEP não encontrado')
+        } else {
+          setStreet(data.logradouro ?? '')
+          setNeighborhood(data.bairro ?? '')
+          setCity(data.localidade ?? '')
+          setState(data.uf ?? '')
+        }
+      } catch {
+        setCepError('Erro ao buscar CEP')
+      } finally {
+        setCepLoading(false)
+      }
+    }
+  }
 
   const address = `${street}, ${number}${complement ? `, ${complement}` : ''} — ${neighborhood}, ${city}/${state}, CEP ${cep}`
 
@@ -463,6 +519,25 @@ function CheckoutForm(props: FormProps) {
       {/* Endereço */}
       <Section>
         <SectionTitle>Endereço de entrega</SectionTitle>
+
+        <Field>
+          <FieldLabel htmlFor="cep">CEP</FieldLabel>
+          <CepWrapper>
+            <Input
+              id="cep"
+              type="text"
+              value={cep}
+              onChange={(e) => { void handleCepChange(e.target.value) }}
+              required
+              placeholder="00000-000"
+              maxLength={9}
+              style={{ paddingRight: cepLoading ? 36 : undefined }}
+            />
+            {cepLoading && <CepSpinner />}
+          </CepWrapper>
+          {cepError && <CepError>{cepError}</CepError>}
+        </Field>
+
         <FieldRow data-cols="3-1">
           <Field>
             <FieldLabel htmlFor="street">Rua / Avenida</FieldLabel>
@@ -493,10 +568,6 @@ function CheckoutForm(props: FormProps) {
             <Input id="state" type="text" value={state} onChange={(e) => setState(e.target.value)} required placeholder="SP" maxLength={2} style={{ textTransform: 'uppercase' }} />
           </Field>
         </FieldRow>
-        <Field>
-          <FieldLabel htmlFor="cep">CEP</FieldLabel>
-          <Input id="cep" type="text" value={cep} onChange={(e) => setCep(e.target.value)} required placeholder="00000-000" maxLength={9} style={{ maxWidth: 200 }} />
-        </Field>
       </Section>
 
       {/* Pagamento */}
