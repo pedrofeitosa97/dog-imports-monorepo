@@ -47,7 +47,7 @@ const Header = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: ${({ theme }) => theme.spacing[7]};
+  margin-bottom: ${({ theme }) => theme.spacing[6]};
   flex-wrap: wrap;
 `
 

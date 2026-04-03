@@ -294,7 +294,7 @@ export default function AdminUsersPage() {
                     {u.isAdmin ? <><Shield size={9} /> Admin</> : 'Cliente'}
                   </Badge>
                 </Td>
-                <Td><MutedText>{new Date(u.createdAt).toLocaleDateString('pt-BR')}</MutedText></Td>
+                <Td><MutedText>{u.createdAt ? new Date(u.createdAt).toLocaleDateString('pt-BR') : '—'}</MutedText></Td>
                 <Td>
                   <Actions>
                     <IconBtn
