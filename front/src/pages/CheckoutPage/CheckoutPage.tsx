@@ -2,7 +2,14 @@ import { useState, type FormEvent, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ShoppingBag, ChevronRight, QrCode, CreditCard, FileText } from 'lucide-react'
 import { loadStripe } from '@stripe/stripe-js'
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
+import {
+  Elements,
+  CardNumberElement,
+  CardExpiryElement,
+  CardCvcElement,
+  useStripe,
+  useElements,
+} from '@stripe/react-stripe-js'
 import Button from '../../ui/Button/Button'
 import { useCart } from '../../hooks/useCart'
 import { useAuth } from '../../hooks/useAuth'
@@ -161,14 +168,19 @@ const PaymentDesc = styled.p`
   margin-top: 2px;
 `
 
-const CardElementWrapper = styled.div`
-  padding: 12px 14px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
+const StripeInput = styled.div<{ $focused?: boolean }>`
+  padding: 11px 14px;
+  border: 1px solid ${({ $focused, theme }) => $focused ? theme.colors.brand : theme.colors.border};
   border-radius: ${({ theme }) => theme.borderRadius.base};
   background: transparent;
   transition: border-color 150ms;
+  cursor: text;
+`
 
-  &:focus-within { border-color: ${({ theme }) => theme.colors.brand}; }
+const CardGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.spacing[3]};
 `
 
 const Summary = styled.div`
@@ -330,16 +342,19 @@ function CheckoutForm(props: FormProps) {
   const theme = useTheme()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [focusedField, setFocusedField] = useState<string | null>(null)
+  const [cardName, setCardName] = useState('')
 
   const address = `${street}, ${number}${complement ? `, ${complement}` : ''} — ${neighborhood}, ${city}/${state}, CEP ${cep}`
 
-  const cardElementOptions = useMemo(() => ({
+  const stripeStyle = useMemo(() => ({
     style: {
       base: {
         fontSize: '14px',
-        color: theme?.colors?.textPrimary ?? '#111',
-        fontFamily: 'inherit',
-        '::placeholder': { color: theme?.colors?.textSecondary ?? '#999' },
+        color: theme?.colors?.textPrimary ?? '#111827',
+        fontFamily: 'Manrope, Inter, system-ui, sans-serif',
+        fontWeight: '400',
+        '::placeholder': { color: theme?.colors?.textSecondary ?? '#9ca3af' },
       },
       invalid: { color: '#ef4444' },
     },
@@ -361,8 +376,8 @@ function CheckoutForm(props: FormProps) {
           return
         }
 
-        const cardElement = elements.getElement(CardElement)
-        if (!cardElement) {
+        const cardNumberElement = elements.getElement(CardNumberElement)
+        if (!cardNumberElement) {
           setError('Elemento de cartão não encontrado.')
           setLoading(false)
           return
@@ -377,8 +392,8 @@ function CheckoutForm(props: FormProps) {
         // 2. Confirmar pagamento com dados do cartão
         const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
           payment_method: {
-            card: cardElement,
-            billing_details: { name, email },
+            card: cardNumberElement,
+            billing_details: { name: cardName || name, email },
           },
         })
 
@@ -500,18 +515,59 @@ function CheckoutForm(props: FormProps) {
           ))}
         </PaymentOptions>
 
-        {/* Card Element — aparece apenas quando cartão está selecionado */}
+        {/* Campos do cartão — aparecem apenas quando cartão está selecionado */}
         {payment === 'cartao' && (
-          <Field>
-            <FieldLabel>Dados do cartão</FieldLabel>
-            <CardElementWrapper>
-              <CardElement options={cardElementOptions} />
-            </CardElementWrapper>
+          <>
+            <Field>
+              <FieldLabel>Número do cartão</FieldLabel>
+              <StripeInput $focused={focusedField === 'number'}>
+                <CardNumberElement
+                  options={{ ...stripeStyle, showIcon: true }}
+                  onFocus={() => setFocusedField('number')}
+                  onBlur={() => setFocusedField(null)}
+                />
+              </StripeInput>
+            </Field>
+
+            <Field>
+              <FieldLabel>Nome no cartão</FieldLabel>
+              <Input
+                type="text"
+                placeholder="Como está impresso no cartão"
+                value={cardName}
+                onChange={(e) => setCardName(e.target.value)}
+                autoComplete="cc-name"
+              />
+            </Field>
+
+            <CardGrid>
+              <Field>
+                <FieldLabel>Validade</FieldLabel>
+                <StripeInput $focused={focusedField === 'expiry'}>
+                  <CardExpiryElement
+                    options={stripeStyle}
+                    onFocus={() => setFocusedField('expiry')}
+                    onBlur={() => setFocusedField(null)}
+                  />
+                </StripeInput>
+              </Field>
+              <Field>
+                <FieldLabel>CVC</FieldLabel>
+                <StripeInput $focused={focusedField === 'cvc'}>
+                  <CardCvcElement
+                    options={stripeStyle}
+                    onFocus={() => setFocusedField('cvc')}
+                    onBlur={() => setFocusedField(null)}
+                  />
+                </StripeInput>
+              </Field>
+            </CardGrid>
+
             <StripeNote>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               Pagamento processado com segurança pela Stripe
             </StripeNote>
-          </Field>
+          </>
         )}
       </Section>
 
