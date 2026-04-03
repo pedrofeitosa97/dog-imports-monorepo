@@ -143,6 +143,8 @@ Na primeira execução, o banco SQLite é criado automaticamente com dados de ex
 | `AWS_SECRET_ACCESS_KEY` | Não | Credencial AWS para upload de imagens |
 | `AWS_REGION` | Não | Região do bucket S3. Ex: `us-east-1` |
 | `AWS_S3_BUCKET` | Não | Nome do bucket S3 |
+| `STRIPE_SECRET_KEY` | Não | Chave secreta Stripe (`sk_test_...` ou `sk_live_...`) |
+| `STRIPE_WEBHOOK_SECRET` | Não | Segredo do webhook Stripe (`whsec_...`) |
 | `RESEND_API_KEY` | Não | API Key do Resend para envio de e-mails |
 
 ### Frontend (`front/.env`)
@@ -150,6 +152,7 @@ Na primeira execução, o banco SQLite é criado automaticamente com dados de ex
 | Variável | Obrigatória | Descrição |
 |---|---|---|
 | `VITE_API_URL` | **Sim** | URL base da API (sem barra no final). Ex: `http://localhost:8000/api` |
+| `VITE_STRIPE_PUBLIC_KEY` | Não | Chave pública Stripe (`pk_test_...` ou `pk_live_...`) |
 
 ---
 
@@ -169,6 +172,7 @@ dog-imports-monorepo/
 │   │   │   ├── banners/           # Banners da homepage
 │   │   │   ├── popups/            # Pop-ups promocionais
 │   │   │   ├── email/             # Envio de e-mails (Resend)
+│   │   │   ├── stripe/            # Pagamentos (Stripe PaymentIntents + Webhook)
 │   │   │   ├── settings/          # Configurações do site
 │   │   │   └── s3/                # Upload para AWS S3
 │   │   ├── common/
@@ -223,7 +227,9 @@ dog-imports-monorepo/
 - Página de detalhes com seleção de tamanho e cor
 - Carrinho persistente (localStorage)
 - Lista de favoritos
-- Checkout com endereço de entrega e método de pagamento
+- Checkout com endereço de entrega e método de pagamento (PIX, Cartão, Boleto)
+- Pagamento por cartão processado diretamente pelo Stripe (PCI-compliant)
+- Confirmação de pagamento via webhook Stripe
 - Confirmação de pedido com timeline de status
 - Área do cliente (`/minha-conta`) com histórico de pedidos
 
@@ -271,6 +277,8 @@ AWS_ACCESS_KEY_ID=<sua-chave>
 AWS_SECRET_ACCESS_KEY=<sua-chave>
 AWS_REGION=us-east-1
 AWS_S3_BUCKET=<nome-do-bucket>
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
 RESEND_API_KEY=<sua-chave>
 ```
 
@@ -287,7 +295,53 @@ O arquivo `back/railway.toml` já define o comando de build e start automaticame
 VITE_API_URL=https://<seu-servico>.up.railway.app/api
 ```
 
-5. Deploy
+5. Configure a variável pública do Stripe:
+
+```
+VITE_STRIPE_PUBLIC_KEY=pk_live_...
+```
+
+6. Deploy
+
+---
+
+## Stripe — Pagamentos
+
+### Teste local
+
+1. Instale a [Stripe CLI](https://stripe.com/docs/stripe-cli)
+2. Faça login: `stripe login`
+3. Inicie o forward para receber webhooks localmente:
+
+```bash
+stripe listen --forward-to localhost:8000/api/stripe/webhook
+```
+
+4. Copie o `whsec_...` exibido e adicione em `back/.env`:
+
+```
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+### Cartões de teste
+
+| Número | Resultado |
+|---|---|
+| `4242 4242 4242 4242` | Pagamento aprovado |
+| `4000 0000 0000 0002` | Cartão recusado |
+| `4000 0025 0000 3155` | Requer autenticação 3D Secure |
+
+Use qualquer data futura, qualquer CVC e qualquer CEP.
+
+### Fluxo de pagamento
+
+```
+Checkout → POST /stripe/payment-intent → clientSecret
+         → stripe.confirmCardPayment(clientSecret)
+         → POST /orders (com stripePaymentIntentId)
+         → Stripe webhook → payment_intent.succeeded
+         → Order.paymentStatus = 'paid' + status = 'confirmado'
+```
 
 ---
 
@@ -319,3 +373,5 @@ http://localhost:8000/api/docs
 | `GET` | `/api/settings` | — | Configurações públicas do site |
 | `GET` | `/api/email/status` | Admin | Status da integração Resend |
 | `POST` | `/api/email/send-order/:id` | Admin | Reenviar e-mail de pedido |
+| `POST` | `/api/stripe/payment-intent` | — | Criar PaymentIntent (cartão/PIX/boleto) |
+| `POST` | `/api/stripe/webhook` | Stripe | Webhook de eventos de pagamento |

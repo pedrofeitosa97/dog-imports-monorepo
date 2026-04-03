@@ -15,6 +15,7 @@ import { Order } from './modules/orders/entities/order.entity';
 import { OrderItem } from './modules/orders/entities/order-item.entity';
 import { S3Module } from './modules/s3/s3.module';
 import { EmailModule } from './modules/email/email.module';
+import { StripeModule } from './modules/stripe/stripe.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { User } from './modules/users/entities/user.entity';
 import { Product } from './modules/products/entities/product.entity';
@@ -38,6 +39,8 @@ import { SeedService } from './database/seed.service';
         AWS_SECRET_ACCESS_KEY: Joi.string().optional(),
         AWS_REGION: Joi.string().optional(),
         AWS_S3_BUCKET: Joi.string().optional(),
+        STRIPE_SECRET_KEY: Joi.string().optional(),
+        STRIPE_WEBHOOK_SECRET: Joi.string().optional(),
       }),
       validationOptions: { abortEarly: false },
     }),
@@ -85,6 +88,7 @@ import { SeedService } from './database/seed.service';
     SettingsModule,
     OrdersModule,
     EmailModule,
+    StripeModule,
   ],
   providers: [
     {

@@ -7,7 +7,7 @@ import { join } from 'path';
 import * as fs from 'fs';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { rawBody: true });
 
   // Serve uploads locais apenas em desenvolvimento (produção usa Cloudinary)
   if (!process.env.DATABASE_URL) {

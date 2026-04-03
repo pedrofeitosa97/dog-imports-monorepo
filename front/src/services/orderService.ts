@@ -8,6 +8,7 @@ export interface CreateOrderPayload {
   address: string
   paymentMethod: string
   totalPrice: number
+  stripePaymentIntentId?: string
   items: {
     productId: number
     productName: string

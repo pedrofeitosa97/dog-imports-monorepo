@@ -43,6 +43,13 @@ export class Order {
   @Column('decimal', { precision: 10, scale: 2 })
   totalPrice: number;
 
+  // Stripe
+  @Column({ nullable: true })
+  stripePaymentIntentId: string;
+
+  @Column({ default: 'pending' })
+  paymentStatus: string; // pending | paid | failed
+
   @OneToMany(() => OrderItem, (item) => item.order, { cascade: true, eager: true })
   items: OrderItem[];
 

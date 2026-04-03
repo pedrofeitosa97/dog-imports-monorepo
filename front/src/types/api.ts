@@ -104,6 +104,8 @@ export interface Order {
   paymentMethod: string
   status: OrderStatus
   totalPrice: number
+  stripePaymentIntentId?: string | null
+  paymentStatus?: string
   items: OrderItem[]
   createdAt: string
   updatedAt: string

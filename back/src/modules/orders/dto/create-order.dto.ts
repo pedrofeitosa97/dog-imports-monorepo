@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsNumber, IsArray, ValidateNested, IsOptional, Min } from 'class-validator';
+import { IsString, IsEmail, IsNumber, IsArray, ValidateNested, IsOptional, Min, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -46,14 +46,19 @@ export class CreateOrderDto {
   @IsString()
   address: string;
 
-  @ApiProperty()
-  @IsString()
+  @ApiProperty({ enum: ['cartao', 'pix', 'boleto'] })
+  @IsIn(['cartao', 'pix', 'boleto'])
   paymentMethod: string;
 
   @ApiProperty()
   @IsNumber()
   @Min(0)
   totalPrice: number;
+
+  @ApiProperty({ required: false, description: 'ID do PaymentIntent Stripe (cartão/pix/boleto)' })
+  @IsOptional()
+  @IsString()
+  stripePaymentIntentId?: string;
 
   @ApiProperty({ type: [OrderItemDto] })
   @IsArray()

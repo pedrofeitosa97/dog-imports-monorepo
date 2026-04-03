@@ -1,13 +1,20 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ShoppingBag, ChevronRight, QrCode, CreditCard, FileText } from 'lucide-react'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import Button from '../../ui/Button/Button'
 import { useCart } from '../../hooks/useCart'
 import { useAuth } from '../../hooks/useAuth'
 import { orderService } from '../../services/orderService'
+import { stripeService } from '../../services/stripeService'
 import { formatCurrency } from '../../utils/formatCurrency'
 import { getImageUrl } from '../../utils/getImageUrl'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
+
+/* ── Stripe instance ─────────────────────────────────────────────────────── */
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY ?? '')
 
 /* ── Layout ──────────────────────────────────────────────────────────────── */
 
@@ -46,8 +53,6 @@ const Grid = styled.div`
     grid-template-columns: 1fr 360px;
   }
 `
-
-/* ── Form ────────────────────────────────────────────────────────────────── */
 
 const Form = styled.form`
   display: flex;
@@ -116,8 +121,6 @@ const Input = styled.input`
   &:focus { border-color: ${({ theme }) => theme.colors.brand}; }
 `
 
-/* ── Payment methods ─────────────────────────────────────────────────────── */
-
 const PaymentOptions = styled.div`
   display: flex;
   flex-direction: column;
@@ -158,7 +161,15 @@ const PaymentDesc = styled.p`
   margin-top: 2px;
 `
 
-/* ── Summary sidebar ─────────────────────────────────────────────────────── */
+const CardElementWrapper = styled.div`
+  padding: 12px 14px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.base};
+  background: transparent;
+  transition: border-color 150ms;
+
+  &:focus-within { border-color: ${({ theme }) => theme.colors.brand}; }
+`
 
 const Summary = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
@@ -270,14 +281,252 @@ const EmptyWrapper = styled.div`
   color: ${({ theme }) => theme.colors.textSecondary};
 `
 
+const StripeNote = styled.p`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+`
+
 const PAYMENT_METHODS = [
-  { value: 'pix', label: 'PIX', desc: '5% de desconto', icon: <QrCode size={20} /> },
-  { value: 'cartao', label: 'Cartão de crédito', desc: 'Em até 12x sem juros', icon: <CreditCard size={20} /> },
-  { value: 'boleto', label: 'Boleto bancário', desc: 'Vencimento em 3 dias úteis', icon: <FileText size={20} /> },
+  { value: 'pix',    label: 'PIX',                desc: '5% de desconto',        icon: <QrCode size={20} /> },
+  { value: 'cartao', label: 'Cartão de crédito',  desc: 'Em até 12x sem juros',  icon: <CreditCard size={20} /> },
+  { value: 'boleto', label: 'Boleto bancário',    desc: 'Vencimento em 3 dias',  icon: <FileText size={20} /> },
 ]
 
+/* ── Inner form (needs Stripe hooks) ─────────────────────────────────────── */
+
+interface FormProps {
+  name: string; setName: (v: string) => void
+  email: string; setEmail: (v: string) => void
+  cep: string; setCep: (v: string) => void
+  street: string; setStreet: (v: string) => void
+  number: string; setNumber: (v: string) => void
+  complement: string; setComplement: (v: string) => void
+  neighborhood: string; setNeighborhood: (v: string) => void
+  city: string; setCity: (v: string) => void
+  state: string; setState: (v: string) => void
+  payment: string; setPayment: (v: string) => void
+  totalPrice: number
+  onSuccess: (orderId: number) => void
+}
+
+function CheckoutForm(props: FormProps) {
+  const {
+    name, setName, email, setEmail,
+    cep, setCep, street, setStreet,
+    number, setNumber, complement, setComplement,
+    neighborhood, setNeighborhood, city, setCity,
+    state, setState,
+    payment, setPayment,
+    totalPrice, onSuccess,
+  } = props
+
+  const { items, clearCart } = useCart()
+  const stripe = useStripe()
+  const elements = useElements()
+  const theme = useTheme()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const address = `${street}, ${number}${complement ? `, ${complement}` : ''} — ${neighborhood}, ${city}/${state}, CEP ${cep}`
+
+  const cardElementOptions = useMemo(() => ({
+    style: {
+      base: {
+        fontSize: '14px',
+        color: theme?.colors?.textPrimary ?? '#111',
+        fontFamily: 'inherit',
+        '::placeholder': { color: theme?.colors?.textSecondary ?? '#999' },
+      },
+      invalid: { color: '#ef4444' },
+    },
+  }), [theme])
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    try {
+      let stripePaymentIntentId: string | undefined
+
+      // ── Cartão: confirmar com Stripe.js ───────────────────────────────────
+      if (payment === 'cartao') {
+        if (!stripe || !elements) {
+          setError('Stripe não carregado. Recarregue a página.')
+          setLoading(false)
+          return
+        }
+
+        const cardElement = elements.getElement(CardElement)
+        if (!cardElement) {
+          setError('Elemento de cartão não encontrado.')
+          setLoading(false)
+          return
+        }
+
+        // 1. Criar PaymentIntent no backend
+        const { clientSecret, paymentIntentId } = await stripeService.createPaymentIntent(
+          totalPrice,
+          'card',
+        )
+
+        // 2. Confirmar pagamento com dados do cartão
+        const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: cardElement,
+            billing_details: { name, email },
+          },
+        })
+
+        if (stripeError) {
+          setError(stripeError.message ?? 'Erro ao processar cartão.')
+          setLoading(false)
+          return
+        }
+
+        if (paymentIntent?.status !== 'succeeded') {
+          setError('Pagamento não foi aprovado. Tente novamente.')
+          setLoading(false)
+          return
+        }
+
+        stripePaymentIntentId = paymentIntentId
+      }
+
+      // ── PIX / Boleto: criar PaymentIntent mas confirmar assincronamente ───
+      if (payment === 'pix' || payment === 'boleto') {
+        const method = payment === 'pix' ? 'pix' : 'boleto'
+        const { paymentIntentId } = await stripeService.createPaymentIntent(totalPrice, method)
+        stripePaymentIntentId = paymentIntentId
+      }
+
+      // ── Criar pedido no banco ────────────────────────────────────────────
+      const order = await orderService.create(
+        items,
+        {
+          customerName: name,
+          customerEmail: email,
+          address,
+          paymentMethod: payment,
+          stripePaymentIntentId,
+        },
+        totalPrice,
+      )
+
+      clearCart()
+      onSuccess(order.id)
+    } catch {
+      setError('Erro ao finalizar pedido. Tente novamente.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      {error && <ErrorMsg>{error}</ErrorMsg>}
+
+      {/* Dados pessoais */}
+      <Section>
+        <SectionTitle>Dados pessoais</SectionTitle>
+        <FieldRow data-cols="2">
+          <Field>
+            <FieldLabel htmlFor="name">Nome completo</FieldLabel>
+            <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Seu nome" />
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="email">E-mail</FieldLabel>
+            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="seu@email.com" />
+          </Field>
+        </FieldRow>
+      </Section>
+
+      {/* Endereço */}
+      <Section>
+        <SectionTitle>Endereço de entrega</SectionTitle>
+        <FieldRow data-cols="3-1">
+          <Field>
+            <FieldLabel htmlFor="street">Rua / Avenida</FieldLabel>
+            <Input id="street" type="text" value={street} onChange={(e) => setStreet(e.target.value)} required placeholder="Nome da rua" />
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="number">Número</FieldLabel>
+            <Input id="number" type="text" value={number} onChange={(e) => setNumber(e.target.value)} required placeholder="123" />
+          </Field>
+        </FieldRow>
+        <FieldRow data-cols="2">
+          <Field>
+            <FieldLabel htmlFor="complement">Complemento</FieldLabel>
+            <Input id="complement" type="text" value={complement} onChange={(e) => setComplement(e.target.value)} placeholder="Apto, bloco..." />
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="neighborhood">Bairro</FieldLabel>
+            <Input id="neighborhood" type="text" value={neighborhood} onChange={(e) => setNeighborhood(e.target.value)} required placeholder="Bairro" />
+          </Field>
+        </FieldRow>
+        <FieldRow data-cols="2">
+          <Field>
+            <FieldLabel htmlFor="city">Cidade</FieldLabel>
+            <Input id="city" type="text" value={city} onChange={(e) => setCity(e.target.value)} required placeholder="Cidade" />
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="state">Estado</FieldLabel>
+            <Input id="state" type="text" value={state} onChange={(e) => setState(e.target.value)} required placeholder="SP" maxLength={2} style={{ textTransform: 'uppercase' }} />
+          </Field>
+        </FieldRow>
+        <Field>
+          <FieldLabel htmlFor="cep">CEP</FieldLabel>
+          <Input id="cep" type="text" value={cep} onChange={(e) => setCep(e.target.value)} required placeholder="00000-000" maxLength={9} style={{ maxWidth: 200 }} />
+        </Field>
+      </Section>
+
+      {/* Pagamento */}
+      <Section>
+        <SectionTitle>Forma de pagamento</SectionTitle>
+        <PaymentOptions>
+          {PAYMENT_METHODS.map((m) => (
+            <PaymentOption key={m.value} $selected={payment === m.value}>
+              <input type="radio" name="payment" value={m.value} checked={payment === m.value} onChange={() => setPayment(m.value)} />
+              <PaymentIcon $selected={payment === m.value}>{m.icon}</PaymentIcon>
+              <PaymentInfo>
+                <PaymentName $selected={payment === m.value}>{m.label}</PaymentName>
+                <PaymentDesc>{m.desc}</PaymentDesc>
+              </PaymentInfo>
+            </PaymentOption>
+          ))}
+        </PaymentOptions>
+
+        {/* Card Element — aparece apenas quando cartão está selecionado */}
+        {payment === 'cartao' && (
+          <Field>
+            <FieldLabel>Dados do cartão</FieldLabel>
+            <CardElementWrapper>
+              <CardElement options={cardElementOptions} />
+            </CardElementWrapper>
+            <StripeNote>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Pagamento processado com segurança pela Stripe
+            </StripeNote>
+          </Field>
+        )}
+      </Section>
+
+      <Button type="submit" variant="primary" size="lg" fullWidth disabled={loading || (payment === 'cartao' && !stripe)}>
+        {loading ? 'Processando...' : `Finalizar pedido · ${formatCurrency(totalPrice)}`}
+        {!loading && <ChevronRight size={18} style={{ marginLeft: 4 }} />}
+      </Button>
+    </Form>
+  )
+}
+
+/* ── Main page ───────────────────────────────────────────────────────────── */
+
 export default function CheckoutPage() {
-  const { items, totalPrice, clearCart } = useCart()
+  const { items, totalPrice } = useCart()
   const { user } = useAuth()
   const navigate = useNavigate()
 
@@ -291,8 +540,6 @@ export default function CheckoutPage() {
   const [city, setCity] = useState('')
   const [state, setState] = useState('')
   const [payment, setPayment] = useState('pix')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
 
   if (items.length === 0) {
     return (
@@ -306,112 +553,28 @@ export default function CheckoutPage() {
     )
   }
 
-  const address = `${street}, ${number}${complement ? `, ${complement}` : ''} — ${neighborhood}, ${city}/${state}, CEP ${cep}`
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-    try {
-      const order = await orderService.create(
-        items,
-        { customerName: name, customerEmail: email, address, paymentMethod: payment },
-        totalPrice,
-      )
-      clearCart()
-      navigate(`/pedido-confirmado/${order.id}`)
-    } catch {
-      setError('Erro ao finalizar pedido. Tente novamente.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   return (
     <PageWrapper>
       <PageLabel>Finalizar compra</PageLabel>
       <Title>Checkout</Title>
 
       <Grid>
-        <Form onSubmit={handleSubmit}>
-          {error && <ErrorMsg>{error}</ErrorMsg>}
-
-          {/* Dados pessoais */}
-          <Section>
-            <SectionTitle>Dados pessoais</SectionTitle>
-            <FieldRow data-cols="2">
-              <Field>
-                <FieldLabel htmlFor="name">Nome completo</FieldLabel>
-                <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Seu nome" />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="email">E-mail</FieldLabel>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="seu@email.com" />
-              </Field>
-            </FieldRow>
-          </Section>
-
-          {/* Endereço */}
-          <Section>
-            <SectionTitle>Endereço de entrega</SectionTitle>
-            <FieldRow data-cols="3-1">
-              <Field>
-                <FieldLabel htmlFor="street">Rua / Avenida</FieldLabel>
-                <Input id="street" type="text" value={street} onChange={(e) => setStreet(e.target.value)} required placeholder="Nome da rua" />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="number">Número</FieldLabel>
-                <Input id="number" type="text" value={number} onChange={(e) => setNumber(e.target.value)} required placeholder="123" />
-              </Field>
-            </FieldRow>
-            <FieldRow data-cols="2">
-              <Field>
-                <FieldLabel htmlFor="complement">Complemento</FieldLabel>
-                <Input id="complement" type="text" value={complement} onChange={(e) => setComplement(e.target.value)} placeholder="Apto, bloco..." />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="neighborhood">Bairro</FieldLabel>
-                <Input id="neighborhood" type="text" value={neighborhood} onChange={(e) => setNeighborhood(e.target.value)} required placeholder="Bairro" />
-              </Field>
-            </FieldRow>
-            <FieldRow data-cols="2">
-              <Field>
-                <FieldLabel htmlFor="city">Cidade</FieldLabel>
-                <Input id="city" type="text" value={city} onChange={(e) => setCity(e.target.value)} required placeholder="Cidade" />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="state">Estado</FieldLabel>
-                <Input id="state" type="text" value={state} onChange={(e) => setState(e.target.value)} required placeholder="SP" maxLength={2} style={{ textTransform: 'uppercase' }} />
-              </Field>
-            </FieldRow>
-            <Field>
-              <FieldLabel htmlFor="cep">CEP</FieldLabel>
-              <Input id="cep" type="text" value={cep} onChange={(e) => setCep(e.target.value)} required placeholder="00000-000" maxLength={9} style={{ maxWidth: 200 }} />
-            </Field>
-          </Section>
-
-          {/* Pagamento */}
-          <Section>
-            <SectionTitle>Forma de pagamento</SectionTitle>
-            <PaymentOptions>
-              {PAYMENT_METHODS.map((m) => (
-                <PaymentOption key={m.value} $selected={payment === m.value}>
-                  <input type="radio" name="payment" value={m.value} checked={payment === m.value} onChange={() => setPayment(m.value)} />
-                  <PaymentIcon $selected={payment === m.value}>{m.icon}</PaymentIcon>
-                  <PaymentInfo>
-                    <PaymentName $selected={payment === m.value}>{m.label}</PaymentName>
-                    <PaymentDesc>{m.desc}</PaymentDesc>
-                  </PaymentInfo>
-                </PaymentOption>
-              ))}
-            </PaymentOptions>
-          </Section>
-
-          <Button type="submit" variant="primary" size="lg" fullWidth disabled={loading}>
-            {loading ? 'Finalizando...' : `Finalizar pedido · ${formatCurrency(totalPrice)}`}
-            {!loading && <ChevronRight size={18} style={{ marginLeft: 4 }} />}
-          </Button>
-        </Form>
+        <Elements stripe={stripePromise}>
+          <CheckoutForm
+            name={name} setName={setName}
+            email={email} setEmail={setEmail}
+            cep={cep} setCep={setCep}
+            street={street} setStreet={setStreet}
+            number={number} setNumber={setNumber}
+            complement={complement} setComplement={setComplement}
+            neighborhood={neighborhood} setNeighborhood={setNeighborhood}
+            city={city} setCity={setCity}
+            state={state} setState={setState}
+            payment={payment} setPayment={setPayment}
+            totalPrice={totalPrice}
+            onSuccess={(id) => navigate(`/pedido-confirmado/${id}`)}
+          />
+        </Elements>
 
         {/* Order summary */}
         <Summary>

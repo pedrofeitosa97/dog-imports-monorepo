@@ -23,6 +23,8 @@ export class OrdersService {
       paymentMethod: dto.paymentMethod,
       totalPrice: dto.totalPrice,
       status: 'pendente',
+      stripePaymentIntentId: dto.stripePaymentIntentId ?? null,
+      paymentStatus: dto.stripePaymentIntentId ? 'pending' : 'not_required',
     });
 
     const saved = await this.orderRepo.save(order);
@@ -88,5 +90,14 @@ export class OrdersService {
 
     order.status = status;
     return this.orderRepo.save(order);
+  }
+
+  async updatePaymentStatus(paymentIntentId: string, paymentStatus: 'paid' | 'failed'): Promise<void> {
+    const order = await this.orderRepo.findOne({ where: { stripePaymentIntentId: paymentIntentId } });
+    if (!order) return;
+
+    order.paymentStatus = paymentStatus;
+    if (paymentStatus === 'paid') order.status = 'confirmado';
+    await this.orderRepo.save(order);
   }
 }
