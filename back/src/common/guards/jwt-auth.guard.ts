@@ -9,12 +9,22 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
-  canActivate(context: ExecutionContext) {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+  private isPublic(context: ExecutionContext): boolean {
+    return this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
-    ]);
-    if (isPublic) return true;
+    ]) ?? false;
+  }
+
+  canActivate(context: ExecutionContext) {
+    // Always run Passport so request.user is populated when token is present
     return super.canActivate(context);
+  }
+
+  handleRequest(err: any, user: any, _info: any, context: ExecutionContext) {
+    // Public routes: accept with or without token (no throw)
+    if (this.isPublic(context)) return user ?? null;
+    if (err || !user) throw err;
+    return user;
   }
 }
