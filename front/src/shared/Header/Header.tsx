@@ -107,7 +107,7 @@ export default function Header({ transparent = false }: HeaderProps) {
               {totalItems > 0 && <CountBadge>{totalItems}</CountBadge>}
             </IconBtn>
 
-            <IconBtn as={Link} to={user?.isAdmin ? '/admin' : user ? '/minha-conta' : '/login'} $transparent={isTransparent} aria-label="Minha conta">
+            <IconBtn as={Link} to={user ? '/minha-conta' : '/login'} $transparent={isTransparent} aria-label="Minha conta">
               <User size={20} />
             </IconBtn>
 
