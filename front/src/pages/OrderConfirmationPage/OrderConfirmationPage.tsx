@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { CheckCircle, Package, MapPin, CreditCard } from 'lucide-react'
+import { CheckCircle, Package, MapPin, CreditCard, Clock } from 'lucide-react'
 import Button from '../../ui/Button/Button'
 import Spinner from '../../ui/Spinner/Spinner'
 import { orderService } from '../../services/orderService'
@@ -8,10 +8,14 @@ import { formatCurrency } from '../../utils/formatCurrency'
 import type { Order } from '../../types/api'
 import styled, { keyframes } from 'styled-components'
 
+/* ── Animations ──────────────────────────────────────────────────────────── */
+
 const fadeUp = keyframes`
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 `
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
 
 const PageWrapper = styled.div`
   max-width: 680px;
@@ -57,6 +61,124 @@ const Subtitle = styled.p`
   margin-bottom: ${({ theme }) => theme.spacing[8]};
 `
 
+const StatusNote = styled.p`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  text-align: center;
+  margin-top: -${({ theme }) => theme.spacing[4]};
+  margin-bottom: ${({ theme }) => theme.spacing[8]};
+`
+
+/* ── Timeline ────────────────────────────────────────────────────────────── */
+
+const TimelineWrapper = styled.div`
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  padding: ${({ theme }) => theme.spacing[6]};
+  margin-bottom: ${({ theme }) => theme.spacing[6]};
+`
+
+const TimelineTitle = styled.p`
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-bottom: ${({ theme }) => theme.spacing[5]};
+`
+
+const TimelineList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+`
+
+const TimelineItem = styled.div<{ $done: boolean; $active: boolean; $cancelled: boolean }>`
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  position: relative;
+
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 13px;
+    top: 28px;
+    width: 2px;
+    height: calc(100% - 4px);
+    background: ${({ $done, $cancelled, theme }) =>
+      $cancelled ? 'rgba(239,68,68,0.3)' :
+      $done ? theme.colors.accentGreen :
+      theme.colors.border};
+  }
+`
+
+const TimelineDot = styled.div<{ $done: boolean; $active: boolean; $cancelled: boolean }>`
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  position: relative;
+  z-index: 1;
+  background: ${({ $done, $active, $cancelled, theme }) =>
+    $cancelled ? 'rgba(239,68,68,0.15)' :
+    $done || $active ? theme.colors.accentGreen :
+    theme.colors.surface};
+  border: 2px solid ${({ $done, $active, $cancelled, theme }) =>
+    $cancelled ? '#ef4444' :
+    $done || $active ? theme.colors.accentGreen :
+    theme.colors.border};
+  color: ${({ $done, $active, $cancelled }) =>
+    $cancelled ? '#ef4444' :
+    $done || $active ? '#fff' :
+    'transparent'};
+`
+
+const TimelineContent = styled.div`
+  padding-bottom: ${({ theme }) => theme.spacing[5]};
+  flex: 1;
+`
+
+const TimelineLabel = styled.p<{ $done: boolean; $active: boolean }>`
+  font-size: 13px;
+  font-weight: ${({ $active }) => $active ? 700 : 600};
+  color: ${({ $done, $active, theme }) =>
+    $done || $active ? theme.colors.textPrimary : theme.colors.textSecondary};
+  line-height: 1.4;
+  padding-top: 4px;
+`
+
+const TimelineDesc = styled.p`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  margin-top: 2px;
+`
+
+const ActiveBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(249,115,22,0.12);
+  color: #f97316;
+  margin-left: 8px;
+`
+
+/* ── Order card ──────────────────────────────────────────────────────────── */
+
 const OrderCard = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.borderRadius.md};
@@ -96,36 +218,6 @@ const OrderMeta = styled.p`
   margin-top: 4px;
 `
 
-const StatusBadge = styled.span<{ $status: string }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: ${({ theme }) => theme.borderRadius.full};
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  background: ${({ $status }) =>
-    $status === 'entregue' ? 'rgba(34,197,94,0.15)' :
-    $status === 'cancelado' ? 'rgba(239,68,68,0.12)' :
-    $status === 'enviado' ? 'rgba(59,130,246,0.15)' :
-    'rgba(249,115,22,0.12)'};
-  color: ${({ $status }) =>
-    $status === 'entregue' ? '#22c55e' :
-    $status === 'cancelado' ? '#ef4444' :
-    $status === 'enviado' ? '#3b82f6' :
-    '#f97316'};
-`
-
-const STATUS_LABELS: Record<string, string> = {
-  pendente: 'Pendente',
-  confirmado: 'Confirmado',
-  em_preparo: 'Em preparo',
-  enviado: 'Enviado',
-  entregue: 'Entregue',
-  cancelado: 'Cancelado',
-}
-
 const ItemsList = styled.div`
   display: flex;
   flex-direction: column;
@@ -138,8 +230,6 @@ const Item = styled.div`
   align-items: flex-start;
   gap: 8px;
 `
-
-const ItemLeft = styled.div``
 
 const ItemName = styled.p`
   font-size: 13px;
@@ -189,11 +279,38 @@ const Center = styled.div`
   min-height: 300px;
 `
 
+/* ── Data ────────────────────────────────────────────────────────────────── */
+
 const PAYMENT_LABELS: Record<string, string> = {
   pix: 'PIX',
   cartao: 'Cartão de crédito',
   boleto: 'Boleto bancário',
 }
+
+const TIMELINE_STEPS = [
+  { key: 'pendente',   label: 'Pedido recebido',   desc: 'Aguardando confirmação' },
+  { key: 'confirmado', label: 'Pedido confirmado',  desc: 'Pagamento aprovado' },
+  { key: 'em_preparo', label: 'Em preparo',         desc: 'Seu pedido está sendo separado' },
+  { key: 'enviado',    label: 'Enviado',             desc: 'A caminho do destino' },
+  { key: 'entregue',   label: 'Entregue',            desc: 'Pedido recebido com sucesso' },
+]
+
+const STATUS_ORDER = ['pendente', 'confirmado', 'em_preparo', 'enviado', 'entregue']
+
+function getStepState(stepKey: string, currentStatus: string) {
+  if (currentStatus === 'cancelado') {
+    return { done: false, active: false, cancelled: true }
+  }
+  const currentIdx = STATUS_ORDER.indexOf(currentStatus)
+  const stepIdx = STATUS_ORDER.indexOf(stepKey)
+  return {
+    done: stepIdx < currentIdx,
+    active: stepIdx === currentIdx,
+    cancelled: false,
+  }
+}
+
+/* ── Component ───────────────────────────────────────────────────────────── */
 
 export default function OrderConfirmationPage() {
   const { id } = useParams<{ id: string }>()
@@ -214,7 +331,7 @@ export default function OrderConfirmationPage() {
     return (
       <PageWrapper>
         <Label>Pedido</Label>
-        <Title>Pedido confirmado!</Title>
+        <Title>Pedido realizado!</Title>
         <Subtitle>Seu pedido #{id} foi recebido com sucesso. Você receberá atualizações por e-mail.</Subtitle>
         <Actions>
           <Button as={Link} to="/produtos" variant="primary">Continuar comprando</Button>
@@ -224,24 +341,65 @@ export default function OrderConfirmationPage() {
     )
   }
 
+  const isCancelled = order.status === 'cancelado'
+
   return (
     <PageWrapper>
       <SuccessIcon><CheckCircle size={56} strokeWidth={1.5} /></SuccessIcon>
-      <Label>Pedido recebido</Label>
-      <Title>Pedido confirmado!</Title>
+      <Label>Obrigado pela compra</Label>
+      <Title>Pedido realizado!</Title>
       <Subtitle>
-        Obrigado, {order.customerName.split(' ')[0]}! Seu pedido foi recebido e está sendo processado.
-        Você receberá atualizações no e-mail {order.customerEmail}.
+        Olá, {order.customerName.split(' ')[0]}! Seu pedido foi recebido e está sendo processado.
+        Acompanhe o status abaixo.
       </Subtitle>
+      <StatusNote>
+        <Clock size={13} />
+        Aguarde atualização de status — atualizamos em tempo real
+      </StatusNote>
 
+      {/* Timeline */}
+      <TimelineWrapper>
+        <TimelineTitle>Acompanhamento do pedido</TimelineTitle>
+        <TimelineList>
+          {isCancelled ? (
+            <TimelineItem $done={false} $active={false} $cancelled>
+              <TimelineDot $done={false} $active={false} $cancelled>✕</TimelineDot>
+              <TimelineContent>
+                <TimelineLabel $done={false} $active style={{ color: '#ef4444' }}>
+                  Pedido cancelado
+                </TimelineLabel>
+                <TimelineDesc>Entre em contato para mais informações</TimelineDesc>
+              </TimelineContent>
+            </TimelineItem>
+          ) : (
+            TIMELINE_STEPS.map((step) => {
+              const { done, active, cancelled } = getStepState(step.key, order.status)
+              return (
+                <TimelineItem key={step.key} $done={done} $active={active} $cancelled={cancelled}>
+                  <TimelineDot $done={done} $active={active} $cancelled={cancelled}>
+                    {done ? '✓' : active ? '●' : ''}
+                  </TimelineDot>
+                  <TimelineContent>
+                    <TimelineLabel $done={done} $active={active}>
+                      {step.label}
+                      {active && <ActiveBadge>Atual</ActiveBadge>}
+                    </TimelineLabel>
+                    <TimelineDesc>{step.desc}</TimelineDesc>
+                  </TimelineContent>
+                </TimelineItem>
+              )
+            })
+          )}
+        </TimelineList>
+      </TimelineWrapper>
+
+      {/* Order details */}
       <OrderCard>
         <CardSection>
           <CardSectionTitle><Package size={14} /> Número do pedido</CardSectionTitle>
           <OrderId>#{order.id.toString().padStart(5, '0')}</OrderId>
           <OrderMeta>
             {new Date(order.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
-            {' · '}
-            <StatusBadge $status={order.status}>{STATUS_LABELS[order.status] ?? order.status}</StatusBadge>
           </OrderMeta>
         </CardSection>
 
@@ -250,7 +408,7 @@ export default function OrderConfirmationPage() {
           <ItemsList>
             {order.items.map((item) => (
               <Item key={item.id}>
-                <ItemLeft>
+                <div>
                   <ItemName>{item.productName}</ItemName>
                   <ItemMeta>
                     {item.productBrand}
@@ -258,14 +416,14 @@ export default function OrderConfirmationPage() {
                     {item.color ? ` · ${item.color}` : ''}
                     {` × ${item.quantity}`}
                   </ItemMeta>
-                </ItemLeft>
-                <ItemPrice>{formatCurrency(item.price * item.quantity)}</ItemPrice>
+                </div>
+                <ItemPrice>{formatCurrency(Number(item.price) * item.quantity)}</ItemPrice>
               </Item>
             ))}
           </ItemsList>
           <TotalRow>
             <span>Total</span>
-            <span>{formatCurrency(order.totalPrice)}</span>
+            <span>{formatCurrency(Number(order.totalPrice))}</span>
           </TotalRow>
         </CardSection>
 
