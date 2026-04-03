@@ -32,6 +32,7 @@ import BannerPage from '../pages/admin/BannerPage/BannerPage'
 import SettingsPage from '../pages/admin/SettingsPage/SettingsPage'
 import PopupPage from '../pages/admin/PopupPage/PopupPage'
 import AdminUsersPage from '../pages/admin/AdminUsersPage/AdminUsersPage'
+import EmailPage from '../pages/admin/EmailPage/EmailPage'
 
 export default function AppRoutes() {
   return (
@@ -74,6 +75,7 @@ export default function AppRoutes() {
             <Route path="/admin/configuracoes" element={<SettingsPage />} />
             <Route path="/admin/popups" element={<PopupPage />} />
             <Route path="/admin/usuarios" element={<AdminUsersPage />} />
+            <Route path="/admin/emails" element={<EmailPage />} />
           </Route>
         </Route>
       </Routes>

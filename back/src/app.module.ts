@@ -13,6 +13,7 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { Order } from './modules/orders/entities/order.entity';
 import { OrderItem } from './modules/orders/entities/order-item.entity';
 import { S3Module } from './modules/s3/s3.module';
+import { EmailModule } from './modules/email/email.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { User } from './modules/users/entities/user.entity';
 import { Product } from './modules/products/entities/product.entity';
@@ -70,6 +71,7 @@ import { SeedService } from './database/seed.service';
     PopupsModule,
     SettingsModule,
     OrdersModule,
+    EmailModule,
   ],
   providers: [
     {

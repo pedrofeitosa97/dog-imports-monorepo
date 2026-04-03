@@ -1,15 +1,17 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order, OrderStatus } from './entities/order.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectRepository(Order) private orderRepo: Repository<Order>,
     @InjectRepository(OrderItem) private itemRepo: Repository<OrderItem>,
+    @Inject(forwardRef(() => EmailService)) private emailService: EmailService,
   ) {}
 
   async create(dto: CreateOrderDto, userId?: number): Promise<Order> {
@@ -41,7 +43,12 @@ export class OrdersService {
 
     await this.itemRepo.save(items);
 
-    return this.orderRepo.findOne({ where: { id: saved.id }, relations: ['items'] });
+    const created = await this.orderRepo.findOne({ where: { id: saved.id }, relations: ['items'] });
+
+    // Enviar e-mail de confirmação (fire-and-forget)
+    this.emailService.sendOrderConfirmation(created).catch(() => null);
+
+    return created;
   }
 
   async findMyOrders(userId: number): Promise<Order[]> {
